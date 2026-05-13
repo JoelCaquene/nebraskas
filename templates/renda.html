@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Finanças | fd GLOBAL{% endblock %}
+
+{% block content %}
+<style>
+    body { 
+        background: #020b1e !important; /* Azul escuro profundo */
+        margin: 0; 
+        padding: 0;
+        overflow-x: hidden; /* Remove rolagem horizontal e evita o balanço da tela */
+    }
+
+    .finance-wrapper {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Brilho suave no centro/fundo para destacar as imagens */
+        background: radial-gradient(circle at center, rgba(0, 122, 255, 0.15) 0%, transparent 70%);
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    /* HEADER TOTALMENTE LIMPO */
+    .finance-header { 
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-start; /* Alinha a seta à esquerda sem títulos */
+        box-sizing: border-box;
+    }
+
+    /* SETA DE VOLTAR CORRIGIDA (FINA, ELEGANTE E COM SVG NATIVO) */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none; 
+        color: rgba(255, 255, 255, 0.8);
+        width: 40px;
+        height: 40px;
+        transition: transform 0.2s, color 0.2s;
+    }
+    .back-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .back-btn:active { 
+        transform: scale(0.9); 
+        color: #007AFF;
+    }
+
+    /* GRADE DE IMAGENS COMPACTA E MISTA */
+    .images-container {
+        width: 100%;
+        max-width: 500px; /* Mantém o padrão estrito de ecrãs mobile */
+        display: flex;
+        flex-direction: column;
+        gap: 0; /* Cola as imagens uma na outra eliminando separações */
+        padding: 0 10px 40px 10px; /* Espaçamento sutil apenas nas laterais e fundo */
+        box-sizing: border-box;
+    }
+
+    /* CONTROLE EXCLUSIVO DE QUALIDADE DAS IMAGENS */
+    .mixed-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain; /* Não recorta, não oculta e abre a imagem por completo */
+        image-rendering: -webkit-optimize-contrast; /* Otimiza a nitidez em ecrãs Mobile */
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<div class="finance-wrapper">
+    <header class="finance-header">
+        <a href="{% url 'menu' %}" class="back-btn">
+            <svg viewBox="0 0 24 24">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+    </header>
+
+    <div class="images-container">
+        <img src="{% static 'images/finance_1.png' %}" alt="Image 1" class="mixed-image">
+        <img src="{% static 'images/finance_2.png' %}" alt="Image 2" class="mixed-image">
+        <img src="{% static 'images/finance_3.png' %}" alt="Image 3" class="mixed-image">
+    </div>
+</div>
+{% endblock %}

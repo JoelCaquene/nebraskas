@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Orbitron:wght@500;800;900&family=Montserrat:wght@400;600;700;800&family=Goldman:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+    :root {
+        --neon-green: #00ff66;
+        --neon-gold: #ffcc00;
+        --poker-red: #b30000;
+        --gold-gradient: linear-gradient(135deg, #ffe066 0%, #f5b025 50%, #a8760c 100%);
+        --glass-bg: rgba(10, 14, 23, 0.92);
+        --glass-border: rgba(255, 215, 0, 0.4);
+    }
+
+    html, body { 
+        overflow-x: hidden; width: 100%; margin: 0; padding: 0; 
+        background-color: #040508 !important; font-family: 'Montserrat', sans-serif;
+        -webkit-tap-highlight-color: transparent; color: #f8fafc;
+    }
+
+    .casino-container {
+        min-height: 100vh; width: 100%;
+        background: radial-gradient(circle at 50% 30%, #163d24 0%, #0a1c11 50%, #030604 100%);
+        display: flex; justify-content: center; position: relative; overflow: hidden;
+    }
+
+    .bg-particles {
+        position: absolute; inset: 0; pointer-events: none; z-index: 1;
+        background-image: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.05) 1px, transparent 1px);
+        background-size: 80px 80px; opacity: 0.6;
+    }
+
+    .casino-layout { width: 100%; max-width: 420px; padding: 20px 14px; display: flex; flex-direction: column; align-items: center; z-index: 2; }
+    .btn-back-minimal { position: absolute; top: 24px; left: 20px; color: #ffffff; font-size: 22px; z-index: 10; text-decoration: none; opacity: 0.7; }
+
+    .casino-header { text-align: center; margin-bottom: 12px; }
+    .main-title { 
+        font-family: 'Cinzel Decorative', serif; font-size: 24px; color: #ffffff; margin: 0; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+        background: linear-gradient(to bottom, #ffffff 40%, #a1a1aa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .casino-badge { color: var(--neon-gold); font-size: 12px; font-weight: 700; margin-top: 4px; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Orbitron', sans-serif; }
+
+    .mini-key-badge {
+        background: linear-gradient(180deg, #262c3a 0%, #11151e 100%);
+        border: 1px solid var(--neon-gold); padding: 8px 20px; border-radius: 50px;
+        display: flex; align-items: center; gap: 8px; font-size: 12px; color: #ffffff; font-weight: 700; margin-bottom: 15px;
+        font-family: 'Orbitron', sans-serif; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+    .mini-key-badge strong { color: var(--neon-gold); font-size: 16px; }
+
+    .lucky-cat-stage {
+        text-align: center; margin-bottom: 20px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        padding: 12px; border-radius: 20px; width: 100%; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .cat-avatar { font-size: 48px; display: inline-block; animation: catFloat 2.5s ease-in-out infinite alternate; }
+    .cat-bubble { color: #f1f5f9; font-size: 13px; font-weight: 600; margin-top: 4px; }
+    @keyframes catFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-7px); } }
+
+    .blocks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-bottom: 15px; perspective: 2000px; }
+    .casino-block { aspect-ratio: 0.70; position: relative; cursor: pointer; background: transparent; border: none; padding: 0; }
+
+    .block-card-inner {
+        position: absolute; width: 100%; height: 100%;
+        transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.32, 1.2);
+    }
+
+    .casino-block.opened .block-card-inner { transform: rotateY(180deg) !important; }
+
+    .block-front {
+        position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+        background: radial-gradient(circle, #a10000 0%, #4a0000 100%);
+        border: 2.5px solid #dfb347; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,0,0,0.7); z-index: 2;
+    }
+    .block-front .card-center-icon {
+        font-size: 24px; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .block-back {
+        position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+        transform: rotateY(180deg); background: #ffffff; border-radius: 10px; border: 2.5px solid var(--neon-green);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 18px rgba(0,0,0,0.4); z-index: 1;
+    }
+    .block-back::before { content: '♦'; position: absolute; top: 4px; left: 6px; font-size: 11px; color: #dc2626; font-weight: bold; }
+    
+    .casino-block.revealed .block-back { border-color: #94a3b8; opacity: 0.65; background: #e2e8f0; filter: grayscale(0.3); }
+    .w-prize-value { font-size: 13px; color: #047857; font-weight: 900; font-family: 'Goldman', sans-serif; text-align: center; }
+    .w-prize-label { font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase; }
+
+    .live-winners-vertical {
+        width: 100%; height: 115px; background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 15px; overflow: hidden; border: 1px solid var(--glass-border); 
+    }
+    .winners-head { background: rgba(0,0,0,0.4); color: #94a3b8; font-size: 11px; font-weight: 800; padding: 7px; text-align: center; font-family: 'Orbitron', sans-serif; }
+    .marquee-vertical { height: 85px; position: relative; overflow: hidden; }
+    .marquee-inner { animation: scrollUp 14s linear infinite; }
+    .winner-row { display: flex; justify-content: space-between; padding: 8px 18px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.01); }
+    @keyframes scrollUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+
+    /* MODAL SLIM PREMIUM DESIGN */
+    .win-overlay { 
+        position: fixed; inset: 0; background: rgba(3, 5, 10, 0.90); 
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    
+    .jackpot-card { 
+        background: radial-gradient(circle at 50% 0%, #151d2a 0%, #06090e 100%);
+        border: 1.5px solid rgba(255, 204, 0, 0.4); padding: 24px 20px; 
+        border-radius: 24px; text-align: center; width: 100%; max-width: 300px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 204, 0, 0.08);
+        animation: modalScaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalScaleUp {
+        0% { transform: scale(0.85); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Carta interna menor e muito mais elegante */
+    .modal-card-visual {
+        width: 105px; height: 148px; background: #ffffff; border-radius: 12px;
+        margin: 10px auto 20px; border: 3px solid var(--neon-green);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0, 255, 102, 0.35);
+    }
+
+    .modal-card-visual::before {
+        content: '♦'; position: absolute; top: 6px; left: 8px;
+        font-size: 16px; color: #dc2626; font-weight: 900;
+    }
+
+    .modal-card-visual i { font-size: 32px; color: #047857; margin-bottom: 6px; }
+    .modal-card-value { font-family: 'Goldman', sans-serif; font-size: 20px; color: #047857; font-weight: 900; }
+
+    .prize-amount-wrap { margin-bottom: 24px; }
+    .prize-main-value { 
+        font-family: 'Goldman', sans-serif; font-size: 36px; color: var(--neon-green); 
+        text-shadow: 0 0 15px rgba(0, 255, 102, 0.6); font-weight: 900; letter-spacing: -0.5px;
+    }
+
+    .btn-collect-gold { 
+        background: var(--gold-gradient); color: #000; border: none; padding: 15px; border-radius: 14px; 
+        font-weight: 900; font-size: 14px; font-family: 'Orbitron', sans-serif; width: 100%; cursor: pointer;
+        text-transform: uppercase; box-shadow: 0 6px 20px rgba(245, 176, 37, 0.3);
+        transition: transform 0.1s, filter 0.2s;
+    }
+    .btn-collect-gold:active { transform: scale(0.97); filter: brightness(1.1); }
+</style>
+
+<div class="casino-container">
+    <div class="bg-particles"></div>
+    <a href="{% url 'menu' %}" class="btn-back-minimal"><i class="fas fa-chevron-left"></i></a>
+
+    <div class="casino-layout">
+        <header class="casino-header">
+            <h1 class="main-title">Oferta da Fazenda FD</h1>
+            <div class="casino-badge">Toque numa carta para ganhar</div>
+        </header>
+
+        <div class="mini-key-badge">
+            <i class="fas fa-key"></i>
+            <span>BANCAS / CHAVES: <strong id="roulette-spins">{{ roulette_spins }}</strong></span>
+        </div>
+
+        <div class="lucky-cat-stage">
+            <div class="cat-avatar">🐱✨</div>
+            <div class="cat-bubble" id="cat-status">Escolha uma das 8 cartas de ouro na mesa!</div>
+        </div>
+
+        <div class="blocks-grid" id="cards-board">
+            {% for i in "12345678" %}
+            <div class="casino-block" onclick="openCasinoCard(this)">
+                <div class="block-card-inner">
+                    <div class="block-front">
+                        <div class="card-center-icon">♦</div>
+                    </div>
+                    <div class="block-back">
+                        <div class="w-prize-value">?</div>
+                        <div class="w-prize-label">Kz</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="live-winners-vertical">
+            <div class="winners-head"><i class="fas fa-circle" style="color:var(--neon-green)"></i> MONITOR AO VIVO</div>
+            <div class="marquee-vertical">
+                <div class="marquee-inner">
+                    {% for winner in recent_winners %}
+                    <div class="winner-row">
+                        <span>ID ***{{ winner.user.id|slice:"-4:" }}</span>
+                        <span style="color:var(--neon-green); font-weight:800;">+{{ winner.prize }} Kz</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="win-modal" class="win-overlay">
+    <div class="jackpot-card">
+        <div class="modal-card-visual">
+            <i class="fas fa-crown"></i>
+            <div class="modal-card-value" id="modal-card-inner-val">0</div>
+            <div style="font-size:9px; color:#64748b; font-weight:bold; letter-spacing: 0.5px;">KZ</div>
+        </div>
+
+        <div class="prize-amount-wrap">
+            <div class="prize-main-value" id="modal-prize-kz">0,00 KZ</div>
+        </div>
+
+        <button onclick="location.reload()" class="btn-collect-gold">COLETAR KWANZAS</button>
+    </div>
+</div>
+
+<audio id="snd-spin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+
+<script>
+    const prizes = {{ prizes_list|safe }}; 
+    let isGameRunning = false;
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[array[j]]] = [array[array[j]], array[i]];
+        }
+        return array;
+    }
+
+    function openCasinoCard(element) {
+        const spinsElem = document.getElementById('roulette-spins');
+        const spins = parseInt(spinsElem.innerText);
+        
+        if (isGameRunning || spins <= 0 || element.classList.contains('opened')) return;
+        isGameRunning = true;
+
+        document.getElementById('snd-spin').play().catch(()=>{});
+        document.getElementById('cat-status').innerText = "A virar a carta...";
+
+        fetch('{% url "spin_roulette" %}', {
+            method: 'POST',
+            headers: { 
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json' 
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Erro");
+            return res.json();
+        })
+        .then(data => {
+            if(data.success) {
+                renderWinEffects(element, data.prize);
+            } else {
+                renderWinEffects(element, prizes[0] || "500");
+            }
+        })
+        .catch(() => {
+            const fallbackPrize = prizes[Math.floor(Math.random() * prizes.length)] || "1000";
+            renderWinEffects(element, fallbackPrize);
+        });
+    }
+
+    function renderWinEffects(chosenElement, rawPrize) {
+        const formattedPrize = parseFloat(rawPrize).toLocaleString('pt-BR');
+        
+        const prizeValueDiv = chosenElement.querySelector('.w-prize-value');
+        if (prizeValueDiv) {
+            prizeValueDiv.innerText = formattedPrize;
+        }
+        chosenElement.classList.add('opened');
+
+        let remainingPrizes = shuffleArray([...prizes]);
+        let poolIndex = 0;
+        
+        document.querySelectorAll('.casino-block').forEach((block, idx) => {
+            if (block !== chosenElement) {
+                const otherPrizeDiv = block.querySelector('.w-prize-value');
+                if (otherPrizeDiv) {
+                    const fakeValue = remainingPrizes[poolIndex] || prizes[0] || "250";
+                    otherPrizeDiv.innerText = parseFloat(fakeValue).toLocaleString('pt-BR');
+                    poolIndex++;
+                }
+                setTimeout(() => {
+                    block.classList.add('opened', 'revealed');
+                }, 150 + (idx * 40));
+            }
+        });
+
+        // Dispara o modal centralizado compacto
+        setTimeout(() => {
+            document.getElementById('modal-card-inner-val').innerText = formattedPrize;
+            document.getElementById('modal-prize-kz').innerText = formattedPrize + " KZ";
+            
+            document.getElementById('win-modal').style.display = 'flex';
+            triggerCasinoConfetti();
+        }, 1000);
+    }
+
+    function triggerCasinoConfetti() {
+        const count = 100;
+        const defaults = { origin: { y: 0.65 }, zIndex: 10000 };
+
+        function fire(particleRatio, opts) {
+            confetti(Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio)
+            }));
+        }
+
+        fire(0.25, { spread: 30, startVelocity: 45 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 90, decay: 0.92, scalar: 0.8 });
+        fire(0.2, { spread: 100, startVelocity: 35 });
+    }
+</script>
+{% endblock %}

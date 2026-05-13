@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Saque | fd{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-blue: #1a1f36;
+        --accent-green: #1cbd6f;
+        --text-dark: #2c3e50;
+        --text-muted: #7f8c8d;
+        --border-color: #eef2f5;
+        --bg-light: #f8fafc;
+        --visa-gradient: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body { 
+        margin: 0; padding: 0;
+        background: #ffffff !important; /* Fundo totalmente branco */
+        font-family: 'Poppins', sans-serif; 
+        color: var(--text-dark);
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    .magico-container { 
+        width: 100%; 
+        min-height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
+        overflow-x: hidden;
+    }
+
+    /* NAVBAR MINIMALISTA */
+    .casino-navbar {
+        width: 100%;
+        max-width: 500px;
+        height: 65px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between;
+        padding: 0 20px; 
+        background: #ffffff;
+        box-sizing: border-box;
+    }
+    .back-link { 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-dark); 
+        text-decoration: none;
+        width: 40px; height: 40px;
+    }
+    .back-link svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    
+    .history-trigger-btn {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary-blue);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .scroll-content { flex: 1; padding: 0 20px 40px 20px; width: 100%; max-width: 500px; box-sizing: border-box; }
+
+    /* CARD DE SALDO ESTILO CARTÃO VISA - DIMINUÍDO E MAIS COMPACTO */
+    .visa-card-balance {
+        width: 100%;
+        background: var(--visa-gradient);
+        border-radius: 20px;
+        padding: 18px 20px;
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        margin-bottom: 22px;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+    .visa-card-balance::before {
+        content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
+        background: rgba(255, 255, 255, 0.03); border-radius: 50%; pointer-events: none;
+    }
+    .visa-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .visa-label { font-size: 10px; font-weight: 500; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; }
+    .visa-logo { font-size: 18px; font-weight: 700; font-style: italic; letter-spacing: -0.5px; }
+    
+    .visa-balance-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .visa-amount { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+    .btn-toggle-visibility { background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+    
+    .visa-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; opacity: 0.8; }
+
+    /* FORMULÁRIO E INPUT DE VALOR */
+    .input-group-saque { position: relative; margin-bottom: 15px; width: 100%; }
+    .input-label-title { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; display: block; }
+    .input-saque-field {
+        width: 100%;
+        padding: 16px 50px 16px 20px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-light);
+        border-radius: 16px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-dark);
+        outline: none;
+        box-sizing: border-box;
+    }
+    .input-saque-field:focus { border-color: var(--accent-green); background: #ffffff; }
+    .currency-suffix { position: absolute; right: 20px; top: 43px; font-weight: 700; font-size: 14px; color: var(--text-muted); }
+
+    /* PAINEL DE TAXAS */
+    .calc-panel {
+        background: var(--bg-light); border-radius: 16px;
+        padding: 16px; border: 1px solid var(--border-color); margin-bottom: 25px;
+    }
+    .calc-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 10px; color: var(--text-muted); font-weight: 500; }
+    .main-result { border-top: 1px solid var(--border-color); padding-top: 12px; font-weight: 700; font-size: 14px; margin-bottom: 0; color: var(--text-dark); }
+
+    /* BOTÕES */
+    .btn-saque-gold {
+        width: 100%; padding: 16px; border-radius: 16px;
+        font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: 0.2s;
+        box-sizing: border-box; text-transform: uppercase;
+    }
+    .btn-active { background: var(--accent-green); color: #ffffff; box-shadow: 0 5px 15px rgba(28, 189, 111, 0.2); }
+    .btn-locked { background: #eef2f5; color: var(--text-muted); cursor: not-allowed; }
+
+    .info-badge-minimum { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 15px; font-weight: 500; }
+
+    /* MODAL DE HISTÓRICO - SIMPLIFICADO SEM ABAS */
+    .modal-history-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(44, 62, 80, 0.4); backdrop-filter: blur(4px);
+        display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; box-sizing: border-box;
+    }
+    .modal-history-box {
+        background: #ffffff; width: 100%; max-width: 420px; border-radius: 24px; padding: 24px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1); animation: slideUp 0.25s ease; box-sizing: border-box;
+    }
+    .modal-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-history-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--primary-blue); }
+    .close-history-btn { background: var(--border-color); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-dark); }
+
+    .history-list-container { max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px; }
+    .empty-history-text { font-size: 12px; color: var(--text-muted); text-align: center; padding: 40px 0; }
+
+    /* CARDS DE HISTÓRICO REAL DO DJANGO */
+    .item-h-card {
+        padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-light);
+        display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+    }
+    .item-h-info { display: flex; flex-direction: column; gap: 4px; }
+    .item-h-info .h-date { font-size: 10px; color: var(--text-muted); }
+    .item-h-info .h-val { font-weight: 700; color: var(--text-dark); font-size: 13px; }
+    .status-badge-inline { padding: 5px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    /* Cores corretas para os status reais do banco de dados */
+    .status-badge-inline.aprovado, .status-badge-inline.approved, .status-badge-inline.sucesso { background: #def7ec; color: #03543f; }
+    .status-badge-inline.pendente, .status-badge-inline.pending { background: #fef3c7; color: #92400e; }
+    .status-badge-inline.recusado, .status-badge-inline.rejected, .status-badge-inline.failed { background: #fde8e8; color: #9b1c1c; }
+
+    /* MODAL EXCLUSIVO PARA RESPOSTAS DE TEXTO */
+    .response-modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
+        display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; box-sizing: border-box;
+    }
+    .response-modal-box {
+        background: #ffffff; width: 100%; max-width: 400px; border-radius: 28px; padding: 30px 24px;
+        text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-sizing: border-box;
+    }
+    .response-icon-circle {
+        width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px auto;
+    }
+    .response-icon-circle.success { background: #e6f7ed; color: #1cbd6f; }
+    .response-icon-circle.warning { background: #fffbeb; color: #d97706; }
+    
+    .response-title { font-size: 18px; font-weight: 700; color: var(--primary-blue); margin: 0 0 10px 0; }
+    .response-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0 0 25px 0; font-weight: 500; }
+    .response-action-btn {
+        width: 100%; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; text-transform: uppercase; transition: 0.2s;
+    }
+    .response-action-btn.success-btn { background: #1cbd6f; color: #ffffff; }
+    .response-action-btn.warning-btn { background: #1a1f36; color: #ffffff; }
+
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
+
+<div class="magico-container">
+    <div class="casino-navbar">
+        <a href="{% url 'menu' %}" class="back-link">
+            <svg viewBox="0 0 24 24">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+        <button class="history-trigger-btn" onclick="openHistoryModal()">
+            <i class="fas fa-history"></i> Histórico
+        </button>
+    </div>
+
+    <div class="scroll-content">
+        <div class="visa-card-balance">
+            <div class="visa-header">
+                <span class="visa-label">Fundo Disponível</span>
+                <span class="visa-logo">Visa</span>
+            </div>
+            <div class="visa-balance-row">
+                <span class="visa-amount" id="txtBalanceValue" data-raw-balance="{{ user.available_balance }}">{{ user.available_balance }} Kz</span>
+                <button type="button" class="btn-toggle-visibility" onclick="toggleBalanceVisibility()">
+                    <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+            </div>
+            <div class="visa-footer">
+                <span>**** **** **** {% if user.id %}{{ user.id|stringformat:"04d" }}{% else %}0000{% endif %}</span>
+                <span>fd GLOBAL</span>
+            </div>
+        </div>
+
+        <form method="post" id="formSaque" onsubmit="return handleSaqueSubmit(event)">
+            {% csrf_token %}
+            
+            <div class="input-group-saque">
+                <label class="input-label-title">Quantia para Retirada</label>
+                <input type="number" 
+                       name="amount" 
+                       id="inputAmountKz" 
+                       class="input-saque-field" 
+                       placeholder="Digite o valor (Ex: 1000)" 
+                       min="2000" 
+                       step="any"
+                       oninput="calculateSaqueFees(this.value)"
+                       {% if has_withdrawn_today %}disabled{% endif %} required>
+                <span class="currency-suffix">Kz</span>
+            </div>
+
+            <div class="calc-panel">
+                <div class="calc-row">
+                    <span>Taxa Operacional (10%)</span>
+                    <span id="taxaTxt">0.00 Kz</span>
+                </div>
+                <div class="calc-row main-result">
+                    <span>Líquido a Receber</span>
+                    <span id="liquidoTxt" style="color: var(--accent-green);">0.00 Kz</span>
+                </div>
+            </div>
+
+            {% if has_withdrawn_today %}
+                <button type="button" class="btn-saque-gold btn-locked" onclick="triggerDailyLimitModal()">Bloqueado até amanhã</button>
+            {% else %}
+                <button type="submit" class="btn-saque-gold btn-active" id="btnConfirm">Solicitar Saque</button>
+            {% endif %}
+        </form>
+
+        <div class="info-badge-minimum">
+            <i class="fas fa-info-circle"></i> O valor mínimo para saque é de 1.000 Kz
+            <i class="fas fa-info-circle"></i> Processado em 2 minutos a 24 horas, reclame saquê, se passar 24 horas sem refletir
+        </div>
+    </div>
+</div>
+
+<div class="modal-history-overlay" id="historyModal">
+    <div class="modal-history-box">
+        <div class="modal-history-header">
+            <h3>Histórico de Saques</h3>
+            <button class="close-history-btn" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="history-list-container">
+            {% if withdrawal_records %}
+                {% for record in withdrawal_records %}
+                <div class="item-h-card">
+                    <div class="item-h-info">
+                        <span class="h-val">{{ record.amount }} Kz</span>
+                        <span class="h-date">{{ record.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <span class="status-badge-inline {{ record.status|lower }}">{{ record.status }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-history-text">Nenhuma solicitação de saque encontrada nesta conta.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="response-modal-overlay" id="responseModal">
+    <div class="response-modal-box">
+        <div class="response-icon-circle success" id="modalIconContainer">
+            <i class="fas fa-check" id="modalIconItem"></i>
+        </div>
+        <h4 class="response-title" id="modalResponseTitle">Saque Solicitado!</h4>
+        <p class="response-desc" id="modalResponseDesc">Aguarde de alguns minutos a 24 horas e será aprovado.</p>
+        <button class="response-action-btn success-btn" id="modalResponseBtn" onclick="closeResponseModal()">Entendido</button>
+    </div>
+</div>
+
+<script>
+    const TAXA_PERCENT = 0.10;
+    let isValueHidden = false;
+
+    // Modal de Regra de Limite Diário (Segunda a Sábado, 1 saque por dia)
+    function triggerDailyLimitModal() {
+        showCustomModal(
+            'warning', 
+            'Aviso de Limite', 
+            'Você já sacou hoje, volte a sacar amanhã. É permitido apenas um saque por dia de segunda a sábado.'
+        );
+    }
+
+    // Intercepta e trata as mensagens enviadas pela Views.py transformando-as nos Modais Modernos
+    window.addEventListener('DOMContentLoaded', () => {
+        {% if has_withdrawn_today %}
+            // Mantém aviso visual se já tentou sacar hoje
+            triggerDailyLimitModal();
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                let msgText = "{{ message }}".toLowerCase();
+                if (msgText.includes("hoje") || msgText.includes("limite") || msgText.includes("realizou")) {
+                    triggerDailyLimitModal();
+                } else if (msgText.includes("solicitado") || msgText.includes("sucesso") || msgText.includes("processamento")) {
+                    showCustomModal(
+                        'success', 
+                        'Saque Solicitado!', 
+                        'Aguarde de alguns minutos a 24 horas e será aprovado. Reclame apenas de saque após 24 horas caso não seja pago.'
+                    );
+                } else {
+                    showCustomModal('warning', 'Mensagem do Sistema', "{{ message }}");
+                }
+            {% endfor %}
+        {% endif %}
+    });
+
+    // Controlador do Modal Customizado de Respostas
+    function showCustomModal(type, title, description) {
+        const modal = document.getElementById('responseModal');
+        const iconContainer = document.getElementById('modalIconContainer');
+        const iconItem = document.getElementById('modalIconItem');
+        const titleEl = document.getElementById('modalResponseTitle');
+        const descEl = document.getElementById('modalResponseDesc');
+        const btnEl = document.getElementById('modalResponseBtn');
+
+        titleEl.innerText = title;
+        descEl.innerText = description;
+
+        if (type === 'success') {
+            iconContainer.className = "response-icon-circle success";
+            iconItem.className = "fas fa-check";
+            btnEl.className = "response-action-btn success-btn";
+        } else {
+            iconContainer.className = "response-icon-circle warning";
+            iconItem.className = "fas fa-exclamation-triangle";
+            btnEl.className = "response-action-btn warning-btn";
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function closeResponseModal() {
+        document.getElementById('responseModal').style.display = 'none';
+    }
+
+    // Alternar visibilidade do saldo
+    function toggleBalanceVisibility() {
+        const txtBalance = document.getElementById('txtBalanceValue');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const rawBalance = txtBalance.getAttribute('data-raw-balance');
+
+        if (!isValueHidden) {
+            txtBalance.innerText = "•••••• Kz";
+            eyeIcon.className = "fas fa-eye-slash";
+            isValueHidden = true;
+        } else {
+            txtBalance.innerText = rawBalance + " Kz";
+            eyeIcon.className = "fas fa-eye";
+            isValueHidden = false;
+        }
+    }
+
+    // Calcula taxas e líquidos apenas em Kz
+    function calculateSaqueFees(value) {
+        const amount = parseFloat(value) || 0;
+        const vTaxa = amount * TAXA_PERCENT;
+        const vLiquido = amount - vTaxa;
+
+        document.getElementById('taxaTxt').innerText = "-" + vTaxa.toFixed(2) + " Kz";
+        document.getElementById('liquidoTxt').innerText = vLiquido.toFixed(2) + " Kz";
+    }
+
+    // Validação de segurança no envio
+    function handleSaqueSubmit(event) {
+        const inputVal = parseFloat(document.getElementById('inputAmountKz').value) || 0;
+        if (inputVal < 2000) {
+            event.preventDefault();
+            showCustomModal('warning', 'Valor Insuficiente', 'O valor mínimo para solicitação de saque é 2.000 Kz.');
+            return false;
+        }
+        return true;
+    }
+
+    // Modais do Histórico
+    function openHistoryModal() {
+        document.getElementById('historyModal').style.display = 'flex';
+    }
+
+    function closeHistoryModal() {
+        document.getElementById('historyModal').style.display = 'none';
+    }
+
+    // Fechar ao clicar fora das caixas
+    window.onclick = function(event) {
+        const histModal = document.getElementById('historyModal');
+        const respModal = document.getElementById('responseModal');
+        if (event.target == histModal) histModal.style.display = "none";
+        if (event.target == respModal) respModal.style.display = "none";
+    }
+</script>
+{% endblock %}

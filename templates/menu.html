@@ -1,0 +1,772 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}FD - Agricultura On-line{% endblock %}
+
+{% block content %}
+<div class="app-light-bg"></div>
+
+<!-- Estilos do Pop-up de Boas-Vindas Premium -->
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(44, 62, 80, 0.6);
+        backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .welcome-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 360px;
+        max-height: 75vh; /* Limita a altura para ecrãs pequenos */
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid rgba(28, 189, 111, 0.1);
+        animation: popupScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Cabeçalho Fixo do Pop-up */
+    .welcome-header {
+        background: linear-gradient(135deg, #1cbd6f, #159e5c);
+        padding: 18px 20px;
+        text-align: center;
+        color: #ffffff;
+        position: relative;
+    }
+    .welcome-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .welcome-header p {
+        margin: 4px 0 0 0;
+        font-size: 11px;
+        opacity: 0.9;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    /* Corpo com Rolagem Visível e Estilizada */
+    .welcome-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex-grow: 1;
+        background: #fdfdfd;
+    }
+
+    /* Forçar scrollbar sempre visível para indicar que há mais conteúdo abaixo */
+    .welcome-body::-webkit-scrollbar {
+        width: 6px;
+        display: block;
+    }
+    .welcome-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    .welcome-body::-webkit-scrollbar-thumb {
+        background: #1cbd6f;
+        border-radius: 10px;
+    }
+
+    /* Lista de Informações */
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: #ffffff;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid #eef2f5;
+    }
+    .info-item i {
+        color: #1cbd6f;
+        font-size: 14px;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    .info-text {
+        font-size: 12.5px;
+        color: #34495e;
+        line-height: 1.5;
+        margin: 0;
+    }
+    .info-text strong {
+        color: #2c3e50;
+    }
+
+    /* Seção de Funcionamento */
+    .section-divider {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #7f8c8d;
+        margin: 15px 0 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .section-divider::after {
+        content: '';
+        flex-grow: 1;
+        height: 1px;
+        background: #eef2f5;
+    }
+
+    .notice-box {
+        background: rgba(207, 161, 115, 0.08);
+        border-left: 4px solid #cfa173;
+        padding: 12px;
+        border-radius: 0 12px 12px 0;
+        font-size: 12px;
+        color: #5d6d7e;
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+
+    /* Rodapé Fixo com Botão */
+    .welcome-footer {
+        padding: 15px 20px 20px 20px;
+        background: #ffffff;
+        border-top: 1px solid #eef2f5;
+    }
+
+    .btn-close-welcome {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #1cbd6f, #159e5c);
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(28, 189, 111, 0.2);
+        transition: transform 0.1s;
+    }
+    .btn-close-welcome:active {
+        transform: scale(0.98);
+    }
+
+    @keyframes popupScale {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<!-- Estrutura HTML do Pop-up -->
+<div id="welcomeModal" class="modal-overlay">
+    <div class="welcome-card">
+        
+        <!-- Cabeçalho -->
+        <div class="welcome-header">
+            <h3>FD (Fazenda Done)</h3>
+            <p>Painel de Informações</p>
+        </div>
+
+        <!-- Conteúdo com Rolagem -->
+        <div class="welcome-body">
+            <div class="info-list">
+                <div class="info-item">
+                    <i class="fas fa-wallet"></i>
+                    <p class="info-text"><strong>Depósito de garantia Mínimo:</strong> 3.000 Kz</p>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <p class="info-text"><strong>Saque mínimo:</strong> 1.000 Kz</p>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-user-plus"></i>
+                    <p class="info-text">
+                        <strong>Subsídio de convite:</strong><br>
+                        Nível 1: 10% | Nível 2: 2% | Nível 3: 1%
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-tasks"></i>
+                    <p class="info-text">
+                        <strong>Comissão de Tarefa dos afiliados:</strong><br>
+                        Nível 1: 5% | Nível 2: 2% | Nível 3: 1%
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <p class="info-text"><strong>Oferta de estágio:</strong> 100 Kz por dia durante 2 dias</p>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-gift"></i>
+                    <p class="info-text"><strong>Oferta do primeiro depósito:</strong> 2.400 Kz</p>
+                </div>
+            </div>
+
+            <div class="section-divider">Funcionamento</div>
+
+            <div class="notice-box">
+                <i class="fab fa-telegram" style="color: #0088cc; margin-right: 5px;"></i> 
+                Temos Canal no Telegram: 1 Grupo Geral e 1 Grupo VIP exclusivo para funcionários com Função ativa.
+            </div>
+
+            <div class="notice-box" style="border-left-color: #1cbd6f; background: rgba(28, 189, 111, 0.05);">
+                <i class="fas fa-building" style="color: #1cbd6f; margin-right: 5px;"></i>
+                Não somos uma plataforma de investimento, somos uma empresa virtual.
+            </div>
+        </div>
+
+        <!-- Rodapé com Botão Fixo -->
+        <div class="welcome-footer">
+            <button class="btn-close-welcome" onclick="closeModal()">Compreendi</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Função para fechar o Modal caso ainda não esteja criada no seu arquivo
+    function closeModal() {
+        document.getElementById('welcomeModal').style.display = 'none';
+    }
+</script>
+
+<div class="unified-support-wrapper">
+    <div class="support-options" id="supportOptions">
+        <a href="{{ whatsapp_link }}" target="_blank" class="submenu-float wa-color" title="WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="https://t.me/fazendadone" target="_blank" class="submenu-float tg-color" title="Telegram">
+            <i class="fa-brands fa-telegram"></i>
+        </a>
+    </div>
+    <button class="main-support-trigger" onclick="toggleSupportMenu()" id="supportTrigger">
+        <i class="fa-solid fa-headset"></i>
+    </button>
+</div>
+
+<div class="stats-top-bar">
+    <div class="top-bar-brand">
+        <img src="{% static 'images/logo.png' %}" alt="FD Logo" class="app-logo-mini">
+    </div>
+    <div class="top-bar-lang">
+        <select id="langSelect" class="lang-picker" onchange="changeLanguage()">
+            <option value="pt">PT</option>
+            <option value="en">EN</option>
+            <option value="zh">ZH</option>
+        </select>
+    </div>
+</div>
+
+<div class="main-scroll-container">
+    
+    <div class="brand-header">
+        <h1 class="platform-subtitle" data-i18n="tagline">Agricultura on-line</h1>
+    </div>
+
+    <div class="app-carousel-container">
+        <div class="app-carousel-track" id="carouselTrack">
+            <div class="carousel-slide"><img src="{% static 'images/slide1.png' %}" alt="Slide 1"></div>
+            <div class="carousel-slide"><img src="{% static 'images/slide2.png' %}" alt="Slide 2"></div>
+            <div class="carousel-slide"><img src="{% static 'images/slide3.png' %}" alt="Slide 3"></div>
+            <div class="carousel-slide"><img src="{% static 'images/slide4.png' %}" alt="Slide 4"></div>
+        </div>
+        <div class="carousel-indicators" id="carouselIndicators"></div>
+    </div>
+
+    <div class="action-grid">
+        <a href="{% url 'deposito' %}" class="card-link">
+            <div class="icon-box i-blue"><i class="fa-solid fa-wallet"></i></div>
+            <span data-i18n="deposito">Garantia</span>
+        </a>
+        <a href="{% url 'renda' %}" class="card-link">
+            <div class="icon-box i-green"><i class="fa-solid fa-chart-pie"></i></div>
+            <span data-i18n="nav2">Renda</span>
+        </a>
+        <a href="{% url 'tarefa' %}" class="card-link">
+            <div class="icon-box i-purple"><i class="fa-solid fa-microchip"></i></div>
+            <span data-i18n="avaliar">Fazenda</span>
+        </a>
+        <a href="{% url 'sobre' %}" class="card-link">
+            <div class="icon-box i-orange"><i class="fa-solid fa-building"></i></div>
+            <span data-i18n="empresa">Anúncios</span>
+        </a>
+    </div>
+
+    <div class="app-video-section">
+        <div class="video-card-wrapper">
+            <video class="native-video-player" controls preload="metadata" poster="{% static 'images/video_poster.png' %}">
+                <source src="{% static 'videos/farm_video.mp4' %}" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <div class="faq-section">
+        <h3 class="section-title">
+            <i class="fa-solid fa-circle-question"></i> 
+            <span data-i18n="titulo_faq">Perguntas frequentes</span>
+        </h3>
+        
+        <div class="faq-container">
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q1">De que origem é a plataforma FD?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <p data-i18n="faq_a1">Origem Suíça.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q2">Quando foi lançado e qual o objetivo?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <p data-i18n="faq_a2">Foi lançado no dia 24 de maio de 2026. Objetivo: Internacionalizar investimentos online, por meio de meios físicos existentes, baseando-se na criação de gados e produção de leites via virtual, e gerar receita para empregabilidade da população a nível global.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q3">Quais são os níveis diposniveis?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <div class="media-container">
+                        <img src="{% static 'images/niveisdeinvestimentos.jpg' %}" alt="Níveis" class="faq-media-img">
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q4">Pode-se adquirir vários Niveis níveis ao mesmo tempo?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <p data-i18n="faq_a4">Sim, podes adquirir vários níveis e maximizar a sua renda diária.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q5">Existe salário fixo na formação de equipe?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <p data-i18n="faq_a5">Sim, conforme demonstrado abaixo:</p>
+                    <div class="media-container">
+                        <img src="{% static 'images/salariofixo.jpg' %}" alt="Salário Fixo" class="faq-media-img">
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q6">Existe comissão das tarefas dos meus afiliados?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <p data-i18n="faq_a6">Sim, você recebe comissão por cada tarefa concluída pela sua equipe.</p>
+                    <div class="media-container">
+                        <img src="{% static 'images/tarefa.jpg' %}" alt="Comissão" class="faq-media-img">
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q7">Horário de trabalho</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <p data-i18n="faq_a7">O horário varia de país para país. Consulte a tabela abaixo:</p>
+                    <div class="media-container">
+                        <img src="{% static 'images/horario.jpg' %}" alt="Horário" class="faq-media-img">
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q10">Como fazer depósito?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <div class="media-container">
+                        <video class="faq-video" controls>
+                            <source src="{% static 'videos/deposito.mp4' %}" type="video/mp4">
+                        </video>
+                        <a href="{% static 'videos/deposito.mp4' %}" download class="btn-download-video">
+                            <i class="fa-solid fa-download"></i> <span data-i18n="baixar">Baixar Vídeo</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q11">Como realizar a tarefa?</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <div class="media-container">
+                        <video class="faq-video" controls>
+                            <source src="{% static 'videos/comorealizartarefa.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q12">Políticas de trabalho</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <ul class="policy-list">
+                        <li><b data-i18n="taxa">Taxa de saque:</b> 10%</li>
+                        <li><b data-i18n="proc">Processamento:</b> 5 min a 24 horas</li>
+                        <li><b data-i18n="dias">Dias de saque:</b> Segunda a Sábado</li>
+                        <li><b data-i18n="job">Trabalho:</b> Segunda a Sábado</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-trigger">
+                    <span data-i18n="faq_q13">Taxa de convite</span>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="faq-content">
+                    <p><span data-i18n="faq_a13">Resposta: Taxa de convite é de </span> 10%.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tech-list-section">
+        <h3 class="section-title">
+            <i class="fa-solid fa-trophy"></i> 
+            <span data-i18n="titulo_lista">Melhores Casas de Apostas Mundiais</span>
+        </h3>
+        <div class="betting-brands-grid">
+            <div class="bet-card border-glow">
+                <div class="bet-logo-box"><i class="fa-solid fa-star text-gold"></i></div>
+                <span class="bet-name">Bet365</span>
+            </div>
+            <div class="bet-card border-glow">
+                <div class="bet-logo-box"><i class="fa-solid fa-bolt text-blue"></i></div>
+                <span class="bet-name">1xBet</span>
+            </div>
+            <div class="bet-card border-glow">
+                <div class="bet-logo-box"><i class="fa-solid fa-crown text-purple"></i></div>
+                <span class="bet-name">Betano</span>
+            </div>
+            <div class="bet-card border-glow">
+                <div class="bet-logo-box"><i class="fa-solid fa-shield-halved text-green"></i></div>
+                <span class="bet-name">Betfair</span>
+            </div>
+            <div class="bet-card border-glow">
+                <div class="bet-logo-box"><i class="fa-solid fa-gem text-orange"></i></div>
+                <span class="bet-name">Stake</span>
+            </div>
+            <div class="bet-card border-glow">
+                <div class="bet-logo-box"><i class="fa-solid fa-fire text-red"></i></div>
+                <span class="bet-name">22Bet</span>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 90px;"></div> 
+</div>
+
+<nav class="bottom-nav">
+    <a href="{% url 'menu' %}" class="nav-btn active">
+        <div class="nav-icon-bg b-green"><i class="fa-solid fa-circle-nodes"></i></div>
+        <span data-i18n="nav_home">Inicio</span>
+    </a>
+    <a href="{% url 'nivel' %}" class="nav-btn">
+        <div class="nav-icon-bg b-blue"><i class="fa-solid fa-cubes-stacked"></i></div>
+        <span data-i18n="nav1">Nivel</span>
+    </a>
+    <a href="{% url 'equipa' %}" class="nav-btn">
+        <div class="nav-icon-bg b-purple"><i class="fa-solid fa-people-group"></i></div>
+        <span data-i18n="nav3">My Time</span>
+    </a>
+    <a href="{% url 'perfil' %}" class="nav-btn">
+        <div class="nav-icon-bg b-orange"><i class="fa-solid fa-user-gear"></i></div>
+        <span data-i18n="nav4">Meu</span>
+    </a>
+</nav>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --primary: #1cbd6f;
+        --primary-light: rgba(28, 189, 111, 0.1);
+        --bg-light: #f4f7f9;
+        --card-bg: #ffffff;
+        --text-main: #333333;
+        --text-muted: #8c9ba5;
+        --border-color: #cbd5e1;
+    }
+
+    body {
+        margin: 0; background: var(--bg-light); color: var(--text-main);
+        font-family: 'Poppins', sans-serif; overflow-x: hidden; width: 100vw;
+    }
+
+    .app-light-bg { position: fixed; inset: 0; background: var(--bg-light); z-index: -2; }
+
+    .stats-top-bar {
+        position: fixed; top: 0; width: 100%; height: 60px;
+        background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+        display: flex; justify-content: space-between; align-items: center;
+        z-index: 1000; border-bottom: 1px solid var(--border-color);
+        padding: 0 16px; box-sizing: border-box;
+    }
+
+    .app-logo-mini { height: 40px; width: auto; object-fit: contain; }
+
+    .lang-picker { 
+        background: #ffffff; color: var(--text-main); border: 1px solid var(--border-color);
+        border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: 600; outline: none;
+    }
+
+    .main-scroll-container { margin-top: 60px; height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden; width: 100%; box-sizing: border-box; }
+
+    .brand-header { text-align: center; padding: 20px 0 10px 0; }
+    .platform-subtitle { font-size: 20px; font-weight: 700; color: #000; margin: 0; }
+
+    /* Carrossel */
+    .app-carousel-container { 
+        margin: 0 15px; position: relative; height: 160px; border-radius: 16px; overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06); background: #eaeaea;
+    }
+    .app-carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.5s ease-in-out; }
+    .carousel-slide { min-width: 100%; height: 100%; }
+    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .carousel-indicators { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10; }
+    .indicator { width: 7px; height: 7px; background: rgba(255,255,255,0.5); border-radius: 50%; transition: 0.3s; }
+    .indicator.active { background: var(--primary); width: 18px; border-radius: 4px; }
+
+    /* Action Grid */
+    .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; }
+    .card-link { text-decoration: none; color: var(--text-main); text-align: center; }
+    
+    .icon-box { 
+        width: 52px; height: 52px; margin: 0 auto 6px; border-radius: 50%; 
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        background: var(--card-bg); border: 1px solid var(--border-color);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.2s;
+    }
+    .icon-box:active { transform: scale(0.9); }
+    .i-blue { color: #2f80ed; } .i-green { color: var(--primary); } .i-purple { color: #9b51e0; } .i-orange { color: #f2994a; }
+    .card-link span { display: block; font-size: 11px; font-weight: 500; color: #4f4f4f; }
+
+    /* Vídeo */
+    .app-video-section { padding: 5px 15px; }
+    .video-card-wrapper { width: 100%; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .native-video-player { width: 100%; height: auto; display: block; max-height: 200px; object-fit: cover; }
+
+    /* Estilos FAQ Premium */
+    .faq-section { padding: 15px; }
+    .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #000; display: flex; align-items: center; gap: 6px; }
+    .faq-container { display: flex; flex-direction: column; gap: 10px; }
+    .faq-item { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .faq-trigger { padding: 14px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .faq-trigger span { font-size: 13px; font-weight: 600; color: #333; line-height: 1.4; padding-right: 8px; }
+    .arrow-icon { font-size: 11px; color: var(--text-muted); transition: transform 0.3s; }
+    .faq-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; background: #fafafa; }
+    .faq-content p { padding: 15px; font-size: 12px; color: #555; line-height: 1.6; margin: 0; }
+    .faq-item.open { border-color: var(--primary); box-shadow: 0 4px 12px rgba(28,189,111,0.08); }
+    .faq-item.open .arrow-icon { transform: rotate(90deg); color: var(--primary); }
+
+    /* Exibição Perfeita de Vídeos e Imagens dentro do FAQ */
+    .media-container { padding: 4px 12px 16px 12px; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; }
+    .faq-media-img { width: 100%; max-width: 100%; border-radius: 10px; display: block; box-shadow: 0 4px 10px rgba(0,0,0,0.08); object-fit: contain; }
+    .faq-video { width: 100%; border-radius: 10px; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.12); display: block; max-height: 220px; object-fit: contain; }
+    
+    .btn-download-video { 
+        display: inline-flex; align-items: center; gap: 8px; background: var(--primary); 
+        color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; 
+        font-size: 12px; font-weight: 600; transition: background 0.2s, transform 0.1s;
+        box-shadow: 0 3px 8px rgba(28,189,111,0.3);
+    }
+    .btn-download-video:active { transform: scale(0.95); background: #16a05d; }
+    
+    .policy-list { padding: 15px; margin: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .policy-list li { font-size: 12px; color: #555; border-bottom: 1px dashed #e2e8f0; padding-bottom: 6px; }
+    .policy-list b { color: var(--primary); }
+
+    /* Nova Grelha das Marcas de Apostas */
+    .betting-brands-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .bet-card { 
+        background: var(--card-bg); border-radius: 12px; padding: 12px 6px; text-align: center;
+        border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .bet-logo-box { width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .bet-name { font-size: 11px; font-weight: 700; color: #222; }
+    .text-gold { color: #f2c94c; } .text-blue { color: #2f80ed; } .text-purple { color: #9b51e0; }
+    .text-green { color: #27ae60; } .text-orange { color: #e2574c; } .text-red { color: #eb5757; }
+    .border-glow { transition: box-shadow 0.2s; }
+    .border-glow:active { box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+
+    /* Suporte Flutuante */
+    .unified-support-wrapper { position: fixed; right: 16px; bottom: 85px; z-index: 2000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .main-support-trigger { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); border: none; color: #fff; font-size: 22px; box-shadow: 0 4px 12px rgba(28,189,111,0.4); display: flex; align-items: center; justify-content: center; }
+    .support-options { display: flex; flex-direction: column; gap: 8px; max-height: 0; opacity: 0; overflow: hidden; transition: 0.3s; }
+    .support-options.show { max-height: 120px; opacity: 1; }
+    .submenu-float { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; text-decoration: none; }
+    .wa-color { background: #25D366; } .tg-color { background: #0088CC; }
+
+    /* Menu Inferior Premium com Ícones Lindos */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100vw; height: 65px; background: #ffffff; border-top: 1px solid var(--border-color); display: flex; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.04); }
+    .nav-btn { text-decoration: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 4px; }
+    
+    .nav-icon-bg { 
+        width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px;
+        background: #f1f5f9; color: #64748b; transition: all 0.2s;
+    }
+    .nav-btn.active { color: var(--primary); }
+    .nav-btn.active .nav-icon-bg.b-green { background: rgba(28, 189, 111, 0.15); color: #1cbd6f; }
+    .nav-btn.active .nav-icon-bg.b-blue { background: rgba(47, 128, 237, 0.15); color: #2f80ed; }
+    .nav-btn.active .nav-icon-bg.b-purple { background: rgba(155, 81, 224, 0.15); color: #9b51e0; }
+    .nav-btn.active .nav-icon-bg.b-orange { background: rgba(242, 153, 74, 0.15); color: #f2994a; }
+    .nav-btn span { font-size: 10px; font-weight: 600; transition: color 0.2s; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+    .modal-img-container { width: 80%; max-width: 320px; position: relative; }
+    .img-welcome { width: 100%; border-radius: 16px; }
+    .close-modal-x { position: absolute; top: -12px; right: -12px; width: 28px; height: 28px; background: #fff; border-radius: 50%; border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; }
+</style>
+
+<script>
+    // SISTEMA DE TRADUÇÃO COMPLETO
+    const translations = {
+        'pt': {
+            'deposito': 'Deposito', 'nav2': 'Renda', 'avaliar': 'Avaliar', 'empresa': 'Empresa', 'tagline': 'Agricultura on-line',
+            'titulo_faq': 'Perguntas frequentes', 'titulo_lista': 'Melhores Casas de Apostas Mundiais', 
+            'nav1': 'Planos', 'nav3': 'Afiliados', 'nav4': 'Meu', 'nav_home': 'Inicio',
+            'faq_q1': 'De que origem é a plataforma FD?', 'faq_a1': 'Origem Australiana.',
+            'faq_q2': 'Quando foi lançado e qual o objetivo?', 'faq_a2': 'Lançado em 21/05/2026. Objetivo: Internacionalizar investimentos online em gado/leite e gerar empregos globais.',
+            'faq_q3': 'Quais são os níveis de investimentos?', 'faq_q4': 'Pode investir em vários níveis?', 'faq_a4': 'Sim, podes investir em vários níveis e maximizar sua renda.',
+            'faq_q5': 'Existe salário fixo na equipe?', 'faq_a5': 'Sim, conforme a tabela salarial abaixo:',
+            'faq_q6': 'Existe comissão de afiliados?', 'faq_a6': 'Sim, você recebe comissão pelas tarefas dos seus indicados.',
+            'faq_q7': 'Horário de trabalho', 'faq_a7': 'Varia de país para país, veja a tabela:',
+            'faq_q10': 'Como fazer depósito?', 'faq_q11': 'Como realizar a tarefa?', 'baixar': 'Baixar Vídeo',
+            'faq_q12': 'Políticas de trabalho', 'taxa': 'Taxa de saque:', 'proc': 'Processamento:', 'dias': 'Dias de saque:', 'job': 'Trabalho:',
+            'faq_q13': 'Taxa de convite', 'faq_a13': 'Resposta: Taxa de convite é de '
+        },
+        'en': {
+            'deposito': 'Deposit', 'nav2': 'Income', 'avaliar': 'Evaluate', 'empresa': 'Company', 'tagline': 'Online Agriculture',
+            'titulo_faq': 'Frequently Asked Questions', 'titulo_lista': 'Top Global Betting Brands', 
+            'nav1': 'Plans', 'nav3': 'Affiliates', 'nav4': 'Mine', 'nav_home': 'Home',
+            'faq_q1': 'What is the origin of the FD platform?', 'faq_a1': 'Australian Origin.',
+            'faq_q2': 'When was it launched and what is the goal?', 'faq_a2': 'Launched on May 21, 2026. Goal: Globalize online livestock/milk investments and create jobs.',
+            'faq_q3': 'What are the investment levels?', 'faq_q4': 'Can I invest in multiple levels?', 'faq_a4': 'Yes, you can invest in multiple levels to maximize daily income.',
+            'faq_q5': 'Is there a fixed salary for teams?', 'faq_a5': 'Yes, as shown in the fixed salary chart below:',
+            'faq_q6': 'Is there commission on affiliate tasks?', 'faq_a6': 'Yes, you earn commissions from your team tasks.',
+            'faq_q7': 'Working hours', 'faq_a7': 'It varies by country, please check the table:',
+            'faq_q10': 'How to deposit?', 'faq_q11': 'How to perform tasks?', 'baixar': 'Download Video',
+            'faq_q12': 'Work Policies', 'taxa': 'Withdrawal fee:', 'proc': 'Processing:', 'dias': 'Withdrawal days:', 'job': 'Work days:',
+            'faq_q13': 'Invitation rate', 'faq_a13': 'Answer: Invitation rate is '
+        },
+        'zh': {
+            'deposito': '充值', 'nav2': '收益', 'avaliar': '评估', 'empresa': '公司', 'tagline': '在线农业',
+            'titulo_faq': '常见问题', 'titulo_lista': '全球最佳博彩品牌', 
+            'nav1': '计划', 'nav3': '团队', 'nav4': '我的', 'nav_home': '首页',
+            'faq_q1': 'FD 平台的起源是什么？', 'faq_a1': '澳大利亚起源。',
+            'faq_q2': '什么时候推出的，目标是什么？', 'faq_a2': '2026年5月21日启动。目标：国际化在线畜牧业投资并创造就业机会。',
+            'faq_q3': '投资等级有哪些？', 'faq_q4': '可以同时投资多个等级吗？', 'faq_a4': '是的，您可以投资多个级别以最大化您的每日收入。',
+            'faq_q5': '组建团队有固定工资吗？', 'faq_a5': '是的，如下表所示：',
+            'faq_q6': '下级任务有佣金吗？', 'faq_a6': '是的，您可以从团队任务中赚取佣金。',
+            'faq_q7': '工作时间', 'faq_a7': '因国家而异，请查表：',
+            'faq_q10': '如何充值？', 'faq_q11': '如何完成任务？', 'baixar': '下载视频',
+            'faq_q12': '工作政策', 'taxa': '提现手续费:', 'proc': '处理时间:', 'dias': '提现日期:', 'job': '工作日:',
+            'faq_q13': '邀请比例', 'faq_a13': '回答：邀请率为 '
+        }
+    };
+
+    function changeLanguage() {
+        const lang = document.getElementById('langSelect').value;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) el.innerText = translations[lang][key];
+        });
+    }
+
+    function toggleFaq(element) {
+        const content = element.querySelector('.faq-content');
+        const isOpen = element.classList.contains('open');
+        
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('open');
+            item.querySelector('.faq-content').style.maxHeight = null;
+        });
+
+        if (!isOpen) {
+            element.classList.add('open');
+            // Dá um espaço extra dinâmico seguro para acomodar imagens e vídeos sem cortar
+            content.style.maxHeight = (content.scrollHeight + 140) + "px";
+        }
+    }
+
+    function closeModal() { document.getElementById('welcomeModal').style.display = 'none'; }
+
+    function toggleSupportMenu() {
+        const options = document.getElementById('supportOptions');
+        const trigger = document.getElementById('supportTrigger');
+        options.classList.toggle('show');
+        trigger.innerHTML = options.classList.contains('show') ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-headset"></i>';
+    }
+
+    // Carrossel Automático
+    const track = document.getElementById('carouselTrack');
+    const slides = Array.from(track.children);
+    const indicatorContainer = document.getElementById('carouselIndicators');
+    let currentIndex = 0;
+
+    slides.forEach((_, idx) => {
+        const ind = document.createElement('div');
+        ind.classList.add('indicator');
+        if(idx === 0) ind.classList.add('active');
+        ind.addEventListener('click', () => goToSlide(idx));
+        indicatorContainer.appendChild(ind);
+    });
+
+    const indicators = Array.from(indicatorContainer.children);
+    function updateIndicators() { indicators.forEach((ind, idx) => ind.classList.toggle('active', idx === currentIndex)); }
+    function goToSlide(index) {
+        currentIndex = index;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        updateIndicators();
+    }
+    setInterval(() => { currentIndex = (currentIndex + 1) % slides.length; goToSlide(currentIndex); }, 5000);
+</script>
+{% endblock %}

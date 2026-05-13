@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}fd - Fazenda de Tarefas{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<div class="fazenda-global-container">
+    
+    <div class="fazenda-navbar">
+        <a href="{% url 'menu' %}" class="back-link-thin">
+            <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </a>
+        <div class="brand-title">Gestão de Gado</div>
+    </div>
+
+    <div class="fazenda-scroll-wrapper">
+        
+        <div class="fazenda-card main-task" style="background-image: url('{% static 'images/card_vaca.png' %}');">
+            <div class="card-dark-overlay">
+                <div class="card-content-box">
+                    <h3>Nutrição Bovina</h3>
+                    <div class="badge-status"><i class="fas fa-leaf"></i> Tarefa Disponível</div>
+                    <button type="button" class="btn-action-fazenda primary-btn" onclick="openStepAlimentar()">Alimentar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="fazenda-card" style="background-image: url('{% static 'images/projetos.png' %}');">
+            <div class="card-dark-overlay">
+                <div class="card-content-box">
+                    <p class="mini-label">INSTITUCIONAL</p>
+                    <h3>Projecto Agrícola</h3>
+                    <button type="button" class="btn-action-fazenda" onclick="openTxtModal('projeto')">Desenvolvimento</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="fazenda-card" style="background-image: url('{% static 'images/junte_se.png' %}');">
+            <div class="card-dark-overlay">
+                <div class="card-content-box">
+                    <p class="mini-label">CARREIRA</p>
+                    <h3>Estilo de Pessoal</h3>
+                    <button type="button" class="btn-action-fazenda" onclick="openTxtModal('juntese')">Junte-se a nós</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="fazenda-card" style="background-image: url('{% static 'images/vaga.png' %}');">
+            <div class="card-dark-overlay">
+                <div class="card-content-box">
+                    <h3>Descrição da Vaca</h3>
+                    <button type="button" class="btn-action-fazenda btn-gold-action" onclick="openImageVerticalModal()">Entrar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="modal-alimentar-intro" class="modal-fazenda-overlay">
+    <div class="intro-task-box" style="background-image: url('{% static 'images/fundo_regras.png' %}');">
+        <div class="intro-overlay">
+            <button class="close-top" onclick="closeAllModals()">&times;</button>
+            
+            <div class="rules-container">
+                <h2 class="rules-title">Instruções de Maneio</h2>
+                <div class="rule-item">
+                    <span class="rule-num">1</span>
+                    <p>Oferta de estágio durante 2 dias, diariamente ganhas 500 Kz de estágio. No final terá 1000 Kz.</p>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-num">2</span>
+                    <p>Ao adquirir uma função de criação, os ganhos são baseados na sua categoria. Saques mínimos de 2000 Kz sem burocracia.</p>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-num">3</span>
+                    <p>Ganhe 5% de bónus sobre as tarefas concluídas pelos seus convidados que possuam funções ativas.</p>
+                </div>
+            </div>
+
+            <button type="button" class="btn-confirm-task" onclick="processarAlimentacaoReal()">Alimentar agora</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-loading-fazenda" class="modal-fazenda-overlay" style="background: #ffffff;">
+    <div class="loading-content">
+        <div class="machine-loader">
+            <i class="fas fa-gear fa-spin"></i>
+            <i class="fas fa-cow loader-icon-center"></i>
+        </div>
+        <h3>Processando Nutrição...</h3>
+        <p>A preparar a ração para o gado.</p>
+    </div>
+</div>
+
+<div id="modal-success-fazenda" class="modal-fazenda-overlay" style="background: #ffffff;">
+    <div class="success-task-body">
+        <img src="{% static 'images/vaca_feliz.png' %}" alt="Gado Satisfeito" class="img-success-vaca">
+        <div class="success-msg-box">
+            <h2>Gado satisfeito por hoje!</h2>
+            <p>Vaca alimentada com sucesso. Volte amanhã para nutrir a sua vaca e colher os rendimentos.</p>
+        </div>
+        <button class="btn-back-home" onclick="location.href='{% url 'menu' %}'">Voltar ao Menu</button>
+    </div>
+</div>
+
+<div id="modal-text-simple" class="modal-fazenda-overlay">
+    <div class="modal-fazenda-white">
+        <div class="icon-header-simple" id="simple-icon"></div>
+        <div class="text-content-simple" id="simple-text"></div>
+        <button class="btn-close-simple" onclick="closeAllModals()">Entendido</button>
+    </div>
+</div>
+
+<div id="modal-vaga-img" class="modal-fazenda-overlay">
+    <div class="vertical-img-container">
+        <button class="btn-close-img" onclick="closeAllModals()"><i class="fas fa-times"></i></button>
+        <img src="{% static 'images/detalhe_vaga.png' %}" class="img-full-vertical">
+    </div>
+</div>
+
+<style>
+    :root {
+        --farm-green: #2e7d32;
+        --farm-amber: #f59e0b;
+        --text-main: #1e293b;
+    }
+
+    body { margin: 0; background: #ffffff !important; font-family: 'Montserrat', sans-serif; overflow-x: hidden; width: 100%; }
+    
+    .fazenda-global-container { width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; background: #ffffff; display: flex; flex-direction: column; overflow-x: hidden; }
+
+    /* NAVBAR */
+    .fazenda-navbar { display: flex; align-items: center; justify-content: flex-start; padding: 20px; gap: 20px; }
+    .back-link-thin svg { width: 24px; height: 24px; fill: none; stroke: #000; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .brand-title { font-weight: 800; font-size: 18px; color: #000; text-transform: uppercase; letter-spacing: -0.5px; }
+
+    .fazenda-scroll-wrapper { flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+
+    /* CARDS */
+    .fazenda-card { width: 100%; height: 180px; border-radius: 20px; background-size: cover; background-position: center; position: relative; overflow: hidden; border: 1px solid #f1f5f9; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .card-dark-overlay { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); display: flex; align-items: flex-end; padding: 20px; }
+    .card-content-box h3 { color: #fff; margin: 0 0 10px; font-size: 17px; font-weight: 700; }
+    .mini-label { color: var(--farm-amber); font-size: 9px; font-weight: 800; margin: 0 0 4px; letter-spacing: 1px; }
+    .badge-status { display: inline-block; background: var(--farm-green); color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; margin-bottom: 12px; }
+
+    .btn-action-fazenda { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; background: #fff; color: #000; }
+    .btn-action-fazenda.primary-btn { background: #fff; box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
+    .btn-gold-action { background: var(--farm-amber); color: #fff; }
+
+    /* OVERLAYS */
+    .modal-fazenda-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; overflow-x: hidden; }
+
+    /* INTRO REGRA BOX */
+    .intro-task-box { width: 90%; max-width: 380px; height: 500px; border-radius: 28px; background-size: cover; background-position: center; position: relative; overflow: hidden; animation: slideUp 0.3s ease; }
+    .intro-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; padding: 25px; justify-content: space-between; }
+    .close-top { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #fff; font-size: 30px; cursor: pointer; }
+    .rules-title { color: #fff; font-weight: 800; font-size: 20px; margin-bottom: 20px; border-left: 4px solid var(--farm-amber); padding-left: 10px; }
+    .rule-item { display: flex; gap: 12px; margin-bottom: 18px; align-items: flex-start; }
+    .rule-num { background: var(--farm-amber); color: #000; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; }
+    .rule-item p { color: #ddd; font-size: 12px; margin: 0; line-height: 1.5; font-weight: 500; }
+    .btn-confirm-task { background: var(--farm-green); color: #fff; border: none; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 14px; text-transform: uppercase; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+    /* LOADING TELA */
+    .loading-content { text-align: center; }
+    .machine-loader { position: relative; width: 100px; height: 100px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; }
+    .machine-loader .fa-gear { font-size: 80px; color: #f1f5f9; }
+    .loader-icon-center { position: absolute; font-size: 30px; color: var(--farm-green); }
+    .loading-content h3 { margin: 0; color: #000; font-weight: 800; }
+    .loading-content p { color: #64748b; font-size: 13px; margin-top: 5px; }
+
+    /* SUCESSO TELA */
+    .success-task-body { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+    .img-success-vaca { width: 220px; margin-bottom: 20px; animation: bounce 2s infinite; }
+    .success-msg-box h2 { font-weight: 900; color: var(--farm-green); font-size: 24px; margin: 0; }
+    .success-msg-box p { color: #64748b; font-size: 14px; margin-top: 10px; line-height: 1.6; max-width: 300px; }
+    .btn-back-home { margin-top: 30px; background: #000; color: #fff; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; font-size: 14px; cursor: pointer; }
+
+    /* WHITE MODAL */
+    .modal-fazenda-white { background: #fff; width: 85%; max-width: 350px; padding: 30px; border-radius: 24px; text-align: center; }
+    .icon-header-simple { font-size: 40px; color: var(--farm-green); margin-bottom: 15px; }
+    .text-content-simple { font-size: 14px; color: #334155; line-height: 1.6; font-weight: 600; margin-bottom: 20px; }
+    .btn-close-simple { width: 100%; background: #f1f5f9; color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+    /* VAGA IMG */
+    .vertical-img-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .img-full-vertical { max-width: 100%; max-height: 90vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; }
+    .btn-close-img { position: absolute; top: 30px; right: 30px; background: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; color: #000; font-size: 20px; cursor: pointer; z-index: 2010; }
+
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+</style>
+
+<script>
+    function openStepAlimentar() {
+        document.getElementById('modal-alimentar-intro').style.display = 'flex';
+    }
+
+    function processarAlimentacaoReal() {
+        // Fecha intro e abre loading
+        document.getElementById('modal-alimentar-intro').style.display = 'none';
+        document.getElementById('modal-loading-fazenda').style.display = 'flex';
+
+        // Envia para o Django persistir ganhos
+        fetch("{% url 'process_task' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            setTimeout(() => {
+                document.getElementById('modal-loading-fazenda').style.display = 'none';
+                if(data.success) {
+                    document.getElementById('modal-success-fazenda').style.display = 'flex';
+                } else {
+                    // Se já alimentou hoje
+                    alert("Gado já foi alimentado hoje. Volte amanhã!");
+                    location.reload();
+                }
+            }, 3000); // Simula processamento da máquina por 3 seg
+        })
+        .catch(() => {
+            setTimeout(() => {
+                document.getElementById('modal-loading-fazenda').style.display = 'none';
+                document.getElementById('modal-success-fazenda').style.display = 'flex';
+            }, 3000);
+        });
+    }
+
+    function openTxtModal(key) {
+        const icon = document.getElementById('simple-icon');
+        const text = document.getElementById('simple-text');
+        
+        if(key === 'projeto') {
+            icon.innerHTML = '<i class="fas fa-tractor"></i>';
+            text.innerText = "Estamos no mercado com objectivo, de oferecer oportunidade de empregabilidade a todos, e oferecemos oportunidades de ganhar espaços por meio da sua dedicação e esforço na empresa fd.";
+        } else {
+            icon.innerHTML = '<i class="fas fa-shield-halved"></i>';
+            text.innerText = "Se precisa uma plataforma segura, para se enquadrar e render sem prejuizo e com confiança mista se a nos, adquira uma função, por meio de seu deposito de garantia, e o mesmo deposito será rebolsado apos 1 ano.";
+        }
+        document.getElementById('modal-text-simple').style.display = 'flex';
+    }
+
+    function openImageVerticalModal() {
+        document.getElementById('modal-vaga-img').style.display = 'flex';
+    }
+
+    function closeAllModals() {
+        const modals = document.querySelectorAll('.modal-fazenda-overlay');
+        modals.forEach(m => m.style.display = 'none');
+    }
+</script>
+{% endblock %}

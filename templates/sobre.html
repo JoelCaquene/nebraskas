@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Planos e Funções - fd{% endblock %}
+
+{% block content %}
+<style>
+    body { 
+        background: #020b1e !important; /* Azul escuro profundo uniforme */
+        margin: 0; 
+        padding: 0;
+        overflow-x: hidden; /* Remove rolagem horizontal e evita o balanço da tela */
+    }
+
+    .gallery-wrapper {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Brilho radial estético no centro da tela */
+        background: radial-gradient(circle at center, rgba(0, 122, 255, 0.15) 0%, transparent 70%);
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    /* HEADER TOTALMENTE LIMPO */
+    .gallery-header { 
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-start; /* Alinha a seta à esquerda sem texto */
+        box-sizing: border-box;
+    }
+
+    /* SETA DE VOLTAR MINIMALISTA (FINA E ELEGANTE EM SVG) */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none; 
+        color: rgba(255, 255, 255, 0.8);
+        width: 40px;
+        height: 40px;
+        transition: transform 0.2s, color 0.2s;
+    }
+    .back-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .back-btn:active { 
+        transform: scale(0.9); 
+        color: #007AFF;
+    }
+
+    /* CONTAINER VERTICAL DE IMAGENS INTEGRADAS */
+    .images-container {
+        width: 100%;
+        max-width: 500px; /* Garante estabilidade em ecrãs Mobile */
+        display: flex;
+        flex-direction: column;
+        gap: 0; /* Cola as duas imagens eliminando qualquer separação */
+        padding: 0 10px 40px 10px; /* Espaço de respiro apenas nas laterais e base */
+        box-sizing: border-box;
+    }
+
+    /* QUALIDADE MÁXIMA SEM CORTES */
+    .mixed-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain; /* Abre a imagem por completo sem recortar ou ocultar partes */
+        image-rendering: -webkit-optimize-contrast; /* Otimização de nitidez para ecrãs mobile */
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<div class="gallery-wrapper">
+    <header class="gallery-header">
+        <a href="{% url 'home' %}" class="back-btn">
+            <svg viewBox="0 0 24 24">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+    </header>
+
+    <div class="images-container">
+        <img src="{% static 'images/image_0cc337.png' %}" alt="Planos de Recarga" class="mixed-image">
+        <img src="{% static 'images/image_0c3c39.png' %}" alt="Planos de Função" class="mixed-image">
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,360 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root { 
+            --primary: #1cbd6f; 
+            --bg-light: #f4f7f9; 
+            --input-bg: #f8fafc;
+            --text-main: #333333;
+            --text-muted: #8c9ba5;
+            --border-color: #cbd5e1;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background: var(--bg-light); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            overflow-y: auto;  
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* TELA DE LOADING PROCESSANDO COM CONTADOR */
+        #loader {
+            position: fixed; 
+            inset: 0; 
+            background: #ffffff; 
+            z-index: 1000;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            overflow: hidden;
+        }
+        .loader-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url("{% static 'images/logo.png' %}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: blur(8px);
+            opacity: 0.15;
+            transform: scale(1.2);
+            z-index: -1;
+        }
+        .farm-loader-icon {
+            font-size: 60px; 
+            color: var(--primary);
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0 { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        /* HEADER SUPER COMPACTO */
+        .top-nav { 
+            width: 100%;
+            max-width: 420px;
+            padding: 10px 20px 0px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        
+        .lang-container {
+            align-self: flex-end; 
+            background: rgba(255, 255, 255, 0.8); 
+            border: 1px solid var(--border-color);
+            border-radius: 20px; 
+            padding: 4px 12px; 
+            display: flex; 
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .lang-container i { color: var(--text-muted); font-size: 14px; }
+        .lang-container select { 
+            background: transparent; border: none; color: var(--text-main); font-size: 13px; 
+            font-weight: 600; outline: none; cursor: pointer;
+        }
+
+        .logo-box { text-align: center; margin: 5px 0; }
+        .logo-img { max-width: 110px; height: auto; object-fit: contain; }
+
+        .platform-subtitle {
+            font-size: 17px;
+            font-weight: 700;
+            color: #000;
+            margin-top: 2px;
+        }
+
+        /* WRAPPER PRINCIPAL SEM ESPAÇO MORTO */
+        .main-form-wrapper {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            padding: 0 24px;
+        }
+
+        /* CARD DE REGISTRO UNIFICADO */
+        .register-card {
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; /* Reduzido o espaço direto entre os campos */
+            margin-top: 5px;
+        }
+
+        h2 { 
+            font-size: 13px; 
+            text-align: center; 
+            color: var(--text-muted); 
+            font-weight: 400;
+            margin-bottom: 5px; 
+        }
+
+        .input-row {
+            display: flex; 
+            align-items: center; 
+            background: var(--input-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 16px; 
+            height: 52px; /* Diminuído para visual enxuto */
+            overflow: hidden;
+            padding: 0 15px;
+            transition: all 0.3s ease;
+        }
+        .input-row:focus-within { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(28, 189, 111, 0.15);
+            background: #ffffff;
+        }
+
+        .input-row i.input-icon { color: #0f172a; font-size: 18px; margin-right: 12px; width: 24px; text-align: center; }
+        
+        input {
+            flex: 1; background: transparent; border: none; color: var(--text-main);
+            padding: 10px 0; font-size: 15px; outline: none; width: 100%;
+        }
+        input::placeholder { color: var(--text-muted); font-weight: 400; }
+
+        .eye-btn { color: var(--text-muted); cursor: pointer; padding-left: 10px; font-size: 18px; }
+
+        .agreement-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+        .agreement-box input { width: auto; accent-color: var(--primary); }
+
+        /* BOTÕES DIRETOS SEM DISTANCIAMENTO EXAGERADO */
+        .footer-nav {
+            width: 100%;
+            display: flex; 
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px; /* Mantém os botões logo abaixo do formulário */
+        }
+
+        .btn-reg {
+            width: 100%;
+            height: 52px; 
+            background: var(--primary);
+            border: none; 
+            border-radius: 16px; 
+            color: #fff; 
+            font-weight: 600;
+            font-size: 17px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(28, 189, 111, 0.2);
+            transition: transform 0.2s;
+        }
+        .btn-reg:active { transform: scale(0.98); }
+
+        .login-redirect {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        .login-redirect a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <div class="loader-bg"></div>
+    <i class="fa-solid fa-tractor farm-loader-icon"></i>
+    <div id="perc" style="margin-top: 20px; font-weight: 700; color: var(--primary); font-size: 22px;">0%</div>
+</div>
+
+<nav class="top-nav">
+    <div class="lang-container">
+        <i class="fa-solid fa-globe"></i>
+        <select id="lang-select" onchange="updateLang()">
+            <option value="pt">PT</option>
+            <option value="en">EN</option>
+            <option value="zh">ZH</option>
+        </select>
+    </div>
+    <div class="logo-box">
+        <img src="{% static 'images/logo.png' %}" alt="FD Logo" class="logo-img">
+        <div class="platform-subtitle">Agricultura on-line</div>
+    </div>
+</nav>
+
+<form method="post" id="regForm" class="main-form-wrapper">
+    {% csrf_token %}
+    
+    <div class="register-card">
+        <h2 id="t-title">Conclua a tarefa,Você ganhará comissões generosas</h2>
+        
+        <div class="input-row">
+            <i class="fa-solid fa-phone input-icon"></i>
+            <input type="text" name="phone_number" id="p-phone" placeholder="Número de celular" required inputmode="numeric">
+        </div>
+
+        <div class="input-row">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" name="password" id="pass" placeholder="Senha de login" required>
+            <i class="fa-solid fa-eye eye-btn" onclick="toggle('pass')"></i>
+        </div>
+
+        <div class="input-row">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" name="confirm_password" id="conf" placeholder="Senha de retirada" required>
+            <i class="fa-solid fa-eye eye-btn" onclick="toggle('conf')"></i>
+        </div>
+
+        <div class="input-row">
+            <i class="fa-solid fa-user-plus input-icon"></i>
+            <input type="text" name="invited_by_code" id="p-inv" placeholder="Código de convite" value="{{ request.GET.invite|default:'' }}">
+        </div>
+
+        <div class="agreement-box">
+            <input type="checkbox" id="agree" checked required>
+            <label id="t-agree" for="agree">Acordo de privacidade do usuário</label>
+        </div>
+    </div>
+
+    <div class="footer-nav">
+        <button type="button" class="btn-reg" onclick="submitForm()">
+            <span id="t-btn">Cadastre-se</span>
+        </button>
+        
+        <div class="login-redirect">
+            <span id="t-have-account">Já tem uma conta ?</span>
+            <a href="{% url 'login' %}" id="t-go-login">Ir para login</a>
+        </div>
+    </div>
+</form>
+
+<script>
+    const texts = {
+        pt: { 
+            title: "Conclua a tarefa,Você ganhará comissões generosas", 
+            phone: "Número de celular", 
+            pass: "Senha de login", 
+            conf: "Senha de retirada", 
+            inv: "Código de convite", 
+            btn: "Cadastre-se",
+            agree: "Acordo de privacidade do usuário",
+            haveAccount: "Já tem uma conta ?",
+            goLogin: "Ir para login"
+        },
+        en: { 
+            title: "Complete the task, You will earn generous commissions", 
+            phone: "Mobile Number", 
+            pass: "Login Password", 
+            conf: "Withdrawal Password", 
+            inv: "Invitation Code", 
+            btn: "Register",
+            agree: "User Privacy Agreement",
+            haveAccount: "Already have an account?",
+            goLogin: "Go to login"
+        },
+        zh: { 
+            title: "完成任务，您将获得丰厚的佣金", 
+            phone: "手机号码", 
+            pass: "登录密码", 
+            conf: "提现密码", 
+            inv: "邀请码", 
+            btn: "注册",
+            agree: "用户隐私协议",
+            haveAccount: "已有账号？",
+            goLogin: "去登录"
+        }
+    };
+
+    function updateLang() {
+        const l = document.getElementById('lang-select').value;
+        
+        document.getElementById('t-title').innerText = texts[l].title;
+        document.getElementById('t-btn').innerText = texts[l].btn;
+        document.getElementById('t-agree').innerText = texts[l].agree;
+        document.getElementById('t-have-account').innerText = texts[l].haveAccount;
+        document.getElementById('t-go-login').innerText = texts[l].goLogin;
+        
+        document.getElementById('p-phone').placeholder = texts[l].phone;
+        document.getElementById('pass').placeholder = texts[l].pass;
+        document.getElementById('conf').placeholder = texts[l].conf;
+        document.getElementById('p-inv').placeholder = texts[l].inv;
+    }
+
+    const phoneInput = document.getElementById('p-phone');
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        e.target.value = value.replace(/\D/g, '');
+    });
+
+    window.onload = () => {
+        let c = 0;
+        let i = setInterval(() => {
+            c += Math.floor(Math.random() * 10) + 5;
+            if(c >= 100) {
+                clearInterval(i);
+                document.getElementById('perc').innerText = "100%";
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 200);
+            } else { document.getElementById('perc').innerText = c + "%"; }
+        }, 40);
+    };
+
+    function toggle(id) {
+        const x = document.getElementById(id);
+        x.type = x.type === "password" ? "text" : "password";
+    }
+
+    function submitForm() {
+        if(document.getElementById('regForm').reportValidity()) {
+            document.getElementById('regForm').submit();
+        }
+    }
+</script>
+
+</body>
+</html>
