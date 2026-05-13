@@ -308,7 +308,7 @@
             <div class="stat-square-value">{{ sub_convite|floatformat:2 }} Kz</div>
         </div>
         <div class="stat-square-box">
-            <div class="stat-square-title" data-tr="stat-sub-tarefa">Subsídio de Tarefa</div>
+            <div class="stat-square-title" data-tr="stat-sub-tarefa">Ganhos de Tarefa</div>
             <div class="stat-square-value">{{ sub_tarefa|floatformat:2 }} Kz</div>
         </div>
         <div class="stat-square-box">
@@ -338,13 +338,13 @@
             <div class="action-round-icon"><i class="far fa-credit-card"></i></div>
             <div class="action-item-label" data-tr="act-conta">Conta Bancária</div>
         </a>
-        <a href="{% static 'app/fd.apk' %}" target="_blank" download class="action-grid-item">
-            <div class="action-round-icon"><i class="fas fa-download"></i></div>
-            <div class="action-item-label" data-tr="act-baixar">Baixar App</div>
+        <a href="{% static 'app/fd.apk' %}" download="fd.apk" class="action-grid-item">
+        <div class="action-round-icon"><i class="fas fa-download"></i></div>
+        <div class="action-item-label" data-tr="act-baixar">Baixar App</div>
         </a>
         <a href="{% url 'roleta' %}" class="action-grid-item">
             <div class="action-round-icon" style="background:#fff4e6; color:#f2994a;"><i class="fas fa-dharmachakra"></i></div>
-            <div class="action-item-label" style="color:#f2994a; font-weight:700;" data-tr="act-roleta">Roleta da Sorte</div>
+            <div class="action-item-label" style="color:#f2994a; font-weight:700;" data-tr="act-roleta">Cassino da sorte</div>
         </a>
         <a href="javascript:void(0)" class="action-grid-item" onclick="openModal('modalPass')">
             <div class="action-round-icon"><i class="fas fa-sync-alt"></i></div>
