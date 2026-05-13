@@ -23,12 +23,12 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 # 1. Inicializa a lista com os domínios fixos (Locais e Produção)
 ALLOWED_HOSTS = [
-    
     'empresa-fd.com',          # O teu domínio principal
     'www.empresa-fd.com',      # Versão com www
     'fd-ybs2.onrender.com',    # O link padrão do Render (útil para testes)
-]   '127.0.0.1',
+    '127.0.0.1',
     'localhost',
+]
 
 # 2. Cria a variável CUSTOM_DOMAINS com os mesmos dados para o teu loop não falhar
 CUSTOM_DOMAINS = list(ALLOWED_HOSTS)
