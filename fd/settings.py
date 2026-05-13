@@ -28,12 +28,12 @@ if hosts_env:
     ALLOWED_HOSTS.extend([host.strip() for host in hosts_env.split(',')])
 
 # Domínios de produção e locais atualizados
-CUSTOM_DOMAINS = [
-    'fd.art',
-    'www.fd.art',
-    'one00xmagico.onrender.com',
+ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    'empresa-fd.com',          # O teu domínio principal
+    'www.empresa-fd.com',      # Versão com www
+    'fd-ybs2.onrender.com',    # O link padrão do Render (útil para testes)
 ]
 
 for domain in CUSTOM_DOMAINS:
@@ -127,30 +127,26 @@ if not os.path.exists(MEDIA_ROOT):
     os.makedirs(MEDIA_ROOT)
 
 # ======================================================================
-# SEGURANÇA E REDIRECIONAMENTO
+# SEGURANÇA E REDIRECIONAMENTO (PRODUÇÃO)
 # ======================================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.CustomUser'
 LOGIN_URL = 'login'
 
 if not DEBUG:
-    # Essencial para o Render identificar o HTTPS vindo do proxy
+    # Essencial para o Render identificar o HTTPS vindo do proxy reversível ok
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     
-    # Cookies seguros
+    # Cookies seguros (impedem o roubo de sessões em redes públicas)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     
-    # Proteções básicas de navegador
-    SECURE_BROWSER_XSS_FILTER = True
+    # Proteções básicas contra ataques no navegador
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = 'DENY'  # Impede que o teu site seja colocado dentro de um <iframe> (evita Clickjacking)
     
-    # Redirecionamento de domínio
-    PREPEND_WWW = False
-
-    # HSTS (Ativado para segurança máxima)
+    # HSTS (Ativar apenas quando o domínio personalizado e o SSL estiverem 100% ativos no Render)
     SECURE_HSTS_SECONDS = 31536000  # 1 ano
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
