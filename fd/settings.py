@@ -20,22 +20,28 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # ======================================================================
 # CONFIGURAÇÃO DOS HOSTS PERMITIDOS
 # ======================================================================
-ALLOWED_HOSTS = []
 
-# Puxa hosts extras do arquivo .env se existirem
-hosts_env = config('ALLOWED_HOSTS', default='')
-if hosts_env:
-    ALLOWED_HOSTS.extend([host.strip() for host in hosts_env.split(',')])
-
-# Domínios de produção e locais atualizados
+# 1. Inicializa a lista com os domínios fixos (Locais e Produção)
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
+    
     'empresa-fd.com',          # O teu domínio principal
     'www.empresa-fd.com',      # Versão com www
     'fd-ybs2.onrender.com',    # O link padrão do Render (útil para testes)
-]
+]   '127.0.0.1',
+    'localhost',
 
+# 2. Cria a variável CUSTOM_DOMAINS com os mesmos dados para o teu loop não falhar
+CUSTOM_DOMAINS = list(ALLOWED_HOSTS)
+
+# 3. Puxa hosts extras do Render/Ambiente (.env) se existirem e adiciona-os
+hosts_env = config('ALLOWED_HOSTS', default='')
+if hosts_env:
+    for host in hosts_env.split(','):
+        clean_host = host.strip()
+        if clean_host and clean_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(clean_host)
+
+# 4. Garante que qualquer item em CUSTOM_DOMAINS está no ALLOWED_HOSTS (o teu loop original)
 for domain in CUSTOM_DOMAINS:
     if domain not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(domain)
