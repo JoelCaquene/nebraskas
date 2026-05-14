@@ -407,7 +407,7 @@
         const inputVal = parseFloat(document.getElementById('inputAmountKz').value) || 0;
         if (inputVal < 2000) {
             event.preventDefault();
-            showCustomModal('warning', 'Valor Insuficiente', 'O valor mínimo para solicitação de saque é 2.000 Kz.');
+            showCustomModal('warning', 'Valor Insuficiente', 'O valor mínimo para solicitação de saque é 1.000 Kz.');
             return false;
         }
         return true;
