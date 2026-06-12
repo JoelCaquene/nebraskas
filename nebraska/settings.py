@@ -133,6 +133,7 @@ if not os.path.exists(MEDIA_ROOT):
     os.makedirs(MEDIA_ROOT)
 
 # ======================================================================
+# ======================================================================
 # SEGURANÇA E REDIRECIONAMENTO (PRODUÇÃO)
 # ======================================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -143,19 +144,22 @@ LOGIN_URL = 'login'
 PREPEND_WWW = True
 
 if not DEBUG:
-    # Essencial para o Render identificar o HTTPS vindo do proxy reversível
+    # O Render usa HTTP_X_FORWARDED_PROTO para detectar HTTPS
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # Redirecionamento HTTPS
     SECURE_SSL_REDIRECT = True
     
     # Cookies seguros
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     
-    # Proteções básicas
+    # Proteções
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
     
-    # HSTS
+    # HSTS - ATENÇÃO: Se o site não abrir após o deploy, 
+    # comente as linhas abaixo temporariamente.
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
