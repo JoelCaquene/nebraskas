@@ -17,13 +17,14 @@
     }
 
     html, body { 
-        overflow-x: hidden; width: 100%; margin: 0; padding: 0; 
+        overflow-x: hidden !important; width: 100% !important; max-width: 100vw !important; margin: 0; padding: 0; 
         background-color: #040508 !important; font-family: 'Montserrat', sans-serif;
         -webkit-tap-highlight-color: transparent; color: #f8fafc;
+        position: relative;
     }
 
     .casino-container {
-        min-height: 100vh; width: 100%;
+        min-height: 100vh; width: 100%; max-width: 100vw;
         background: radial-gradient(circle at 50% 30%, #163d24 0%, #0a1c11 50%, #030604 100%);
         display: flex; justify-content: center; position: relative; overflow: hidden;
     }
@@ -34,122 +35,121 @@
         background-size: 80px 80px; opacity: 0.6;
     }
 
-    .casino-layout { width: 100%; max-width: 420px; padding: 20px 14px; display: flex; flex-direction: column; align-items: center; z-index: 2; }
-    .btn-back-minimal { position: absolute; top: 24px; left: 20px; color: #ffffff; font-size: 22px; z-index: 10; text-decoration: none; opacity: 0.7; }
+    .casino-layout { 
+        width: 100%; max-width: 380px; padding: 15px 12px; 
+        display: flex; flex-direction: column; align-items: center; z-index: 2; 
+        box-sizing: border-box;
+    }
+    
+    .btn-back-minimal { position: absolute; top: 20px; left: 16px; color: #ffffff; font-size: 20px; z-index: 10; text-decoration: none; opacity: 0.7; }
 
-    .casino-header { text-align: center; margin-bottom: 12px; }
+    .casino-header { text-align: center; margin-bottom: 15px; margin-top: 10px; width: 100%; }
     .main-title { 
-        font-family: 'Cinzel Decorative', serif; font-size: 24px; color: #ffffff; margin: 0; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+        font-family: 'Cinzel Decorative', serif; font-size: 24px; color: #ffffff; margin: 0; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
         background: linear-gradient(to bottom, #ffffff 40%, #a1a1aa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .casino-badge { color: var(--neon-gold); font-size: 12px; font-weight: 700; margin-top: 4px; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Orbitron', sans-serif; }
 
     .mini-key-badge {
         background: linear-gradient(180deg, #262c3a 0%, #11151e 100%);
-        border: 1px solid var(--neon-gold); padding: 8px 20px; border-radius: 50px;
+        border: 1px solid var(--neon-gold); padding: 6px 20px; border-radius: 50px;
         display: flex; align-items: center; gap: 8px; font-size: 12px; color: #ffffff; font-weight: 700; margin-bottom: 15px;
-        font-family: 'Orbitron', sans-serif; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        font-family: 'Orbitron', sans-serif; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
     }
     .mini-key-badge strong { color: var(--neon-gold); font-size: 16px; }
 
-    .lucky-cat-stage {
-        text-align: center; margin-bottom: 20px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        padding: 12px; border-radius: 20px; width: 100%; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    /* --- SISTEMA DA ROLETA TOTALMENTE ESTÁVEL E RESPONSIVA --- */
+    .roulette-box {
+        position: relative; 
+        width: 82vw; height: 82vw; 
+        max-width: 290px; max-height: 290px; 
+        margin: 5px 0 20px;
+        border-radius: 50%; padding: 8px;
+        background: radial-gradient(circle, #f5b025 0%, #a8760c 60%, #523603 100%);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.8), 0 0 25px rgba(255, 204, 0, 0.15);
+        box-sizing: border-box;
     }
-    .cat-avatar { font-size: 48px; display: inline-block; animation: catFloat 2.5s ease-in-out infinite alternate; }
-    .cat-bubble { color: #f1f5f9; font-size: 13px; font-weight: 600; margin-top: 4px; }
-    @keyframes catFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-7px); } }
-
-    .blocks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-bottom: 15px; perspective: 2000px; }
-    .casino-block { aspect-ratio: 0.70; position: relative; cursor: pointer; background: transparent; border: none; padding: 0; }
-
-    .block-card-inner {
-        position: absolute; width: 100%; height: 100%;
-        transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.32, 1.2);
-    }
-
-    .casino-block.opened .block-card-inner { transform: rotateY(180deg) !important; }
-
-    .block-front {
-        position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-        background: radial-gradient(circle, #a10000 0%, #4a0000 100%);
-        border: 2.5px solid #dfb347; border-radius: 10px; display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 8px 18px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,0,0,0.7); z-index: 2;
-    }
-    .block-front .card-center-icon {
-        font-size: 24px; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-
-    .block-back {
-        position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-        transform: rotateY(180deg); background: #ffffff; border-radius: 10px; border: 2.5px solid var(--neon-green);
-        display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 18px rgba(0,0,0,0.4); z-index: 1;
-    }
-    .block-back::before { content: '♦'; position: absolute; top: 4px; left: 6px; font-size: 11px; color: #dc2626; font-weight: bold; }
     
-    .casino-block.revealed .block-back { border-color: #94a3b8; opacity: 0.65; background: #e2e8f0; filter: grayscale(0.3); }
-    .w-prize-value { font-size: 13px; color: #047857; font-weight: 900; font-family: 'Goldman', sans-serif; text-align: center; }
-    .w-prize-label { font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase; }
-
-    .live-winners-vertical {
-        width: 100%; height: 115px; background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 15px; overflow: hidden; border: 1px solid var(--glass-border); 
+    .roulette-pointer {
+        position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+        width: 0; height: 0; 
+        border-left: 14px solid transparent; border-right: 14px solid transparent;
+        border-top: 24px solid #ffcc00; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6));
+        z-index: 50; animation: pointerPulse 1s infinite alternate;
     }
-    .winners-head { background: rgba(0,0,0,0.4); color: #94a3b8; font-size: 11px; font-weight: 800; padding: 7px; text-align: center; font-family: 'Orbitron', sans-serif; }
-    .marquee-vertical { height: 85px; position: relative; overflow: hidden; }
-    .marquee-inner { animation: scrollUp 14s linear infinite; }
-    .winner-row { display: flex; justify-content: space-between; padding: 8px 18px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.01); }
-    @keyframes scrollUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+    @keyframes pointerPulse { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(2px); } }
 
-    /* MODAL SLIM PREMIUM DESIGN */
+    .wheel-canvas-wrap {
+        width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+        border: 3px solid #0a0e17; background: #0a0e17; position: relative;
+        box-sizing: border-box;
+    }
+
+    #wheelCanvas {
+        width: 100%; height: 100%; border-radius: 50%; display: block;
+        transition: transform 5s cubic-bezier(0.15, 0.85, 0.35, 1);
+    }
+
+    .wheel-center-pin {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 50px; height: 50px; background: radial-gradient(circle, #ffffff 0%, #cbd5e1 40%, #475569 100%);
+        border: 3px solid #ffcc00; border-radius: 50%; z-index: 40;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 4px rgba(255,255,255,0.8);
+    }
+
+    .btn-spin-center {
+        background: var(--gold-gradient); border: none; width: 100%; height: 100%;
+        border-radius: 50%; font-family: 'Orbitron', sans-serif; font-weight: 900;
+        font-size: 10px; color: #000; cursor: pointer; text-shadow: 0 1px 1px rgba(255,255,255,0.4);
+        display: flex; align-items: center; justify-content: center; padding: 0; margin: 0;
+    }
+
+    /* --- HISTÓRICO EM ESTEIRA SEGURO --- */
+    .live-winners-vertical {
+        width: 100%; height: 120px; background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 14px; margin-top: 5px; overflow: hidden; border: 1px solid var(--glass-border); box-sizing: border-box;
+    }
+    .winners-head { background: rgba(0,0,0,0.4); color: #94a3b8; font-size: 11px; font-weight: 800; padding: 6px; text-align: center; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; }
+    
+    .marquee-vertical { height: 88px; position: relative; overflow: hidden; width: 100%; }
+    .marquee-inner { display: flex; flex-direction: column; animation: scrollUpContinuous 14s linear infinite; }
+    .winner-row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.03); box-sizing: border-box; }
+    
+    @keyframes scrollUpContinuous { 
+        0% { transform: translateY(0); } 
+        100% { transform: translateY(-50%); } 
+    }
+
+    /* --- JANELA DE PREMIAÇÃO MODAL --- */
     .win-overlay { 
-        position: fixed; inset: 0; background: rgba(3, 5, 10, 0.90); 
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        position: fixed; inset: 0; background: rgba(3, 5, 10, 0.92); 
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px;
     }
     
     .jackpot-card { 
         background: radial-gradient(circle at 50% 0%, #151d2a 0%, #06090e 100%);
-        border: 1.5px solid rgba(255, 204, 0, 0.4); padding: 24px 20px; 
-        border-radius: 24px; text-align: center; width: 100%; max-width: 300px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 204, 0, 0.08);
-        animation: modalScaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border: 1.5px solid rgba(255, 204, 0, 0.4); padding: 22px 18px; 
+        border-radius: 20px; text-align: center; width: 100%; max-width: 280px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+        animation: modalScaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     @keyframes modalScaleUp {
-        0% { transform: scale(0.85); opacity: 0; }
+        0% { transform: scale(0.9); opacity: 0; }
         100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Carta interna menor e muito mais elegante */
-    .modal-card-visual {
-        width: 105px; height: 148px; background: #ffffff; border-radius: 12px;
-        margin: 10px auto 20px; border: 3px solid var(--neon-green);
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        position: relative;
-        box-shadow: 0 10px 30px rgba(0, 255, 102, 0.35);
-    }
-
-    .modal-card-visual::before {
-        content: '♦'; position: absolute; top: 6px; left: 8px;
-        font-size: 16px; color: #dc2626; font-weight: 900;
-    }
-
-    .modal-card-visual i { font-size: 32px; color: #047857; margin-bottom: 6px; }
-    .modal-card-value { font-family: 'Goldman', sans-serif; font-size: 20px; color: #047857; font-weight: 900; }
-
-    .prize-amount-wrap { margin-bottom: 24px; }
+    .prize-amount-wrap { margin-bottom: 20px; margin-top: 12px;}
     .prize-main-value { 
-        font-family: 'Goldman', sans-serif; font-size: 36px; color: var(--neon-green); 
-        text-shadow: 0 0 15px rgba(0, 255, 102, 0.6); font-weight: 900; letter-spacing: -0.5px;
+        font-family: 'Goldman', sans-serif; font-size: 30px; color: var(--neon-green); 
+        text-shadow: 0 0 12px rgba(0, 255, 102, 0.5); font-weight: 900;
     }
 
     .btn-collect-gold { 
-        background: var(--gold-gradient); color: #000; border: none; padding: 15px; border-radius: 14px; 
-        font-weight: 900; font-size: 14px; font-family: 'Orbitron', sans-serif; width: 100%; cursor: pointer;
-        text-transform: uppercase; box-shadow: 0 6px 20px rgba(245, 176, 37, 0.3);
-        transition: transform 0.1s, filter 0.2s;
+        background: var(--gold-gradient); color: #000; border: none; padding: 14px; border-radius: 12px; 
+        font-weight: 900; font-size: 13px; font-family: 'Orbitron', sans-serif; width: 100%; cursor: pointer;
+        text-transform: uppercase;
     }
-    .btn-collect-gold:active { transform: scale(0.97); filter: brightness(1.1); }
 </style>
 
 <div class="casino-container">
@@ -158,34 +158,22 @@
 
     <div class="casino-layout">
         <header class="casino-header">
-            <h1 class="main-title">Oferta da Fazenda FD</h1>
-            <div class="casino-badge">Toque numa carta para ganhar</div>
+            <h1 class="main-title">Roleta da Sorte</h1>
         </header>
 
         <div class="mini-key-badge">
             <i class="fas fa-key"></i>
-            <span>BANCAS / CHAVES: <strong id="roulette-spins">{{ roulette_spins }}</strong></span>
+            <span>CHAVES: <strong id="roulette-spins">{{ roulette_spins }}</strong></span>
         </div>
 
-        <div class="lucky-cat-stage">
-            <div class="cat-avatar">🐱✨</div>
-            <div class="cat-bubble" id="cat-status">Escolha uma das 8 cartas de ouro na mesa!</div>
-        </div>
-
-        <div class="blocks-grid" id="cards-board">
-            {% for i in "12345678" %}
-            <div class="casino-block" onclick="openCasinoCard(this)">
-                <div class="block-card-inner">
-                    <div class="block-front">
-                        <div class="card-center-icon">♦</div>
-                    </div>
-                    <div class="block-back">
-                        <div class="w-prize-value">?</div>
-                        <div class="w-prize-label">Kz</div>
-                    </div>
-                </div>
+        <div class="roulette-box">
+            <div class="roulette-pointer"></div>
+            <div class="wheel-canvas-wrap">
+                <canvas id="wheelCanvas" width="500" height="500"></canvas>
             </div>
-            {% endfor %}
+            <div class="wheel-center-pin">
+                <button class="btn-spin-center" id="btnSpin" onclick="startRouletteSpin()">GIRO</button>
+            </div>
         </div>
 
         <div class="live-winners-vertical">
@@ -195,7 +183,13 @@
                     {% for winner in recent_winners %}
                     <div class="winner-row">
                         <span>ID ***{{ winner.user.id|slice:"-4:" }}</span>
-                        <span style="color:var(--neon-green); font-weight:800;">+{{ winner.prize }} Kz</span>
+                        <span style="color:var(--neon-green); font-weight:800;">+{{ winner.prize|stringformat:".2f" }} USDT</span>
+                    </div>
+                    {% endfor %}
+                    {% for winner in recent_winners %}
+                    <div class="winner-row">
+                        <span>ID ***{{ winner.user.id|slice:"-4:" }}</span>
+                        <span style="color:var(--neon-green); font-weight:800;">+{{ winner.prize|stringformat:".2f" }} USDT</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -206,43 +200,90 @@
 
 <div id="win-modal" class="win-overlay">
     <div class="jackpot-card">
-        <div class="modal-card-visual">
-            <i class="fas fa-crown"></i>
-            <div class="modal-card-value" id="modal-card-inner-val">0</div>
-            <div style="font-size:9px; color:#64748b; font-weight:bold; letter-spacing: 0.5px;">KZ</div>
-        </div>
+        <div style="font-size: 40px; margin-bottom: 8px;">🏆</div>
+        <h3 style="margin:0; font-family:'Orbitron', sans-serif; color:#fff; font-size:15px; letter-spacing:1px;">PARABÉNS!</h3>
+        <p style="color:#64748b; font-size:11px; margin:4px 0 0 0;">Você faturou:</p>
 
         <div class="prize-amount-wrap">
-            <div class="prize-main-value" id="modal-prize-kz">0,00 KZ</div>
+            <div class="prize-main-value" id="modal-prize-usdt">0.00 USDT</div>
         </div>
 
-        <button onclick="location.reload()" class="btn-collect-gold">COLETAR KWANZAS</button>
+        <button onclick="location.reload()" class="btn-collect-gold">COLETAR USDT</button>
     </div>
 </div>
 
+<audio id="bg-music" src="https://assets.mixkit.co/active_storage/sfx/123/123-preview.mp3" loop></audio>
 <audio id="snd-spin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
 
 <script>
-    const prizes = {{ prizes_list|safe }}; 
+    const rawPrizes = {{ prizes_list|safe }}; 
+    const segments = rawPrizes.map(p => (parseFloat(p) / 1000).toFixed(2));
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const numSegments = segments.length;
+    const arcSize = (2 * Math.PI) / numSegments;
+
     let isGameRunning = false;
 
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[array[j]]] = [array[array[j]], array[i]];
+    function startAmbientMusic() {
+        const music = document.getElementById('bg-music');
+        music.volume = 0.20; 
+        music.play().catch(() => {});
+        document.removeEventListener('click', startAmbientMusic);
+        document.removeEventListener('touchstart', startAmbientMusic);
+    }
+    document.addEventListener('click', startAmbientMusic);
+    document.addEventListener('touchstart', startAmbientMusic);
+
+    function drawWheel() {
+        const radius = canvas.width / 2;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < numSegments; i++) {
+            const angle = i * arcSize;
+            
+            if (i % 2 === 0) {
+                ctx.fillStyle = (i % 4 === 0) ? "#b30000" : "#0f172a";
+            } else {
+                ctx.fillStyle = "#1e293b";
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(radius, radius);
+            ctx.arc(radius, radius, radius, angle, angle + arcSize);
+            ctx.lineTo(radius, radius);
+            ctx.fill();
+
+            ctx.strokeStyle = "rgba(255, 215, 0, 0.15)";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.save();
+            ctx.translate(radius, radius);
+            ctx.rotate(angle + arcSize / 2);
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 22px 'Goldman', sans-serif";
+            if(i % 2 === 0 && i % 4 !== 0) ctx.fillStyle = "#ffcc00";
+
+            ctx.fillText(segments[i] + " $", radius - 35, 0);
+            ctx.restore();
         }
-        return array;
     }
 
-    function openCasinoCard(element) {
+    drawWheel();
+
+    function startRouletteSpin() {
         const spinsElem = document.getElementById('roulette-spins');
         const spins = parseInt(spinsElem.innerText);
         
-        if (isGameRunning || spins <= 0 || element.classList.contains('opened')) return;
+        if (isGameRunning || spins <= 0) return;
         isGameRunning = true;
 
         document.getElementById('snd-spin').play().catch(()=>{});
-        document.getElementById('cat-status').innerText = "A virar a carta...";
 
         fetch('{% url "spin_roulette" %}', {
             method: 'POST',
@@ -258,51 +299,37 @@
         })
         .then(data => {
             if(data.success) {
-                renderWinEffects(element, data.prize);
+                const prizeInUsdt = (parseFloat(data.prize) / 1000).toFixed(2);
+                processWheelRotation(prizeInUsdt);
             } else {
-                renderWinEffects(element, prizes[0] || "500");
+                processWheelRotation(segments[0]);
             }
         })
         .catch(() => {
-            const fallbackPrize = prizes[Math.floor(Math.random() * prizes.length)] || "1000";
-            renderWinEffects(element, fallbackPrize);
+            const fallback = segments[Math.floor(Math.random() * segments.length)];
+            processWheelRotation(fallback);
         });
     }
 
-    function renderWinEffects(chosenElement, rawPrize) {
-        const formattedPrize = parseFloat(rawPrize).toLocaleString('pt-BR');
-        
-        const prizeValueDiv = chosenElement.querySelector('.w-prize-value');
-        if (prizeValueDiv) {
-            prizeValueDiv.innerText = formattedPrize;
-        }
-        chosenElement.classList.add('opened');
+    function processWheelRotation(targetPrize) {
+        let targetIndex = segments.indexOf(targetPrize);
+        if (targetIndex === -1) targetIndex = 0;
 
-        let remainingPrizes = shuffleArray([...prizes]);
-        let poolIndex = 0;
-        
-        document.querySelectorAll('.casino-block').forEach((block, idx) => {
-            if (block !== chosenElement) {
-                const otherPrizeDiv = block.querySelector('.w-prize-value');
-                if (otherPrizeDiv) {
-                    const fakeValue = remainingPrizes[poolIndex] || prizes[0] || "250";
-                    otherPrizeDiv.innerText = parseFloat(fakeValue).toLocaleString('pt-BR');
-                    poolIndex++;
-                }
-                setTimeout(() => {
-                    block.classList.add('opened', 'revealed');
-                }, 150 + (idx * 40));
-            }
-        });
+        const segmentCenterAngle = (targetIndex * arcSize) + (arcSize / 2);
+        const stopAngle = (3 * Math.PI / 2) - segmentCenterAngle;
 
-        // Dispara o modal centralizado compacto
+        const extraRotations = 5 * 2 * Math.PI;
+        const totalRotationAngle = stopAngle + extraRotations;
+
+        const wheel = document.getElementById("wheelCanvas");
+        wheel.style.transform = `rotate(${totalRotationAngle}rad)`;
+
         setTimeout(() => {
-            document.getElementById('modal-card-inner-val').innerText = formattedPrize;
-            document.getElementById('modal-prize-kz').innerText = formattedPrize + " KZ";
-            
+            const formattedPrize = parseFloat(targetPrize).toFixed(2);
+            document.getElementById('modal-prize-usdt').innerText = formattedPrize + " USDT";
             document.getElementById('win-modal').style.display = 'flex';
             triggerCasinoConfetti();
-        }, 1000);
+        }, 5100);
     }
 
     function triggerCasinoConfetti() {

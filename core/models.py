@@ -155,9 +155,16 @@ class Withdrawal(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor")
     status = models.CharField(max_length=20, default='Pending', verbose_name="Status")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")
+    
+    # --- NOVOS CAMPOS ESTRUTURAIS PARA SALVAR AS COORDENADAS ---
+    channel_type = models.CharField(max_length=20, default='KWANZA', verbose_name="Canal de Saque")
+    usdt_network = models.CharField(max_length=50, blank=True, null=True, verbose_name="Rede USDT")
+    crypto_address = models.CharField(max_length=255, blank=True, null=True, verbose_name="Endereço Cripto")
+    bank_holder = models.CharField(max_length=255, blank=True, null=True, verbose_name="Titular da Conta")
+    bank_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Nome do Banco")
+    bank_iban = models.CharField(max_length=50, blank=True, null=True, verbose_name="IBAN")
 
-    # --- ADICIONE ESTAS PROPRIEDADES ABAIXO ---
-
+    # --- SUAS PROPRIEDADES DE CÁLCULO MANTIDAS ---
     @property
     def taxa_calculada(self):
         return self.amount * Decimal('0.10')
@@ -174,7 +181,7 @@ class Withdrawal(models.Model):
     class Meta:
         verbose_name = "Saque"
         verbose_name_plural = "Saques"
-
+        
 class Level(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Nome do Nível")
     deposit_value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor de Depósito")

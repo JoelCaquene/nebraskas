@@ -1,213 +1,840 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}fd - Fazenda de Tarefas{% endblock %}
+{% block title %}nebraska - Fonte Lucrativo{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+<style>
+    :root {
+        --farm-green: #10b981;
+        --farm-dark: #042f1a;
+        --farm-leaf: #059669;
+        /* Fundo verde orgânico imersivo que reflete o cultivo */
+        --farm-bg: linear-gradient(180deg, #043a2b 0%, #011c13 100%);
+        --text-light: #f1f5f9;
+        --text-dark: #0f172a;
+        --strawberry-grad: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+        --orange-grad: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+        --avocado-grad: linear-gradient(135deg, #10b981 0%, #047857 100%);
+        --cherry-grad: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+        --apple-grad: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+        --grape-grad: linear-gradient(135deg, #a855f7 0%, #6b21a8 100%);
+    }
+
+    body { 
+        margin: 0; 
+        background: #022218 !important; 
+        font-family: 'Montserrat', sans-serif; 
+        overflow-x: hidden; 
+        width: 100%; 
+    }
+    
+    .fazenda-global-container { 
+        width: 100%; 
+        max-width: 480px; 
+        margin: 0 auto; 
+        min-height: 100vh; 
+        background: var(--farm-bg); 
+        display: flex; 
+        flex-direction: column; 
+        overflow-x: hidden; 
+        box-sizing: border-box; 
+        position: relative;
+    }
+
+    /* Partículas de folhas flutuantes de fundo */
+    .leaf-decor {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+    .leaf-decor::before, .leaf-decor::after {
+        content: '\f06c';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        color: rgba(16, 185, 129, 0.15);
+        font-size: 32px;
+        animation: swayLeaves 8s ease-in-out infinite alternate;
+    }
+    .leaf-decor::before { top: 15%; left: 8%; animation-delay: 0s; }
+    .leaf-decor::after { top: 60%; right: 10%; animation-delay: 3s; font-size: 24px; }
+
+    /* HEADER DA FAZENDA ONLINE */
+    .fazenda-navbar { 
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-start; 
+        padding: 22px 20px; 
+        gap: 15px; 
+        background: rgba(4, 47, 26, 0.8); 
+        border-bottom: 1px solid rgba(16, 185, 129, 0.2); 
+        backdrop-filter: blur(8px);
+        z-index: 10;
+    }
+    .back-link-thin svg { 
+        width: 24px; 
+        height: 24px; 
+        fill: none; 
+        stroke: #fff; 
+        stroke-width: 2.5; 
+        stroke-linecap: round; 
+        stroke-linejoin: round; 
+    }
+    
+    .brand-title-area { 
+        display: flex; 
+        flex-direction: column; 
+    }
+    .online-indicator { 
+        font-size: 9px; 
+        font-weight: 800; 
+        color: var(--farm-green); 
+        display: flex; 
+        align-items: center; 
+        gap: 4px; 
+        letter-spacing: 1px; 
+    }
+    .pulse-dot { 
+        width: 6px; 
+        height: 6px; 
+        background-color: var(--farm-green); 
+        border-radius: 50%; 
+        display: inline-block; 
+        animation: activePulse 1.5s infinite; 
+    }
+    .brand-title { 
+        font-weight: 800; 
+        font-size: 19px; 
+        color: #fff; 
+        letter-spacing: -0.5px; 
+    }
+
+    /* BODY WRAPPER & SCROLLING */
+    .fazenda-scroll-wrapper { 
+        flex: 1; 
+        padding: 20px 15px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 20px; 
+        box-sizing: border-box; 
+        z-index: 5;
+    }
+    .intro-section-text {
+        text-align: center;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 15px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .intro-section-text h3 { 
+        margin: 0 0 6px 0; 
+        font-size: 18px; 
+        font-weight: 800; 
+        color: #fff; 
+    }
+    .intro-section-text p { 
+        margin: 0; 
+        font-size: 12px; 
+        color: #a7f3d0; 
+        line-height: 1.5; 
+        font-weight: 500; 
+    }
+
+    /* GRID DAS FRUTAS PREMIUM */
+    .vitrina-frutas-online { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px; 
+        width: 100%; 
+        box-sizing: border-box; 
+    }
+    
+    .fruta-premium-card { 
+        background: #ffffff; 
+        border-radius: 24px; 
+        padding: 15px; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        position: relative; 
+        overflow: hidden; 
+        height: 275px; 
+        border: 1px solid rgba(16, 185, 129, 0.15); 
+        cursor: pointer; 
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease; 
+        box-sizing: border-box; 
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .fruta-premium-card:active { 
+        transform: scale(0.96) rotate(-1deg); 
+    }
+    .fruta-premium-card:hover {
+        box-shadow: 0 15px 30px rgba(16, 185, 129, 0.25);
+    }
+
+    .fruta-card-backdrop { 
+        position: absolute; 
+        top: -40px; 
+        left: -40px; 
+        width: 130px; 
+        height: 130px; 
+        border-radius: 50%; 
+        opacity: 0.12; 
+        pointer-events: none; 
+        transition: transform 0.5s ease;
+    }
+    .fruta-premium-card:hover .fruta-card-backdrop {
+        transform: scale(1.3);
+    }
+    
+    .card-strawberry .fruta-card-backdrop { background-color: #ef4444; }
+    .card-orange .fruta-card-backdrop { background-color: #f97316; }
+    .card-avocado .fruta-card-backdrop { background-color: #10b981; }
+    .card-cherry .fruta-card-backdrop { background-color: #e11d48; }
+    .card-apple .fruta-card-backdrop { background-color: #ef4444; }
+    .card-grape .fruta-card-backdrop { background-color: #a855f7; }
+
+    .fruta-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        z-index: 2; 
+    }
+    .badge-vitamina { 
+        font-size: 8px; 
+        font-weight: 800; 
+        padding: 4px 8px; 
+        border-radius: 8px; 
+        background: #f1f5f9; 
+        color: #1e293b; 
+        text-transform: uppercase;
+    }
+    .badge-price { 
+        font-size: 9px; 
+        font-weight: 800; 
+        padding: 4px 8px; 
+        border-radius: 8px; 
+        background: rgba(16, 185, 129, 0.15); 
+        color: #047857; 
+        text-transform: uppercase; 
+    }
+
+    .fruta-center-display { 
+        height: 100px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 2; 
+        position: relative;
+    }
+
+    /* ICONES ANIMADOS */
+    .floating-fruit-icon { 
+        font-size: 58px; 
+        animation: floatFruit 2.5s ease-in-out infinite alternate; 
+        filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15)); 
+        transition: transform 0.3s ease;
+    }
+    .fruta-premium-card:hover .floating-fruit-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .floating-fruit-icon-cherry { 
+        font-size: 42px; 
+        width: 54px; 
+        height: 54px; 
+        background: #ffe4e6; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        color: #e11d48; 
+        animation: floatFruit 2.8s ease-in-out infinite alternate; 
+    }
+
+    .card-strawberry .floating-fruit-icon { color: #f43f5e; }
+    .card-orange .floating-fruit-icon { color: #f97316; }
+    .card-avocado .floating-fruit-icon { color: #10b981; }
+    .card-apple .floating-fruit-icon { color: #ef4444; }
+    .card-grape .floating-fruit-icon { color: #a855f7; }
+
+    /* Brilho pulsante por trás do ícone da fruta */
+    .glow-aura {
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+        z-index: -1;
+        opacity: 0.5;
+        animation: pulseGlow 2s infinite alternate;
+    }
+
+    .fruta-footer { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 6px; 
+        z-index: 2; 
+    }
+    .fruta-footer h4 { 
+        margin: 0; 
+        font-size: 14px; 
+        font-weight: 800; 
+        color: var(--text-dark); 
+    }
+    .benefit-txt { 
+        margin: 0; 
+        font-size: 10px; 
+        color: #64748b; 
+        line-height: 1.4; 
+        font-weight: 600; 
+        height: 28px; 
+        overflow: hidden; 
+        display: -webkit-box; 
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical; 
+    }
+
+    .btn-harvest-action { 
+        width: 100%; 
+        border: none; 
+        padding: 11px; 
+        border-radius: 12px; 
+        font-weight: 800; 
+        font-size: 11px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 6px; 
+        cursor: pointer; 
+        color: white; 
+        transition: transform 0.2s ease, opacity 0.2s ease; 
+    }
+    
+    .card-strawberry .btn-harvest-action { background: var(--strawberry-grad); box-shadow: 0 4px 10px rgba(244, 63, 94, 0.25); }
+    .card-orange .btn-harvest-action { background: var(--orange-grad); box-shadow: 0 4px 10px rgba(249, 115, 22, 0.25); }
+    .card-avocado .btn-harvest-action { background: var(--avocado-grad); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); }
+    .card-cherry .btn-harvest-action { background: var(--cherry-grad); box-shadow: 0 4px 10px rgba(225, 29, 72, 0.25); }
+    .card-apple .btn-harvest-action { background: var(--apple-grad); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25); }
+    .card-grape .btn-harvest-action { background: var(--grape-grad); box-shadow: 0 4px 10px rgba(168, 85, 247, 0.25); }
+
+    /* MODAL CLEAN RESPONSIVO */
+    .intro-task-box-clean { 
+        width: 100%; 
+        max-width: 400px; 
+        background: #ffffff; 
+        border-radius: 32px; 
+        display: flex; 
+        flex-direction: column; 
+        padding: 25px; 
+        position: relative; 
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); 
+        animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
+        box-sizing: border-box; 
+        
+        /* Ajustes cruciais para telas pequenas */
+        max-height: 85vh;
+    }
+    .close-top { 
+        position: absolute; 
+        top: 15px; 
+        right: 20px; 
+        background: none; 
+        border: none; 
+        color: #64748b; 
+        font-size: 30px; 
+        cursor: pointer; 
+        z-index: 15;
+    }
+    
+    /* DINAMICA SELECÇÃO FRUTA NO MODAL */
+    .selected-fruit-badge { 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        background: #f8fafc; 
+        padding: 12px 16px; 
+        border-radius: 20px; 
+        margin-bottom: 15px; 
+        border: 1px solid #e2e8f0; 
+        margin-top: 15px; 
+        flex-shrink: 0;
+    }
+    .selected-icon-container { 
+        width: 44px; 
+        height: 44px; 
+        border-radius: 12px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        background: #fff; 
+        border: 1px solid #e2e8f0; 
+    }
+    .selected-icon-container i { 
+        font-size: 22px; 
+    }
+    .selected-text-info h4 { 
+        margin: 0; 
+        font-size: 14px; 
+        font-weight: 800; 
+        color: var(--text-dark); 
+    }
+    .selected-text-info p { 
+        margin: 0; 
+        font-size: 11px; 
+        font-weight: 600; 
+        color: var(--farm-green); 
+    }
+
+    /* Bloco de Instruções Inferior Isolado com Rolagem Interna */
+    .modal-scrollable-body {
+        overflow-y: auto;
+        padding-right: 4px;
+        margin-top: 15px;
+    }
+    /* Estilização suave da barra de rolagem se ela surgir */
+    .modal-scrollable-body::-webkit-scrollbar {
+        width: 5px;
+    }
+    .modal-scrollable-body::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    .rules-title { 
+        color: var(--text-dark); 
+        font-weight: 800; 
+        font-size: 18px; 
+        margin: 0 0 15px 0; 
+        border-left: 4px solid var(--farm-green); 
+        padding-left: 10px; 
+    }
+    .rules-container { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 14px; 
+    }
+    .rule-item { 
+        display: flex; 
+        gap: 10px; 
+        align-items: flex-start; 
+    }
+    .rule-num { 
+        background: var(--farm-green); 
+        color: #fff; 
+        width: 22px; 
+        height: 22px; 
+        border-radius: 50%; 
+        font-size: 11px; 
+        font-weight: 800; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        flex-shrink: 0; 
+        margin-top: 1px; 
+    }
+    .rule-item p { 
+        color: #475569; 
+        font-size: 12px; 
+        margin: 0; 
+        line-height: 1.5; 
+        font-weight: 600; 
+    }
+    
+    .btn-confirm-task { 
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+        color: #fff; 
+        border: none; 
+        padding: 16px; 
+        border-radius: 18px; 
+        font-weight: 800; 
+        font-size: 14px; 
+        text-transform: uppercase; 
+        cursor: pointer; 
+        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25); 
+        width: 100%; 
+        box-sizing: border-box; 
+        flex-shrink: 0; /* Impede o botão de esmagar */
+    }
+
+    /* LOADING E SUCESSO MODALS */
+    .modal-fazenda-overlay { 
+        position: fixed; 
+        inset: 0; 
+        background: rgba(15, 23, 42, 0.8); 
+        display: none; 
+        justify-content: center; 
+        align-items: center; 
+        z-index: 2000; 
+        padding: 20px; 
+        box-sizing: border-box; 
+        backdrop-filter: blur(6px); 
+    }
+
+    .loading-content { 
+        text-align: center; 
+    }
+    .machine-loader { 
+        position: relative; 
+        width: 100px; 
+        height: 100px; 
+        margin: 0 auto 20px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+    }
+    .main-spin { 
+        font-size: 80px; 
+        color: #f1f5f9; 
+    }
+    .loader-icon-center { 
+        position: absolute; 
+        font-size: 28px; 
+        color: var(--farm-green); 
+    }
+    .loading-content h3 { 
+        margin: 0; 
+        color: var(--text-dark); 
+        font-weight: 800; 
+    }
+    .loading-content p { 
+        color: #64748b; 
+        font-size: 13px; 
+        margin-top: 5px; 
+    }
+
+    .success-task-body { 
+        width: 100%; 
+        height: 100%; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        padding: 20px; 
+        text-align: center; 
+        box-sizing: border-box; 
+    }
+    .basket-success-animation { 
+        width: 110px; 
+        height: 110px; 
+        background: #ecfdf5; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        margin-bottom: 25px; 
+        animation: pulseSuccess 1s infinite alternate; 
+    }
+    .success-farm-icon { 
+        font-size: 48px; 
+        color: var(--farm-green); 
+    }
+    .success-msg-box h2 { 
+        font-weight: 900; 
+        color: var(--farm-green); 
+        font-size: 24px; 
+        margin: 0; 
+    }
+    .success-msg-box p { 
+        color: #64748b; 
+        font-size: 14px; 
+        margin-top: 10px; 
+        line-height: 1.6; 
+        max-width: 320px; 
+        font-weight: 500; 
+    }
+    .btn-back-home { 
+        margin-top: 30px; 
+        background: #0f172a; 
+        color: #fff; 
+        border: none; 
+        padding: 16px 40px; 
+        border-radius: 50px; 
+        font-weight: 700; 
+        font-size: 14px; 
+        cursor: pointer; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    }
+
+    /* CUSTOM DYNAMIC TOAST / ERROR NOTIFICATION */
+    .toast-error {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        background: #ef4444;
+        color: white;
+        padding: 14px 24px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 700;
+        z-index: 3000;
+        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.35);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        white-space: nowrap;
+    }
+    .toast-error.show {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    /* ANIMAÇÕES GERAIS */
+    @keyframes activePulse { 
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 
+        70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } 
+    }
+    @keyframes floatFruit { 
+        0% { transform: translateY(0); } 
+        100% { transform: translateY(-10px); } 
+    }
+    @keyframes pulseGlow {
+        0% { transform: scale(0.9); opacity: 0.3; }
+        100% { transform: scale(1.1); opacity: 0.7; }
+    }
+    @keyframes slideUp { 
+        from { transform: translateY(20px); opacity: 0; } 
+        to { transform: translateY(0); opacity: 1; } 
+    }
+    @keyframes pulseSuccess { 
+        from { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.15); } 
+        to { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); } 
+    }
+    @keyframes swayLeaves {
+        0% { transform: rotate(-10deg) translateY(0); }
+        100% { transform: rotate(15deg) translateY(-5px); }
+    }
+</style>
+
+<div id="toast-message-box" class="toast-error"></div>
+
 <div class="fazenda-global-container">
+    <div class="leaf-decor"></div>
     
     <div class="fazenda-navbar">
         <a href="{% url 'menu' %}" class="back-link-thin">
             <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </a>
-        <div class="brand-title">Gestão de Gado</div>
+        <div class="brand-title-area">
+            <span class="online-indicator"><span class="pulse-dot"></span>FONTE LUCRATIVO</span>
+            <div class="brand-title">Pomar Tecnológico</div>
+        </div>
     </div>
 
     <div class="fazenda-scroll-wrapper">
-        
-        <div class="fazenda-card main-task" style="background-image: url('{% static 'images/card_vaca.png' %}');">
-            <div class="card-dark-overlay">
-                <div class="card-content-box">
-                    <h3>Nutrição Bovina</h3>
-                    <div class="badge-status"><i class="fas fa-leaf"></i> Tarefa Disponível</div>
-                    <button type="button" class="btn-action-fazenda primary-btn" onclick="openStepAlimentar()">Alimentar</button>
-                </div>
-            </div>
+        <div class="intro-section-text">
+            <h3>Selecione uma Fruta para Colher</h3>
+            <p>Toque no fruto maduro para iniciar o processo de colheita e impulsionar a sua produção orgânica.</p>
         </div>
 
-        <div class="fazenda-card" style="background-image: url('{% static 'images/projetos.png' %}');">
-            <div class="card-dark-overlay">
-                <div class="card-content-box">
-                    <p class="mini-label">INSTITUCIONAL</p>
-                    <h3>Projecto Agrícola</h3>
-                    <button type="button" class="btn-action-fazenda" onclick="openTxtModal('projeto')">Desenvolvimento</button>
+        <div class="vitrina-frutas-online">
+            
+            <div class="fruta-premium-card card-strawberry" onclick="openStepAlimentar('Morango Silvestre', 'fa-strawberry', 'Vitamina C e K', 'Combate radicais livres e impulsiona a imunidade.')">
+                <div class="fruta-card-backdrop"></div>
+                <div class="fruta-header">
+                    <span class="badge-vitamina">Vitamina C & K</span>
+                    <span class="badge-price">Ativo</span>
+                </div>
+                <div class="fruta-center-display">
+                    <div class="glow-aura"></div>
+                    <i class="fas fa-strawberry floating-fruit-icon"></i>
+                </div>
+                <div class="fruta-footer">
+                    <h4>Morango Silvestre</h4>
+                    <p class="benefit-txt">Fortalece o sistema vascular e renova as células corporais.</p>
+                    <button class="btn-harvest-action"><i class="fas fa-basket-shopping"></i> Colher</button>
                 </div>
             </div>
-        </div>
 
-        <div class="fazenda-card" style="background-image: url('{% static 'images/junte_se.png' %}');">
-            <div class="card-dark-overlay">
-                <div class="card-content-box">
-                    <p class="mini-label">CARREIRA</p>
-                    <h3>Estilo de Pessoal</h3>
-                    <button type="button" class="btn-action-fazenda" onclick="openTxtModal('juntese')">Junte-se a nós</button>
+            <div class="fruta-premium-card card-orange" onclick="openStepAlimentar('Laranja Doce', 'fa-lemon', 'Rica em Vitamina C', 'Aumenta a absorção de ferro e fornece energia celular.')">
+                <div class="fruta-card-backdrop"></div>
+                <div class="fruta-header">
+                    <span class="badge-vitamina">Vitamina C Extra</span>
+                    <span class="badge-price">Ativo</span>
+                </div>
+                <div class="fruta-center-display">
+                    <div class="glow-aura"></div>
+                    <i class="fas fa-lemon floating-fruit-icon"></i>
+                </div>
+                <div class="fruta-footer">
+                    <h4>Laranja Imperial</h4>
+                    <p class="benefit-txt">Rica em fibras e antioxidantes essenciais para o metabolismo active.</p>
+                    <button class="btn-harvest-action"><i class="fas fa-basket-shopping"></i> Colher</button>
                 </div>
             </div>
-        </div>
 
-        <div class="fazenda-card" style="background-image: url('{% static 'images/vaga.png' %}');">
-            <div class="card-dark-overlay">
-                <div class="card-content-box">
-                    <h3>Descrição da Vaca</h3>
-                    <button type="button" class="btn-action-fazenda btn-gold-action" onclick="openImageVerticalModal()">Entrar</button>
+            <div class="fruta-premium-card card-avocado" onclick="openStepAlimentar('Abacate Manteiga', 'fa-seedling', 'Complexo B & E', 'Gorduras saudáveis benéficas para a saúde do coração.')">
+                <div class="fruta-card-backdrop"></div>
+                <div class="fruta-header">
+                    <span class="badge-vitamina">Complexo B & E</span>
+                    <span class="badge-price">Ativo</span>
+                </div>
+                <div class="fruta-center-display">
+                    <div class="glow-aura"></div>
+                    <i class="fas fa-seedling floating-fruit-icon"></i>
+                </div>
+                <div class="fruta-footer">
+                    <h4>Abacate Manteiga</h4>
+                    <p class="benefit-txt">Garante alta saciedade e otimiza as funções cerebrais diárias.</p>
+                    <button class="btn-harvest-action"><i class="fas fa-basket-shopping"></i> Colher</button>
                 </div>
             </div>
-        </div>
 
+            <div class="fruta-premium-card card-cherry" onclick="openStepAlimentar('Cereja Rubi', 'fa-circle-dot', 'Melatonina & Potássio', 'Melhora a qualidade do sono e recuperação muscular.')">
+                <div class="fruta-card-backdrop"></div>
+                <div class="fruta-header">
+                    <span class="badge-vitamina">Antocianinas</span>
+                    <span class="badge-price">Ativo</span>
+                </div>
+                <div class="fruta-center-display">
+                    <div class="glow-aura" style="background: radial-gradient(circle, rgba(255,228,230,0.8) 0%, rgba(255,255,255,0) 70%);"></div>
+                    <i class="fas fa-circle-dot floating-fruit-icon-cherry"></i>
+                </div>
+                <div class="fruta-footer">
+                    <h4>Cereja Rubi</h4>
+                    <p class="benefit-txt">Poderoso anti-inflamatório natural que ajuda na saúde articular.</p>
+                    <button class="btn-harvest-action"><i class="fas fa-basket-shopping"></i> Colher</button>
+                </div>
+            </div>
+
+            <div class="fruta-premium-card card-apple" onclick="openStepAlimentar('Maçã Gala', 'fa-apple-whole', 'Fibras e Quercetina', 'Auxilia no controlo glicémico e na saúde respiratória.')">
+                <div class="fruta-card-backdrop"></div>
+                <div class="fruta-header">
+                    <span class="badge-vitamina">Fibras & Mineral</span>
+                    <span class="badge-price">Ativo</span>
+                </div>
+                <div class="fruta-center-display">
+                    <div class="glow-aura"></div>
+                    <i class="fas fa-apple-whole floating-fruit-icon"></i>
+                </div>
+                <div class="fruta-footer">
+                    <h4>Maçã Gala</h4>
+                    <p class="benefit-txt">Contém antioxidantes que melhoram a digestão e imunidade.</p>
+                    <button class="btn-harvest-action"><i class="fas fa-basket-shopping"></i> Colher</button>
+                </div>
+            </div>
+
+            <div class="fruta-premium-card card-grape" onclick="openStepAlimentar('Uva Niagara', 'fa-grapes', 'Resveratrol', 'Altamente recomendada para a saúde cognitiva e circulatória.')">
+                <div class="fruta-card-backdrop"></div>
+                <div class="fruta-header">
+                    <span class="badge-vitamina">Resveratrol</span>
+                    <span class="badge-price">Ativo</span>
+                </div>
+                <div class="fruta-center-display">
+                    <div class="glow-aura"></div>
+                    <i class="fas fa-grapes floating-fruit-icon" style="font-size: 50px;"></i>
+                </div>
+                <div class="fruta-footer">
+                    <h4>Uva Niagara</h4>
+                    <p class="benefit-txt">Protege o sistema cardiovascular com ação antioxidante imediata.</p>
+                    <button class="btn-harvest-action"><i class="fas fa-basket-shopping"></i> Colher</button>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <div id="modal-alimentar-intro" class="modal-fazenda-overlay">
-    <div class="intro-task-box" style="background-image: url('{% static 'images/fundo_regras.png' %}');">
-        <div class="intro-overlay">
-            <button class="close-top" onclick="closeAllModals()">&times;</button>
-            
+    <div class="intro-task-box-clean">
+        <button class="close-top" onclick="closeAllModals()">&times;</button>
+        
+        <div class="selected-fruit-badge" id="modal-fruit-selected">
+            <div class="selected-icon-container"><i class="fas fa-strawberry" id="modal-fruit-icon"></i></div>
+            <div class="selected-text-info">
+                <h4 id="modal-fruit-name">Morango Silvestre</h4>
+                <p id="modal-fruit-vitamins">Vitamina C e K</p>
+            </div>
+        </div>
+
+        <button type="button" class="btn-confirm-task" onclick="processarAlimentacaoReal()">Confirmar Colheita</button>
+
+        <div class="modal-scrollable-body">
             <div class="rules-container">
-                <h2 class="rules-title">Instruções de Maneio</h2>
+                <h2 class="rules-title">Instruções do Pomar</h2>
                 <div class="rule-item">
                     <span class="rule-num">1</span>
-                    <p>Oferta de estágio durante 2 dias, diariamente ganhas 100 Kz de estágio. No final terá 200 Kz. (Dias de Tarefas Segunda a sábado) </p>
+                    <p>Realize a sua colheita diária para receber os seus rendimentos correspondentes diretamente na sua conta de acordo com o seu nível ativo.</p>
                 </div>
-                <div class="rule-item">
-                    <span class="rule-num">2</span>
-                    <p>Ao adquirir uma função de criação, os ganhos são baseados na sua categoria. Saques mínimos de 1.000 Kz sem burocracia.</p>
-                </div>
-                <div class="rule-item">
-                    <span class="rule-num">3</span>
-                    <p>Ganhe 5% de bónus sobre as tarefas concluídas pelos seus convidados que possuam funções ativas.</p>
-                </div>
-                <div class="rule-item">
-                    <span class="rule-num">4</span>
-                    <p>Ganhas premio de 2400 Kz, e Jogo Cassino grátis, no seu primeiro deposito de garantia</p>
-                </div>
-            </div> <button type="button" class="btn-confirm-task" onclick="processarAlimentacaoReal()">Alimentar agora</button>
-        </div> 
+            </div>
+        </div>
     </div> 
 </div>
 
 <div id="modal-loading-fazenda" class="modal-fazenda-overlay" style="background: #ffffff;">
     <div class="loading-content">
         <div class="machine-loader">
-            <i class="fas fa-gear fa-spin"></i>
-            <i class="fas fa-cow loader-icon-center"></i>
+            <i class="fas fa-spinner fa-spin main-spin"></i>
+            <i class="fas fa-basket-shopping loader-icon-center"></i>
         </div>
-        <h3>Processando Nutrição...</h3>
-        <p>A preparar a ração para o gado.</p>
+        <h3>Processando Colheita...</h3>
+        <p>A validar a frescura do fruto e a somar os rendimentos à sua carteira.</p>
     </div>
 </div>
 
 <div id="modal-success-fazenda" class="modal-fazenda-overlay" style="background: #ffffff;">
     <div class="success-task-body">
-        <img src="{% static 'images/vaca_feliz.png' %}" alt="Gado Satisfeito" class="img-success-vaca">
+        <div class="basket-success-animation">
+            <i class="fas fa-circle-check success-farm-icon"></i>
+        </div>
         <div class="success-msg-box">
-            <h2>Gado satisfeito por hoje!</h2>
-            <p>Vaca alimentada com sucesso. Volte amanhã para nutrir a sua vaca e colher os rendimentos.</p>
+            <h2>Rendimento Adicionado!</h2>
+            <p>Parabéns! A sua colheita diária foi processada e o rendimento correspondente ao seu nível foi creditado na sua conta com sucesso.</p>
         </div>
         <button class="btn-back-home" onclick="location.href='{% url 'menu' %}'">Voltar ao Menu</button>
     </div>
 </div>
 
-<div id="modal-text-simple" class="modal-fazenda-overlay">
-    <div class="modal-fazenda-white">
-        <div class="icon-header-simple" id="simple-icon"></div>
-        <div class="text-content-simple" id="simple-text"></div>
-        <button class="btn-close-simple" onclick="closeAllModals()">Entendido</button>
-    </div>
-</div>
-
-<div id="modal-vaga-img" class="modal-fazenda-overlay">
-    <div class="vertical-img-container">
-        <button class="btn-close-img" onclick="closeAllModals()"><i class="fas fa-times"></i></button>
-        <img src="{% static 'images/detalhe_vaga.png' %}" class="img-full-vertical">
-    </div>
-</div>
-
-<style>
-    :root {
-        --farm-green: #2e7d32;
-        --farm-amber: #f59e0b;
-        --text-main: #1e293b;
-    }
-
-    body { margin: 0; background: #ffffff !important; font-family: 'Montserrat', sans-serif; overflow-x: hidden; width: 100%; }
-    
-    .fazenda-global-container { width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; background: #ffffff; display: flex; flex-direction: column; overflow-x: hidden; }
-
-    /* NAVBAR */
-    .fazenda-navbar { display: flex; align-items: center; justify-content: flex-start; padding: 20px; gap: 20px; }
-    .back-link-thin svg { width: 24px; height: 24px; fill: none; stroke: #000; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .brand-title { font-weight: 800; font-size: 18px; color: #000; text-transform: uppercase; letter-spacing: -0.5px; }
-
-    .fazenda-scroll-wrapper { flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-
-    /* CARDS */
-    .fazenda-card { width: 100%; height: 180px; border-radius: 20px; background-size: cover; background-position: center; position: relative; overflow: hidden; border: 1px solid #f1f5f9; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    .card-dark-overlay { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); display: flex; align-items: flex-end; padding: 20px; }
-    .card-content-box h3 { color: #fff; margin: 0 0 10px; font-size: 17px; font-weight: 700; }
-    .mini-label { color: var(--farm-amber); font-size: 9px; font-weight: 800; margin: 0 0 4px; letter-spacing: 1px; }
-    .badge-status { display: inline-block; background: var(--farm-green); color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; margin-bottom: 12px; }
-
-    .btn-action-fazenda { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; background: #fff; color: #000; }
-    .btn-action-fazenda.primary-btn { background: #fff; box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
-    .btn-gold-action { background: var(--farm-amber); color: #fff; }
-
-    /* OVERLAYS */
-    .modal-fazenda-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; overflow-x: hidden; }
-
-    /* INTRO REGRA BOX */
-    .intro-task-box { width: 90%; max-width: 380px; height: 500px; border-radius: 28px; background-size: cover; background-position: center; position: relative; overflow: hidden; animation: slideUp 0.3s ease; }
-    .intro-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; padding: 25px; justify-content: space-between; }
-    .close-top { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #fff; font-size: 30px; cursor: pointer; }
-    .rules-title { color: #fff; font-weight: 800; font-size: 20px; margin-bottom: 20px; border-left: 4px solid var(--farm-amber); padding-left: 10px; }
-    .rule-item { display: flex; gap: 12px; margin-bottom: 18px; align-items: flex-start; }
-    .rule-num { background: var(--farm-amber); color: #000; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; }
-    .rule-item p { color: #ddd; font-size: 12px; margin: 0; line-height: 1.5; font-weight: 500; }
-    .btn-confirm-task { background: var(--farm-green); color: #fff; border: none; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 14px; text-transform: uppercase; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-
-    /* LOADING TELA */
-    .loading-content { text-align: center; }
-    .machine-loader { position: relative; width: 100px; height: 100px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; }
-    .machine-loader .fa-gear { font-size: 80px; color: #f1f5f9; }
-    .loader-icon-center { position: absolute; font-size: 30px; color: var(--farm-green); }
-    .loading-content h3 { margin: 0; color: #000; font-weight: 800; }
-    .loading-content p { color: #64748b; font-size: 13px; margin-top: 5px; }
-
-    /* SUCESSO TELA */
-    .success-task-body { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-    .img-success-vaca { width: 220px; margin-bottom: 20px; animation: bounce 2s infinite; }
-    .success-msg-box h2 { font-weight: 900; color: var(--farm-green); font-size: 24px; margin: 0; }
-    .success-msg-box p { color: #64748b; font-size: 14px; margin-top: 10px; line-height: 1.6; max-width: 300px; }
-    .btn-back-home { margin-top: 30px; background: #000; color: #fff; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; font-size: 14px; cursor: pointer; }
-
-    /* WHITE MODAL */
-    .modal-fazenda-white { background: #fff; width: 85%; max-width: 350px; padding: 30px; border-radius: 24px; text-align: center; }
-    .icon-header-simple { font-size: 40px; color: var(--farm-green); margin-bottom: 15px; }
-    .text-content-simple { font-size: 14px; color: #334155; line-height: 1.6; font-weight: 600; margin-bottom: 20px; }
-    .btn-close-simple { width: 100%; background: #f1f5f9; color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-
-    /* VAGA IMG */
-    .vertical-img-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .img-full-vertical { max-width: 100%; max-height: 90vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; }
-    .btn-close-img { position: absolute; top: 30px; right: 30px; background: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; color: #000; font-size: 20px; cursor: pointer; z-index: 2010; }
-
-    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-</style>
-
 <script>
-    function openStepAlimentar() {
+    // Função dinâmica que lê os atributos da fruta colhida para alimentar o modal
+    function openStepAlimentar(fruitName, iconClass, vitamins, benefits) {
+        document.getElementById('modal-fruit-name').innerText = fruitName;
+        document.getElementById('modal-fruit-vitamins').innerText = vitamins;
+        
+        const fruitIcon = document.getElementById('modal-fruit-icon');
+        fruitIcon.className = `fas ${iconClass}`;
+        
+        // Cores personalizadas dinâmicas no ícone de acordo com a fruta
+        if(fruitName.includes('Morango')) {
+            fruitIcon.style.color = '#f43f5e';
+        } else if(fruitName.includes('Laranja')) {
+            fruitIcon.style.color = '#f97316';
+        } else if(fruitName.includes('Abacate')) {
+            fruitIcon.style.color = '#10b981';
+        } else if(fruitName.includes('Maçã')) {
+            fruitIcon.style.color = '#ef4444';
+        } else if(fruitName.includes('Uva')) {
+            fruitIcon.style.color = '#a855f7';
+        } else {
+            fruitIcon.style.color = '#e11d48';
+        }
+
         document.getElementById('modal-alimentar-intro').style.display = 'flex';
     }
 
+    // Exibe um toast premium sem usar o chato 'alert()'
+    function showToast(message) {
+        const toast = document.getElementById('toast-message-box');
+        toast.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
     function processarAlimentacaoReal() {
-        // Fecha intro e abre loading
         document.getElementById('modal-alimentar-intro').style.display = 'none';
         document.getElementById('modal-loading-fazenda').style.display = 'flex';
 
-        // Envia para o Django persistir ganhos
+        // Conservação integral das rotas de envio e ganhos da sua lógica Django
         fetch("{% url 'process_task' %}", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' }
@@ -219,36 +846,20 @@
                 if(data.success) {
                     document.getElementById('modal-success-fazenda').style.display = 'flex';
                 } else {
-                    // Se já alimentou hoje
-                    alert("Gado já foi alimentado hoje. Volte amanhã!");
-                    location.reload();
+                    showToast("A colheita de hoje já foi realizada! Volte amanhã.");
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2500);
                 }
-            }, 3000); // Simula processamento da máquina por 3 seg
+            }, 3000); 
         })
         .catch(() => {
+            // Em caso de fallback na simulação
             setTimeout(() => {
                 document.getElementById('modal-loading-fazenda').style.display = 'none';
                 document.getElementById('modal-success-fazenda').style.display = 'flex';
             }, 3000);
         });
-    }
-
-    function openTxtModal(key) {
-        const icon = document.getElementById('simple-icon');
-        const text = document.getElementById('simple-text');
-        
-        if(key === 'projeto') {
-            icon.innerHTML = '<i class="fas fa-tractor"></i>';
-            text.innerText = "Estamos no mercado com objectivo, de oferecer oportunidade de empregabilidade a todos, e oferecemos oportunidades de ganhar espaços por meio da sua dedicação e esforço na empresa fd.";
-        } else {
-            icon.innerHTML = '<i class="fas fa-shield-halved"></i>';
-            text.innerText = "Se precisa uma plataforma segura, para se enquadrar e render sem prejuizo e com confiança mista se a nos, adquira uma função, por meio de seu deposito de garantia, e o mesmo deposito será rebolsado apos 1 ano.";
-        }
-        document.getElementById('modal-text-simple').style.display = 'flex';
-    }
-
-    function openImageVerticalModal() {
-        document.getElementById('modal-vaga-img').style.display = 'flex';
     }
 
     function closeAllModals() {

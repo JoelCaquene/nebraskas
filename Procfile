@@ -1,1 +1,1 @@
-web: gunicorn fd.wsgi:application
+web: gunicorn nebraska.wsgi:application

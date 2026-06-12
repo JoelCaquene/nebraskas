@@ -1,562 +1,283 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Função da criação | FD{% endblock %}
+{% block title %}Centro de VIP | Nebraska{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-    
     :root { 
-        --primary-green: #1cbd6f;
-        --accent-gold: #dfb387;
-        --bg-light: #f4f7f6;
-        --text-dark: #2c3e50;
-        --text-muted: #7f8c8d;
-        --border-color: #eef2f5;
-        --modal-bg-card: #f9fbfb;
-        --btn-gold: #cfa173;
+        --neon-green: #00ff66;
+        --dark-emerald: #061f10;
+        --gold-glow: #ffd700;
+        --card-bg: rgba(6, 26, 14, 0.9);
+        --card-border: rgba(0, 255, 102, 0.25);
+        --gold-gradient: linear-gradient(135deg, #ffe066 0%, #f5b025 100%);
     }
 
-    body { 
-        background: var(--bg-light) !important; 
-        color: var(--text-dark); 
-        font-family: 'Poppins', sans-serif; 
+    html, body { 
+        overflow-x: hidden !important; 
+        width: 100% !important; 
+        max-width: 100vw !important; 
         margin: 0; 
-        padding-bottom: 80px;
-        overflow-x: hidden; /* Garante que nenhuma rolagem horizontal apareça no corpo da página */
+        padding: 0; 
+        background-color: #020a05 !important; 
+        font-family: 'Poppins', sans-serif; 
+        color: #f8fafc;
+        -webkit-tap-highlight-color: transparent;
     }
 
-    .container { 
-        width: 100%; 
-        max-width: 500px; 
-        margin: 0 auto; 
-        padding: 0 15px; 
-        box-sizing: border-box; 
-        overflow-x: hidden; /* Proteção extra para ecrãs muito pequenos */
-    }
-
-    /* Top Navigation & Language Selector */
-    .top-navbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 5px;
-        background: transparent;
-    }
-    .top-navbar a { color: var(--text-dark); font-size: 18px; text-decoration: none; }
-    .top-navbar h1 { flex: 1; text-align: center; font-size: 16px; font-weight: 600; margin: 0; text-transform: uppercase; padding-left: 20px; }
-    
-    .lang-selector-container {
-        display: flex;
-        align-items: center;
-    }
-    .lang-select {
-        border: 1px solid var(--border-color);
-        background: #ffffff;
-        padding: 5px 8px;
-        border-radius: 10px;
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--text-dark);
-        outline: none;
-        cursor: pointer;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    /* Banner de Status Superior */
-    .status-top-banner {
-        background: linear-gradient(135deg, #2ecc71, #1cbd6f);
-        border-radius: 20px;
-        padding: 20px;
-        color: #fff;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        box-shadow: 0 8px 20px rgba(28, 189, 111, 0.15);
-        box-sizing: border-box;
-    }
-    .status-avatar {
-        width: 50px; height: 50px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 22px;
-        flex-shrink: 0;
-    }
-    .status-info h2 { margin: 0; font-size: 16px; font-weight: 700; }
-    .status-info p { margin: 3px 0 0 0; font-size: 11px; opacity: 0.9; }
-
-    /* BOTÕES DE AÇÃO: DEPOSITAR / CONVITE */
-    .action-buttons-row {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 25px;
+    .vip-matrix-container {
+        min-height: 100vh;
         width: 100%;
+        max-width: 100vw;
+        background: radial-gradient(circle at 50% 15%, #0d4722 0%, #051e0e 55%, #010603 100%);
+        padding: 24px 14px 100px;
+        box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
         box-sizing: border-box;
-    }
-    .btn-action-top {
-        flex: 1;
-        padding: 15px 10px;
-        border-radius: 16px;
-        border: none;
-        font-size: 12px;
-        font-weight: 700;
-        text-align: center;
-        text-decoration: none;
-        cursor: pointer;
-        transition: transform 0.2s;
-        box-sizing: border-box;
-        white-space: nowrap; /* Evita quebra feia de texto em ecrãs menores */
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .btn-action-top:active {
-        transform: scale(0.98);
-    }
-    .btn-action-top.deposit {
-        background: var(--primary-green);
-        color: #ffffff;
-    }
-    .btn-action-top.invite {
-        background: var(--btn-gold);
-        color: #ffffff;
-    }
-
-    /* LISTA DE CARDS HORIZONTAIS FINOS */
-    .plan-list {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .horizontal-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 12px 16px;
-        display: flex;
         align-items: center;
-        justify-content: space-between;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.01);
-        border: 1px solid var(--border-color);
+    }
+
+    .vip-layout {
+        width: 100%;
+        max-width: 380px;
+        display: flex;
+        flex-direction: column;
         box-sizing: border-box;
     }
 
-    .horizontal-card.active-plan {
-        border: 1.5px solid var(--primary-green);
-        background: #f8fbf9;
+    /* Título Solicitado */
+    .vip-main-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 26px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin: 15px 0 30px 0;
+        text-align: center;
+        color: #ffffff;
+        text-shadow: 0 0 12px rgba(0, 255, 102, 0.6);
     }
 
-    .card-left-info {
+    .vip-cards-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+    }
+
+    /* CARD ESTRUTURADO: Elementos no topo, Ação estritamente abaixo */
+    .premium-vip-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .premium-vip-card.active-card {
+        border-color: var(--neon-green);
+        box-shadow: 0 0 20px rgba(0, 255, 102, 0.25);
+    }
+
+    /* Parte Superior do Card: Ícone + Detalhes lado a lado */
+    .vip-top-row {
         display: flex;
         align-items: center;
         gap: 14px;
-        max-width: 70%;
+        width: 100%;
     }
 
-    /* Bloco do Ícone de Escudo com Coroa Interna */
-    .badge-icon-box {
-        position: relative;
-        width: 46px; height: 46px;
-        background: linear-gradient(135deg, #fdfaf4, #f5e6d3);
-        border: 1px solid #e8d0b5;
-        border-radius: 14px;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 3px 6px rgba(207, 161, 115, 0.15);
-        flex-shrink: 0;
-    }
-    .badge-icon-box i.fa-shield-alt { 
-        font-size: 26px; 
-        color: var(--accent-gold); 
-    }
-    .badge-icon-box i.fa-crown { 
-        position: absolute;
-        font-size: 11px; 
-        color: #fff;
-        top: 15px;
-    }
-
-    .meta-text-block {
+    .vip-shield-box {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #103a1c 0%, #051a0d 100%);
+        border: 1.5px solid var(--gold-glow);
+        border-radius: 12px;
         display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-    .meta-text-block .plan-name {
-        font-size: 13px; font-weight: 700; color: var(--primary-green); margin: 0;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    
-    /* Estrelas de classificação abaixo do nome */
-    .plan-stars {
-        display: flex;
-        gap: 2px;
-        margin: 2px 0;
-        color: var(--primary-green);
-        font-size: 11px;
-    }
-
-    .meta-text-block .plan-subtext {
-        font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 1px;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .meta-text-block .plan-subtext span {
-        color: var(--text-dark); font-weight: 600;
-    }
-
-    /* Botão Detalhes arredondado */
-    .btn-details-trigger {
-        background: var(--primary-green);
-        border: none;
-        color: #ffffff;
-        font-size: 11px;
-        font-weight: 700;
-        border-radius: 20px;
-        cursor: pointer;
-        padding: 6px 14px;
-        flex-shrink: 0;
-    }
-
-    /* MODAL DE DETALHES - CUSTOMIZADO PARA ECRÃS MENORES */
-    .details-modal-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(44, 62, 80, 0.5);
-        backdrop-filter: blur(4px);
-        display: none;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
-        padding: 15px;
-        box-sizing: border-box;
+        position: relative;
+        flex-shrink: 0;
     }
-    
-    .modal-box {
-        background: #ffffff;
-        width: 100%;
-        max-width: 380px;
-        max-height: 85vh; /* Evita que o modal passe do tamanho do ecrã */
-        border-radius: 24px;
-        padding: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column; /* Organiza os elementos verticalmente de forma fixa */
-    }
+    .vip-shield-box i.fa-shield-alt { font-size: 26px; color: var(--gold-glow); }
+    .vip-shield-box i.fa-crown { position: absolute; font-size: 11px; color: #fff; top: 15px; }
 
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        flex-shrink: 0; /* Impede o cabeçalho de encolher */
-    }
-    .modal-header h3 { 
-        margin: 0; font-size: 15px; font-weight: 800; color: var(--text-dark); text-transform: uppercase;
-    }
-    .modal-close-btn { 
-        background: var(--border-color); border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; color: var(--text-dark); cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-
-    /* Área de informações interna com suporte a scroll inteligente */
-    .modal-info-rows {
+    /* Bloco de Informações Financeiras */
+    .vip-details-info {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        margin-bottom: 16px;
-        overflow-y: auto; /* Ativa a rolagem interna se houver muitos dados */
-        padding-right: 4px; /* Pequeno espaço para a barra de rolagem */
-        flex-grow: 1; /* Ocupa o espaço disponível sem quebrar o layout */
-    }
-    
-    /* Customização estética e fina do scroll do modal */
-    .modal-info-rows::-webkit-scrollbar {
-        width: 4px;
-    }
-    .modal-info-rows::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
-    
-    .modal-data-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 14px;
-        background: var(--modal-bg-card);
-        border-radius: 12px;
-        font-size: 12.5px;
-        border: 1px solid rgba(238, 242, 245, 0.7);
-        box-sizing: border-box;
-    }
-    .modal-data-row span:first-child { color: var(--text-muted); font-weight: 600; }
-    .modal-data-row span:last-child { color: var(--text-dark); font-weight: 700; }
-    .modal-data-row .highlight-green { color: var(--primary-green) !important; font-weight: 800; }
-
-    #modalActionContainer {
-        flex-shrink: 0; /* Garante que o botão de ação fique fixo no fundo do modal */
-        width: 100%;
+        gap: 2px;
+        flex: 1;
+        min-width: 0;
     }
 
-    .btn-submit-action {
-        width: 100%;
-        padding: 14px;
-        border-radius: 14px;
-        border: none;
-        font-weight: 700;
-        font-size: 12.5px;
-        text-transform: uppercase;
-        cursor: pointer;
-        box-sizing: border-box;
-    }
-    
-    .btn-submit-action.buy {
-        background: linear-gradient(135deg, #1cbd6f, #159e5c);
+    .vip-tier-name {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 16px;
+        font-weight: 800;
         color: #ffffff;
-        box-shadow: 0 5px 15px rgba(28, 189, 111, 0.25);
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+    }
+
+    .vip-metrics-line {
+        font-size: 12px;
+        color: #94a3b8;
+        white-space: nowrap;
+        line-height: 1.4;
     }
     
-    .btn-submit-action.owned {
-        background: #eef2f5;
-        color: var(--text-muted);
-        cursor: not-allowed;
+    .vip-metrics-line strong {
+        color: #ffffff;
         font-weight: 600;
     }
+    
+    .vip-metrics-line strong.profit {
+        color: var(--neon-green);
+        font-weight: 700;
+    }
 
-    @keyframes slideUp {
-        from { transform: translateY(15px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+    /* Linha Separadora Interna Discreta */
+    .vip-card-divider {
+        height: 1px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.06);
+        margin: 2px 0;
+    }
+
+    /* Parte Inferior do Card: Botão Seguro Ocupando 100% da Largura */
+    .vip-bottom-action {
+        width: 100%;
+    }
+
+    .btn-vip-action {
+        width: 100%;
+        height: 42px;
+        border-radius: 12px;
+        border: none;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 900;
+        font-size: 12px;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-sizing: border-box;
+        letter-spacing: 1px;
+        transition: transform 0.1s ease;
+    }
+    .btn-vip-action:active { transform: scale(0.98); }
+
+    /* Estado COMPRAR: Dourado Premium */
+    .btn-vip-action.btn-buy-now {
+        background: var(--gold-gradient);
+        color: #000000;
+        box-shadow: 0 4px 15px rgba(245, 176, 37, 0.3);
+    }
+
+    /* Estado COMPRADO: Verde Neon Fluorescente */
+    .btn-vip-action.btn-already-owned {
+        background: linear-gradient(135deg, #00ff66 0%, #00993d 100%);
+        color: #010603;
+        box-shadow: 0 4px 15px rgba(0, 255, 102, 0.3);
     }
 </style>
 
-<div class="container">
-    <div class="top-navbar">
-        <a href="{% url 'menu' %}"><i class="fas fa-arrow-left"></i></a>
-        <h1 data-i18n="nav_title">Função da criação</h1>
+<div class="vip-matrix-container">
+    <div class="vip-layout">
         
-        <div class="lang-selector-container">
-            <select id="jsLangSelect" class="lang-select">
-                <option value="pt">PT</option>
-                <option value="en">EN</option>
-                <option value="zh">ZH</option>
-            </select>
-        </div>
-    </div>
+        <h1 class="vip-main-title">Centro de VIP</h1>
 
-    <div class="status-top-banner">
-        <div class="status-avatar">
-            <i class="fas fa-medal"></i>
-        </div>
-        <div class="status-info">
-            <h2 data-i18n="user_rank">Criador Estagiário</h2>
-            <p><span data-i18n="neg_value">Valor negociável atual</span>: 100 KZ Durante 2 dias/200 Kz</p>
-        </div>
-    </div>
-
-    <div class="action-buttons-row">
-        <a href="{% url 'deposito' %}" class="btn-action-top deposit" data-i18n="btn_deposit">Recarregar</a>
-        <a href="{% url 'equipa' %}" class="btn-action-top invite" data-i18n="btn_rewards">Recompensas de convite</a>
-    </div>
-
-    <div class="plan-list">
-        {% for level in levels %}
-        <div class="horizontal-card {% if level.id in user_levels %}active-plan{% endif %}">
-            
-            <div class="card-left-info">
-                <div class="badge-icon-box">
-                    <i class="fas fa-shield-alt"></i>
-                    <i class="fas fa-crown"></i>
-                </div>
-                <div class="meta-text-block">
-                    <span class="plan-name">{{ level.name }}</span>
-                    
-                    <div class="plan-stars">
-                        <i class="fas fa-star"></i>
-                        {% if forloop.counter > 1 %}<i class="fas fa-star"></i>{% endif %}
-                        {% if forloop.counter > 2 %}<i class="fas fa-star"></i>{% endif %}
+        <div class="vip-cards-grid">
+            {% for level in levels %}
+            {% if level.id in user_levels %}
+                <div class="premium-vip-card active-card">
+                    <div class="vip-top-row">
+                        <div class="vip-shield-box" style="border-color: var(--neon-green);">
+                            <i class="fas fa-shield-alt" style="color: var(--neon-green);"></i>
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="vip-details-info">
+                            <span class="vip-tier-name">{{ level.name }}</span>
+                            <span class="vip-metrics-line">Depósito: <strong id="dep-owned-{{ level.id }}"></strong></span>
+                            <span class="vip-metrics-line">Ganho Diário: <strong class="profit" id="gain-owned-{{ level.id }}"></strong></span>
+                            <span class="vip-metrics-line">Ciclo: <strong>90 Dias</strong></span>
+                        </div>
                     </div>
+
+                    <div class="vip-card-divider"></div>
+
+                    <div class="vip-bottom-action">
+                        <button class="btn-vip-action btn-already-owned" disabled>
+                            <i class="fas fa-check-circle"></i> Comprado
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="premium-vip-card">
+                    <div class="vip-top-row">
+                        <div class="vip-shield-box">
+                            <i class="fas fa-shield-alt"></i>
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="vip-details-info">
+                            <span class="vip-tier-name">{{ level.name }}</span>
+                            <span class="vip-metrics-line">Depósito: <strong id="dep-buy-{{ level.id }}"></strong></span>
+                            <span class="vip-metrics-line">Ganho Diário: <strong class="profit" id="gain-buy-{{ level.id }}"></strong></span>
+                            <span class="vip-metrics-line">Ciclo: <strong>90 Dias</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="vip-card-divider"></div>
+
+                    <div class="vip-bottom-action">
+                        <form method="post" action="{% url 'nivel' %}" style="margin: 0; width: 100%;">
+                            {% csrf_token %}
+                            <input type="hidden" name="level_id" value="{{ level.id }}">
+                            <button type="submit" class="btn-vip-action btn-buy-now">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            <script>
+                (function() {
+                    var rawDeposit = parseFloat("{{ level.deposit_value }}") || 0;
+                    var rawDaily = parseFloat("{{ level.daily_gain }}") || 0;
                     
-                    <span class="plan-subtext"><span>{{ level.deposit_value }} Kz</span></span>
-                </div>
-            </div>
+                    var usdtDeposit = (rawDeposit / 1000).toFixed(2);
+                    var usdtDaily = (rawDaily / 1000).toFixed(2);
 
-            <div class="card-actions-right">
-                <button class="btn-details-trigger" data-i18n="btn_details" onclick="openPlanDetails(
-                    '{{ level.name }}',
-                    '{{ level.deposit_value }}',
-                    '{{ level.daily_gain }}',
-                    '{{ level.cycle|default:365 }}',
-                    '{{ level.monthly_gain }}',
-                    '{{ level.yearly_gain }}',
-                    '{{ level.id }}',
-                    '{% if level.id in user_levels %}true{% else %}false{% endif %}'
-                )">Detalhes</button>
-            </div>
+                    var depOwned = document.getElementById("dep-owned-{{ level.id }}");
+                    var gainOwned = document.getElementById("gain-owned-{{ level.id }}");
+                    var depBuy = document.getElementById("dep-buy-{{ level.id }}");
+                    var gainBuy = document.getElementById("gain-buy-{{ level.id }}");
+
+                    if(depOwned) depOwned.innerText = usdtDeposit + " USDT";
+                    if(gainOwned) gainOwned.innerText = "+" + usdtDaily + " USDT";
+                    if(depBuy) depBuy.innerText = usdtDeposit + " USDT";
+                    if(gainBuy) gainBuy.innerText = "+" + usdtDaily + " USDT";
+                })();
+            </script>
+            {% endfor %}
         </div>
-        {% endfor %}
+
     </div>
 </div>
-
-<div class="details-modal-overlay" id="detailsModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3 id="modalPlanName" data-i18n="modal_title">Detalhes do Plano</h3>
-            <button class="modal-close-btn" onclick="closePlanDetails()"><i class="fas fa-times"></i></button>
-        </div>
-        
-        <div class="modal-info-rows">
-            <div class="modal-data-row">
-                <span data-i18n="row_deposit">Depósito de Adesão</span>
-                <span id="modalDeposit">0.00 Kz</span>
-            </div>
-            <div class="modal-data-row">
-                <span data-i18n="row_cycle">Ciclo do Contrato</span>
-                <span id="modalCycle">365 Dias</span>
-            </div>
-            <div class="modal-data-row">
-                <div class="modal-data-row" style="padding: 0; border: none; background: transparent; width: 100%; display: flex; justify-content: space-between;">
-                    <span data-i18n="row_daily">Ganho Diário</span>
-                    <span id="modalDaily" class="highlight-green">0.00 Kz</span>
-                </div>
-            </div>
-            <div class="modal-data-row">
-                <span data-i18n="row_monthly">Ganho Mensal</span>
-                <span id="modalMonthly" class="highlight-green">0.00 Kz</span>
-            </div>
-            <div class="modal-data-row">
-                <span data-i18n="row_yearly">Ganho Anual</span>
-                <span id="modalYearly" class="highlight-green">0.00 Kz</span>
-            </div>
-        </div>
-
-        <div id="modalActionContainer"></div>
-    </div>
-</div>
-
-<script>
-    // Dicionário de traduções
-    const translations = {
-        pt: {
-            nav_title: "Função da criação",
-            user_rank: "Criador Estagiário",
-            neg_value: "Valor negociável atual",
-            btn_deposit: "Recarregar",
-            btn_rewards: "Recompensas de convite",
-            btn_details: "Detalhes",
-            modal_title: "Detalhes do Plano",
-            row_deposit: "Depósito de Adesão",
-            row_cycle: "Ciclo do Contrato",
-            row_daily: "Ganho Diário",
-            row_monthly: "Ganho Mensal",
-            row_yearly: "Ganho Anual",
-            btn_active: "PLANO ATIVO",
-            btn_buy: "Investir e Ativar Nível",
-            word_days: "Dias"
-        },
-        en: {
-            nav_title: "Breeding Function",
-            user_rank: "Trainee Breeder",
-            neg_value: "Current negotiable value",
-            btn_deposit: "Recharge",
-            btn_rewards: "Invite Rewards",
-            btn_details: "Details",
-            modal_title: "Plan Details",
-            row_deposit: "Membership Deposit",
-            row_cycle: "Contract Cycle",
-            row_daily: "Daily Profit",
-            row_monthly: "Monthly Profit",
-            row_yearly: "Yearly Profit",
-            btn_active: "ACTIVE PLAN",
-            btn_buy: "Invest and Activate Level",
-            word_days: "Days"
-        },
-        zh: {
-            nav_title: "养殖功能",
-            user_rank: "实习养殖员",
-            neg_value: "当前可协商价值",
-            btn_deposit: "充值",
-            btn_rewards: "邀请奖励",
-            btn_details: "详情",
-            modal_title: "计划详情",
-            row_deposit: "入会押金",
-            row_cycle: "合同周期",
-            row_daily: "每日收益",
-            row_monthly: "每月收益",
-            row_yearly: "年度收益",
-            btn_active: "已激活计划",
-            btn_buy: "投资并激活级别",
-            word_days: "天"
-        }
-    };
-
-    let currentLang = 'pt';
-    let lastOpenedPlan = null; 
-
-    function changeLanguage(lang) {
-        currentLang = lang;
-        document.querySelectorAll('[data-i18n]').forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            if (translations[lang][key]) {
-                element.innerText = translations[lang][key];
-            }
-        });
-        
-        if (lastOpenedPlan && document.getElementById('detailsModal').style.display === 'flex') {
-            renderModalContent();
-        }
-    }
-
-    document.getElementById('jsLangSelect').addEventListener('change', function() {
-        changeLanguage(this.value);
-    });
-
-    function openPlanDetails(name, deposit, daily, cycle, monthly, yearly, levelId, isOwned) {
-        lastOpenedPlan = { name, deposit, daily, cycle, monthly, yearly, levelId, isOwned };
-        renderModalContent();
-        document.getElementById('detailsModal').style.display = 'flex';
-    }
-
-    function renderModalContent() {
-        if (!lastOpenedPlan) return;
-        
-        const p = lastOpenedPlan;
-        const langData = translations[currentLang];
-
-        document.getElementById('modalPlanName').innerText = p.name;
-        document.getElementById('modalDeposit').innerText = parseFloat(p.deposit).toFixed(2) + " Kz";
-        document.getElementById('modalDaily').innerText = "+ " + parseFloat(p.daily).toFixed(2) + " Kz";
-        document.getElementById('modalCycle').innerText = p.cycle + " " + langData.word_days;
-        document.getElementById('modalMonthly').innerText = "+ " + parseFloat(p.monthly).toFixed(2) + " Kz";
-        document.getElementById('modalYearly').innerText = "+ " + parseFloat(p.yearly).toFixed(2) + " Kz";
-
-        const actionContainer = document.getElementById('modalActionContainer');
-
-        if (p.isOwned === 'true') {
-            actionContainer.innerHTML = `<button class="btn-submit-action owned" disabled>${langData.btn_active}</button>`;
-        } else {
-            actionContainer.innerHTML = `
-                <form method="post" action="{% url 'nivel' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="level_id" value="${p.levelId}">
-                    <button type="submit" class="btn-submit-action buy">${langData.btn_buy}</button>
-                </form>
-            `;
-        }
-    }
-
-    function closePlanDetails() {
-        document.getElementById('detailsModal').style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('detailsModal');
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-</script>
 {% endblock %}

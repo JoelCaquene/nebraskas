@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login - FD</title>
+    <title>Login - nebraska</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
@@ -18,23 +18,52 @@
             --border-color: #cbd5e1;
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        /* Proteção estrita contra rolagem horizontal */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
         
         body { 
-            background: var(--bg-light); 
+            background: radial-gradient(circle at 50% 50%, #22c55e, #15803d, #166534);
+            background-size: 200% 200%;
+            animation: glowBackground 10s ease infinite;
             color: var(--text-main); 
             min-height: 100vh; 
             overflow-y: auto;  
             display: flex; 
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
 
-        /* TELA DE LOADING PROCESSANDO COM HISTÓRICO E CONTANDO */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(transparent 30%, rgba(0, 0, 0, 0.3));
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes glowBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* TELA DE LOADING */
         #loader {
             position: fixed; 
             inset: 0; 
-            background: #ffffff; 
+            background: #0f172a; 
             z-index: 1000;
             display: flex; 
             flex-direction: column; 
@@ -42,49 +71,55 @@
             align-items: center;
             overflow: hidden;
         }
-        .loader-bg {
-            position: absolute;
-            inset: 0;
-            background-image: url("{% static 'images/logo.png' %}");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: blur(8px);
-            opacity: 0.15;
-            transform: scale(1.2);
-            z-index: -1;
+        
+        .classic-spinner {
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #22c55e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
         }
-        .farm-loader-icon {
-            font-size: 60px; 
-            color: var(--primary);
-            animation: pulse 1.5s infinite ease-in-out;
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.15); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
+
+        .loader-text {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-top: 25px;
+            opacity: 0.8;
+            text-transform: uppercase;
         }
 
         /* HEADER & LANG-SELECT */
         .top-nav { 
             width: 100%;
-            max-width: 420px;
-            padding: 15px 20px 0px 20px; 
+            max-width: 460px;
+            padding: 15px 12px 0px 12px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            z-index: 1;
         }
         
         .lang-container {
-            align-self: flex-end; 
-            background: rgba(255, 255, 255, 0.8); 
+            background: rgba(255, 255, 255, 0.9); 
             border: 1px solid var(--border-color);
             border-radius: 20px; 
             padding: 4px 12px; 
             display: flex; 
             align-items: center;
             gap: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: absolute;
+            right: 12px;
+            top: 15px;
         }
         .lang-container i { color: var(--text-muted); font-size: 14px; }
         .lang-container select { 
@@ -92,23 +127,59 @@
             font-weight: 600; outline: none; cursor: pointer;
         }
 
-        .logo-box { text-align: center; margin: 5px 0; }
-        .logo-img { max-width: 120px; height: auto; object-fit: contain; }
+        .logo-box { text-align: center; margin: 35px 0 15px 0; width: 100%; }
 
-        .platform-subtitle {
-            font-size: 18px;
-            font-weight: 700;
-            color: #000;
-            margin-top: 2px;
+        /* Estilização Dinâmica NEBRASKA */
+        .nebraska-title {
+            font-size: 46px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* WRAPPER COMPACTO DO FORMULÁRIO */
+        .nebraska-title span {
+            display: inline-block;
+            animation: dynamicColors 3s infinite alternate ease-in-out;
+        }
+
+        .nebraska-title span:nth-child(1) { animation-delay: 0.0s; }
+        .nebraska-title span:nth-child(2) { animation-delay: 0.3s; }
+        .nebraska-title span:nth-child(3) { animation-delay: 0.6s; }
+        .nebraska-title span:nth-child(4) { animation-delay: 0.9s; }
+        .nebraska-title span:nth-child(5) { animation-delay: 1.2s; }
+        .nebraska-title span:nth-child(6) { animation-delay: 1.5s; }
+        .nebraska-title span:nth-child(7) { animation-delay: 1.8s; }
+        .nebraska-title span:nth-child(8) { animation-delay: 2.1s; }
+
+        @keyframes dynamicColors {
+            0% { color: #ffffff; transform: translateY(0px); }
+            33% { color: #facc15; transform: translateY(-2px); text-shadow: 0 6px 12px rgba(250, 204, 21, 0.5); }
+            66% { color: #60a5fa; transform: translateY(0px); text-shadow: 0 6px 12px rgba(96, 165, 250, 0.5); }
+            100% { color: #4ade80; transform: translateY(2px); }
+        }
+
+        .platform-subtitle {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 0.5px;
+        }
+
+        /* WRAPPER COMPACTO COM MEDIDA SEGURA CONTRA OVERFLOW */
         .main-form-wrapper {
             width: 100%;
-            max-width: 420px;
+            max-width: 460px;
             display: flex;
             flex-direction: column;
-            padding: 0 24px;
+            padding: 0 12px; 
+            z-index: 1;
         }
 
         /* CARD DE LOGIN COESIVO */
@@ -116,15 +187,19 @@
             width: 100%; 
             display: flex; 
             flex-direction: column; 
-            gap: 12px; /* Reduzido para aproximar os inputs */
+            gap: 14px; 
             margin-top: 5px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 24px 16px; 
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         h2 { 
-            font-size: 13px; 
+            font-size: 15px; 
             text-align: center; 
             color: var(--text-muted); 
-            font-weight: 400;
+            font-weight: 500;
             margin-bottom: 8px; 
         }
 
@@ -134,7 +209,7 @@
             background: var(--input-bg); 
             border: 1px solid var(--border-color); 
             border-radius: 16px; 
-            height: 54px; /* Altura ideal conforme a imagem */
+            height: 56px; 
             overflow: hidden;
             padding: 0 15px;
             transition: all 0.3s ease;
@@ -162,19 +237,19 @@
             border: 1px solid rgba(255,0,0,0.15); margin-bottom: 5px;
         }
 
-        /* BOTOES E REDIRECIONAMENTO COM ESPAÇAMENTO RESTRITO */
+        /* BOTOES E REDIRECIONAMENTO */
         .footer-nav {
             width: 100%;
             display: flex; 
             flex-direction: column;
             gap: 15px;
-            margin-top: 15px; /* Evita que caia excessivamente para o fundo da página */
+            margin-top: 15px; 
         }
 
         .btn-login-submit {
             width: 100%;
-            height: 52px; 
-            background: var(--primary);
+            height: 54px; 
+            background: #0f172a; 
             border: none; 
             border-radius: 16px; 
             color: #fff; 
@@ -184,21 +259,22 @@
             align-items: center; 
             justify-content: center; 
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(28, 189, 111, 0.2);
-            transition: transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
         }
         .btn-login-submit:active { transform: scale(0.98); }
 
         .register-redirect {
             text-align: center;
             font-size: 14px;
-            color: var(--text-muted);
+            color: #ffffff;
             margin-bottom: 20px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         .register-redirect a {
-            color: var(--primary);
+            color: #facc15; 
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             margin-left: 5px;
         }
     </style>
@@ -206,9 +282,9 @@
 <body>
 
 <div id="loader">
-    <div class="loader-bg"></div>
-    <i class="fa-solid fa-tractor farm-loader-icon"></i>
-    <div id="perc" style="margin-top: 20px; font-weight: 700; color: var(--primary); font-size: 22px;">0%</div>
+    <div class="classic-spinner"></div>
+    <div id="perc" style="margin-top: 20px; font-weight: 700; color: #22c55e; font-size: 24px; letter-spacing: 1px;">0%</div>
+    <div class="loader-text">Carregando</div>
 </div>
 
 <nav class="top-nav">
@@ -221,8 +297,10 @@
         </select>
     </div>
     <div class="logo-box">
-        <img src="{% static 'images/logo.png' %}" alt="FD Logo" class="logo-img">
-        <div class="platform-subtitle">Agricultura on-line</div>
+        <div class="nebraska-title">
+            <span>N</span><span>e</span><span>b</span><span>r</span><span>a</span><span>s</span><span>k</span><span>a</span>
+        </div>
+        <div class="platform-subtitle">Fonte Lucrativa</div>
     </div>
 </nav>
 

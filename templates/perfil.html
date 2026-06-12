@@ -1,19 +1,20 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Meu Perfil | FD{% endblock %}
+{% block title %}Meu Perfil | nebraska{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-    
     :root { 
-        --primary-green: #1cbd6f;
-        --primary-light: rgba(28, 189, 111, 0.08);
-        --text-dark: #222222;
-        --text-muted: #8c9ba5;
-        --border-color: #f1f5f9;
+        --primary-blue: #0f172a;
+        --accent-gold: #f59e0b;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #cbd5e1;
+        --bg-light: #f8fafc;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -31,23 +32,33 @@
         background: #ffffff;
         min-height: 100vh; 
         width: 100%; 
-        padding-bottom: 90px;
+        max-width: 500px;
+        margin: 0 auto;
+        padding-bottom: 40px;
     }
 
-    /* Topo Interativo e Seletor de Idiomas Dropdown */
+    /* Barra Superior */
     .lang-bar { 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        padding: 15px; 
+        padding: 15px 20px; 
         background: #ffffff; 
-        border-bottom: 1px solid var(--border-color); 
-        position: relative;
     }
+    .back-link {
+        color: var(--text-dark);
+        font-size: 18px;
+        text-decoration: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+    }
+
     .lang-selector-wrapper { position: relative; }
     .lang-dropdown-btn {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
         padding: 8px 14px;
         border-radius: 20px;
         cursor: pointer;
@@ -64,7 +75,7 @@
         background: #ffffff;
         border: 1px solid var(--border-color);
         border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
         display: none;
         flex-direction: column;
         z-index: 4000;
@@ -78,180 +89,152 @@
         color: var(--text-dark);
         cursor: pointer;
         transition: background 0.2s;
-        text-align: left;
     }
-    .lang-opt:hover { background: #f8fafc; }
-    .lang-opt.active { background: var(--primary-green); color: #fff; }
+    .lang-opt:hover { background: var(--bg-light); }
+    .lang-opt.active { background: var(--primary-blue); color: #fff; }
 
-    /* Cartão de Nível */
-    .level-card-wrapper { padding: 15px; }
+    /* CARD SUPERIOR PREMIUM - ESTRELA */
+    .level-card-wrapper { padding: 0 20px 20px 20px; }
     .level-banner {
-        background: var(--primary-green);
-        border-radius: 16px;
-        padding: 20px;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-radius: 24px;
+        padding: 24px;
         color: #ffffff;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 4px 15px rgba(28, 189, 111, 0.2);
-    }
-    .level-info-left { display: flex; align-items: center; gap: 12px; }
-    .level-badge-icon {
-        width: 45px;
-        height: 45px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-    }
-    .level-text-label { font-size: 12px; opacity: 0.9; font-weight: 500; display: block; margin-bottom: 2px; }
-    .level-title-name { font-size: 16px; font-weight: 700; margin: 0; }
-    .level-balance-display { font-size: 18px; font-weight: 800; text-align: right; }
-
-    /* Botão de Convite */
-    .invite-strip-box { padding: 0 15px 15px 15px; }
-    .btn-invite-friends {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        background: #dfb387;
-        color: #ffffff;
-        text-decoration: none;
-        padding: 14px;
-        border-radius: 25px;
-        font-weight: 600;
-        font-size: 14px;
-        box-shadow: 0 4px 10px rgba(223, 179, 135, 0.25);
-        transition: transform 0.2s;
-    }
-    .btn-invite-friends:active { transform: scale(0.98); }
-
-    /* Bloco Estatístico Operando via Django */
-    .stats-matrix-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        padding: 0 15px 20px 15px;
-    }
-    .stat-square-box {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 12px 8px;
-        text-align: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.01);
-    }
-    .stat-square-title {
-        font-size: 11px;
-        color: #4f4f4f;
-        font-weight: 500;
-        margin-bottom: 6px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
+        position: relative;
         overflow: hidden;
-        height: 32px;
-        line-height: 1.4;
     }
-    .stat-square-value {
-        font-size: 12px;
-        font-weight: 700;
-        color: #eb5757;
-        word-break: break-all;
+    .level-info-left { display: flex; align-items: center; gap: 16px; z-index: 2; }
+    
+    /* ÍCONE FORMATO DE ESTRELA */
+    .level-star-shape {
+        width: 52px;
+        height: 52px;
+        background: var(--accent-gold);
+        clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .level-star-shape i {
+        color: #ffffff;
+        font-size: 14px;
+        margin-top: -2px; /* Ajuste óptico de centralização na estrela */
     }
 
-    /* Grelha de Ações */
-    .actions-card-panel {
-        margin: 0 15px 20px 15px;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 20px 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        row-gap: 20px;
-        column-gap: 5px;
-    }
-    .action-grid-item {
+    .level-text-label { font-size: 11px; opacity: 0.6; font-weight: 500; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    .level-title-name { font-size: 18px; font-weight: 700; margin: 4px 0 0 0; letter-spacing: -0.5px; }
+    
+    .level-balance-right { text-align: right; z-index: 2; }
+    .level-crypto-val { font-size: 20px; font-weight: 800; color: #ffffff; display: block; }
+    .level-fiat-val { font-size: 13px; font-weight: 500; color: #34d399; display: block; margin-top: 2px; }
+
+    /* MATRIZ DE 3 INDICADORES CLEAN */
+    .stats-matrix-grid {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        text-decoration: none;
-        color: var(--text-dark);
-        text-align: center;
+        gap: 12px;
+        padding: 0 20px 25px 20px;
     }
-    .action-round-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: #eafaf1;
-        color: #1cbd6f;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        margin-bottom: 8px;
-        transition: transform 0.2s;
-    }
-    .action-grid-item:active .action-round-icon { transform: scale(0.9); }
-    .action-item-label {
-        font-size: 10px;
-        font-weight: 600;
-        color: #444;
-        line-height: 1.3;
-        padding: 0 2px;
-    }
-
-    /* Botão Sair */
-    .logout-wrapper { padding: 0 15px; }
-    .btn-logout-action {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        background: #f8fafc;
+    .stat-square-box {
+        background: var(--bg-light);
         border: 1px solid var(--border-color);
-        color: #333;
-        text-decoration: none;
-        padding: 15px;
-        border-radius: 14px;
-        font-weight: 700;
-        font-size: 14px;
+        border-radius: 16px;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
+    .stat-left-meta { display: flex; align-items: center; gap: 14px; }
+    
+    /* ÍCONES DAS METRICAS EM ESTRELA MENOR */
+    .stat-star-icon {
+        width: 36px;
+        height: 36px;
+        background: rgba(15, 23, 42, 0.06);
+        clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 10px;
+    }
+    .stat-square-box:nth-child(2) .stat-star-icon { color: #1cbd6f; background: rgba(28, 189, 111, 0.1); }
+    .stat-square-box:nth-child(3) .stat-star-icon { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
 
-    /* Modais */
+    .stat-square-title {
+        font-size: 13px;
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+    .stat-right-values { text-align: right; }
+    .stat-main-crypto { font-size: 14px; font-weight: 700; color: var(--text-dark); display: block; }
+    .stat-sub-fiat { font-size: 11px; font-weight: 500; color: var(--text-muted); display: block; margin-top: 1px; }
+
+    /* BOTÕES EXECUTIVOS PRINCIPAIS */
+    .profile-actions-vertical {
+        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .btn-profile-prime {
+        width: 100%;
+        padding: 16px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-change-password {
+        background: var(--primary-blue);
+        color: #ffffff;
+    }
+    .btn-change-password:active { background: #1e293b; transform: scale(0.99); }
+    
+    .btn-logout-clean {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    .btn-logout-clean:active { background: #fca5a5; transform: scale(0.99); }
+
+    /* MÓDULO DOS MODAIS FULL-SCREEN */
     .modal-full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: none; flex-direction: column; }
-    .modal-nav { padding: 20px; display: flex; align-items: center; gap: 20px; background: #fff; border-bottom: 1px solid var(--border-color); font-weight: 700; }
+    .modal-nav { padding: 20px; display: flex; align-items: center; gap: 20px; background: #fff; border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--primary-blue); }
     .modal-nav i { cursor: pointer; font-size: 18px; }
-    .modal-content { padding: 20px; flex: 1; overflow-y: auto; }
+    .modal-content { padding: 24px 20px; flex: 1; overflow-y: auto; }
 
-    .input-group { margin-bottom: 15px; }
-    .input-group label { display: block; font-size: 11px; color: #666; margin-bottom: 6px; font-weight: 700; }
+    .input-group { margin-bottom: 16px; }
+    .input-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
     .input-group input { 
         width: 100% !important; 
-        background: #f8fafc !important; 
-        color: #000 !important; 
+        background: var(--bg-light) !important; 
+        color: var(--text-dark) !important; 
         border: 1px solid var(--border-color) !important; 
-        padding: 14px !important; 
+        padding: 14px 16px !important; 
         border-radius: 12px !important; 
         font-weight: 600; 
         outline: none;
+        font-size: 14px;
     }
-    .btn-submit-form { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--primary-green); color: #fff; font-weight: 700; text-transform: uppercase; cursor: pointer; }
-
-    .hist-card { background: #ffffff; padding: 15px; border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border-color); }
-    .status-box { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; }
-    .status-aprovado { background: #eafaf1; color: #28a745; }
-    .status-pendente { background: #fff5f5; color: #dc3545; }
+    .btn-submit-form { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--primary-blue); color: #fff; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
 </style>
 
 <div class="main-container">
     <div class="lang-bar">
-        <a href="{% url 'menu' %}" style="color: #000; font-size: 18px; text-decoration: none;">
+        <a href="{% url 'menu' %}" class="back-link">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="lang-selector-wrapper">
@@ -269,7 +252,7 @@
     <div class="level-card-wrapper">
         <div class="level-banner">
             <div class="level-info-left">
-                <div class="level-badge-icon">
+                <div class="level-star-shape">
                     <i class="fas fa-crown"></i>
                 </div>
                 <div>
@@ -277,130 +260,56 @@
                     <h3 class="level-title-name">{{ level_name }}</h3>
                 </div>
             </div>
-            <div class="level-balance-display">
-                <span class="level-text-label" style="text-align: right;" data-tr="lbl-disponivel">Disponível</span>
-                <span>{{ user.available_balance|floatformat:2 }} Kz</span>
+            <div class="level-balance-right">
+                <span class="level-text-label" data-tr="lbl-disponivel">Saldo Disponível</span>
+                <span class="level-crypto-val" id="premium-top-usdt">0.00 USDT</span>
+                <span class="level-fiat-val" id="premium-top-kz">{{ user.available_balance|floatformat:2 }} Kz</span>
             </div>
         </div>
-    </div>
-
-    <div class="invite-strip-box">
-        <a href="{% url 'equipa' %}" class="btn-invite-friends" data-tr="btn-convidar">
-            Convide amigos
-        </a>
     </div>
 
     <div class="stats-matrix-grid">
         <div class="stat-square-box">
-            <div class="stat-square-title" data-tr="stat-semana">Semana</div>
-            <div class="stat-square-value">{{ semana_income|floatformat:2 }} Kz</div>
+            <div class="stat-left-meta">
+                <div class="stat-star-icon"><i class="fas fa-bolt"></i></div>
+                <span class="stat-square-title" data-tr="stat-hoje">Ganho de Hoje</span>
+            </div>
+            <div class="stat-right-values">
+                <span class="stat-main-crypto" id="calc-hoje-usdt">0.00 USDT</span>
+                <span class="stat-sub-fiat" id="raw-hoje-kz">{{ sub_tarefa|floatformat:2 }} Kz</span>
+            </div>
         </div>
+
         <div class="stat-square-box">
-            <div class="stat-square-title" data-tr="stat-mes">Este Mês</div>
-            <div class="stat-square-value">{{ mes_atual_income|floatformat:2 }} Kz</div>
+            <div class="stat-left-meta">
+                <div class="stat-star-icon"><i class="fas fa-wallet"></i></div>
+                <span class="stat-square-title" data-tr="lbl-disponivel">Saldo Disponível</span>
+            </div>
+            <div class="stat-right-values">
+                <span class="stat-main-crypto" id="calc-disp-usdt">0.00 USDT</span>
+                <span class="stat-sub-fiat" id="raw-disp-kz">{{ user.available_balance|floatformat:2 }} Kz</span>
+            </div>
         </div>
+
         <div class="stat-square-box">
-            <div class="stat-square-title" data-tr="stat-passado">Mês Passado</div>
-            <div class="stat-square-value">{{ mes_passado_income|floatformat:2 }} Kz</div>
-        </div>
-        <div class="stat-square-box">
-            <div class="stat-square-title" data-tr="stat-sub-convite">Subsídio de Convite</div>
-            <div class="stat-square-value">{{ sub_convite|floatformat:2 }} Kz</div>
-        </div>
-        <div class="stat-square-box">
-            <div class="stat-square-title" data-tr="stat-sub-tarefa">Ganhos de Tarefa</div>
-            <div class="stat-square-value">{{ sub_tarefa|floatformat:2 }} Kz</div>
-        </div>
-        <div class="stat-square-box">
-            <div class="stat-square-title" data-tr="stat-total-sacado">Total Sacado</div>
-            <div class="stat-square-value">{{ total_sacado|floatformat:2 }} Kz</div>
+            <div class="stat-left-meta">
+                <div class="stat-star-icon"><i class="fas fa-gift"></i></div>
+                <span class="stat-square-title" data-tr="stat-subsidio">Subsídio</span>
+            </div>
+            <div class="stat-right-values">
+                <span class="stat-main-crypto" id="calc-sub-usdt">0.00 USDT</span>
+                <span class="stat-sub-fiat" id="raw-sub-kz">{{ sub_convite|floatformat:2 }} Kz</span>
+            </div>
         </div>
     </div>
 
-    <div class="actions-card-panel">
-        <a href="{% url 'saque' %}" class="action-grid-item">
-            <div class="action-round-icon"><i class="fas fa-exchange-alt"></i></div>
-            <div class="action-item-label" data-tr="act-conversao">Conversão de fundos</div>
+    <div class="profile-actions-vertical">
+        <button class="btn-profile-prime btn-change-password" onclick="openModal('modalPass')">
+            <i class="fas fa-key"></i> <span data-tr="act-senha">Alterar Senha</span>
+        </button>
+        <a href="{% url 'logout' %}" class="btn-profile-prime btn-logout-clean">
+            <i class="fas fa-sign-out-alt"></i> <span data-tr="btn-sair">Sair</span>
         </a>
-        <a href="{% url 'equipa' %}" class="action-grid-item">
-            <div class="action-round-icon"><i class="fas fa-users"></i></div>
-            <div class="action-item-label" data-tr="act-time">Meu time</div>
-        </a>
-        <a href="javascript:void(0)" class="action-grid-item" onclick="openModal('modalHist')">
-            <div class="action-round-icon"><i class="far fa-file-alt"></i></div>
-            <div class="action-item-label" data-tr="act-detalhes">Detalhes do fundo</div>
-        </a>
-        <a href="{% url 'nivel' %}" class="action-grid-item">
-            <div class="action-round-icon"><i class="fas fa-seedling"></i></div>
-            <div class="action-item-label" data-tr="act-recorde">Recorde de investimento</div>
-        </a>
-        <a href="javascript:void(0)" class="action-grid-item" onclick="openModal('modalBank')">
-            <div class="action-round-icon"><i class="far fa-credit-card"></i></div>
-            <div class="action-item-label" data-tr="act-conta">Conta Bancária</div>
-        </a>
-        <a href="{% static 'app/fd.apk' %}" download="fd.apk" class="action-grid-item">
-        <div class="action-round-icon"><i class="fas fa-download"></i></div>
-        <div class="action-item-label" data-tr="act-baixar">Baixar App</div>
-        </a>
-        <a href="{% url 'roleta' %}" class="action-grid-item">
-            <div class="action-round-icon" style="background:#fff4e6; color:#f2994a;"><i class="fas fa-dharmachakra"></i></div>
-            <div class="action-item-label" style="color:#f2994a; font-weight:700;" data-tr="act-roleta">Cassino da sorte</div>
-        </a>
-        <a href="javascript:void(0)" class="action-grid-item" onclick="openModal('modalPass')">
-            <div class="action-round-icon"><i class="fas fa-sync-alt"></i></div>
-            <div class="action-item-label" data-tr="act-senha">Alterar Senha</div>
-        </a>
-    </div>
-
-    <div class="logout-wrapper">
-        <a href="{% url 'logout' %}" class="btn-logout-action" data-tr="btn-sair">
-            Sair
-        </a>
-    </div>
-</div>
-
-<div id="modalBank" class="modal-full">
-    <div class="modal-nav"><i class="fas fa-arrow-left" onclick="closeModal('modalBank')"></i><b data-tr="md-config-banco">CONFIGURAR CONTA</b></div>
-    <div class="modal-content">
-        <form method="post">
-            {% csrf_token %}
-            <div class="input-group">
-                <label data-tr="md-titular">TITULAR DA CONTA</label>
-                {{ form.account_holder_name }}
-            </div>
-            <div class="input-group">
-                <label data-tr="md-banco">BANCO / COORDENADA</label>
-                {{ form.bank_name }}
-            </div>
-            <div class="input-group">
-                <label data-tr="md-iban">IBAN DA CONTA</label>
-                {{ form.IBAN }}
-            </div>
-            <button type="submit" name="update_bank" class="btn-submit-form" data-tr="md-btn-salvar-banco">SALVAR COORDENADAS</button>
-        </form>
-    </div>
-</div>
-
-<div id="modalHist" class="modal-full">
-    <div class="modal-nav"><i class="fas fa-arrow-left" onclick="closeModal('modalHist')"></i><b data-tr="act-detalhes">DETALHES DO FUNDO</b></div>
-    <div class="modal-content">
-        {% for record in withdrawal_records %}
-        <div class="hist-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <div>
-                    <div style="font-weight:700; color: #000; font-size:15px;">{{ record.amount|floatformat:2 }} Kz</div>
-                </div>
-                <div class="status-box {% if record.status == 'Aprovado' %}status-aprovado{% else %}status-pendente{% endif %}">
-                    {{ record.status }}
-                </div>
-            </div>
-            <div style="border-top: 1px dashed #f1f5f9; padding-top: 8px; font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
-                <span><i class="far fa-calendar-alt"></i> Solicitado: {{ record.created_at|date:"d/m/Y H:i" }}</span>
-            </div>
-        </div>
-        {% empty %}
-        <p style="text-align: center; color: var(--text-muted); padding-top: 40px; font-size: 13px;" data-tr="md-sem-registro">Nenhum registro de movimentação encontrado.</p>
-        {% endfor %}
     </div>
 </div>
 
@@ -418,41 +327,51 @@
 </div>
 
 <script>
-    // Dicionário de Idiomas nativo para tradução instantânea em tempo de execução
+    // Taxa de Câmbio unificada alterada para corresponder a 1000 Kz = 1 USDT
+    const WISE_EXCHANGE_RATE = 1000;
+
+    // Conversão dinâmica no front-end para exibição simultânea USDT / KZ
+    function performCryptoConversions() {
+        const conversionTargets = [
+            { fiatId: 'premium-top-kz', cryptoId: 'premium-top-usdt' },
+            { fiatId: 'raw-hoje-kz', cryptoId: 'calc-hoje-usdt' },
+            { fiatId: 'raw-disp-kz', cryptoId: 'calc-disp-usdt' },
+            { fiatId: 'raw-sub-kz', cryptoId: 'calc-sub-usdt' }
+        ];
+
+        conversionTargets.forEach(target => {
+            const fiatEl = document.getElementById(target.fiatId);
+            const cryptoEl = document.getElementById(target.cryptoId);
+            if (fiatEl && cryptoEl) {
+                // Remove pontos de milhar e substitui vírgula por ponto para conversão limpa
+                let cleanValue = fiatEl.innerText.replace(/[^\d,.-]/g, '').replace(',', '.');
+                let parsedFiat = parseFloat(cleanValue) || 0;
+                let calculatedCrypto = parsedFiat / WISE_EXCHANGE_RATE;
+                cryptoEl.innerText = calculatedCrypto.toFixed(2) + " USDT";
+            }
+        });
+    }
+
+    // Dicionário de Idiomas nativo atualizado para a estrutura limpa
     const translations = {
         pt: {
-            "lbl-meu-nivel": "Meu Nível", "lbl-disponivel": "Disponível", "btn-convidar": "Convide amigos",
-            "stat-semana": "Renda desta Semana", "stat-mes": "Renda deste Mês", "stat-passado": "Mês Passado",
-            "stat-sub-convite": "Subsídio de Convite", "stat-sub-tarefa": "Subsídio de Tarefa", "stat-total-sacado": "Total Sacado",
-            "act-conversao": "Conversão de fundos", "act-time": "Meu time", "act-detalhes": "Detalhes do fundo",
-            "act-recorde": "Recorde de investimento", "act-conta": "Conta Bancária", "act-baixar": "Baixar App",
-            "act-roleta": "Roleta da Sorte", "act-senha": "Alterar Senha", "btn-sair": "Sair",
-            "md-config-banco": "CONFIGURAR CONTA", "md-titular": "TITULAR DA CONTA", "md-banco": "BANCO / COORDENADA",
-            "md-iban": "IBAN DA CONTA", "md-btn-salvar-banco": "SALVAR COORDENADAS", "md-sem-registro": "Nenhum registro de movimentação encontrado.",
+            "lbl-meu-nivel": "Meu Nível", "lbl-disponivel": "Saldo Disponível", 
+            "stat-hoje": "Ganho de Hoje", "stat-subsidio": "Subsídio",
+            "act-senha": "Alterar Senha", "btn-sair": "Sair",
             "md-titulo-senha": "ALTERAR SENHA DE ACESSO", "md-senha-atual": "SENHA ATUAL", "md-nova-senha": "NOVA SENHA",
             "md-conf-senha": "CONFIRMAR NOVA SENHA", "md-btn-senha": "ATUALIZAR SENHA"
         },
         en: {
-            "lbl-meu-nivel": "My Level", "lbl-disponivel": "Available", "btn-convidar": "Invite Friends",
-            "stat-semana": "Weekly Earnings", "stat-mes": "Monthly Earnings", "stat-passado": "Last Month",
-            "stat-sub-convite": "Invitation Subsidy", "stat-sub-tarefa": "Task Subsidy", "stat-total-sacado": "Total Withdrawn",
-            "act-conversao": "Funds Conversion", "act-time": "My Team", "act-detalhes": "Fund Details",
-            "act-recorde": "Investment Record", "act-conta": "Bank Account", "act-baixar": "Download App",
-            "act-roleta": "Lucky Roulette", "act-senha": "Change Password", "btn-sair": "Logout",
-            "md-config-banco": "CONFIGURE ACCOUNT", "md-titular": "ACCOUNT HOLDER", "md-banco": "BANK NAME / CODE",
-            "md-iban": "ACCOUNT IBAN", "md-btn-salvar-banco": "SAVE DETAILS", "md-sem-registro": "No transactions found.",
+            "lbl-meu-nivel": "My Level", "lbl-disponivel": "Available Balance", 
+            "stat-hoje": "Today's Earnings", "stat-subsidio": "Subsidy",
+            "act-senha": "Change Password", "btn-sair": "Logout",
             "md-titulo-senha": "CHANGE ACCESS PASSWORD", "md-senha-atual": "CURRENT PASSWORD", "md-nova-senha": "NEW PASSWORD",
             "md-conf-senha": "CONFIRM NEW PASSWORD", "md-btn-senha": "UPDATE PASSWORD"
         },
         zh: {
-            "lbl-meu-nivel": "我的等级", "lbl-disponivel": "可用余额", "btn-convidar": "邀请好友",
-            "stat-semana": "本周收益", "stat-mes": "本月收益", "stat-passado": "上个月",
-            "stat-sub-convite": "邀请津贴", "stat-sub-tarefa": "任务津贴", "stat-total-sacado": "总提现额",
-            "act-conversao": "资金转换", "act-time": "我的团队", "act-detalhes": "资金明细",
-            "act-recorde": "投资记录", "act-conta": "银行账户", "act-baixar": "下载应用",
-            "act-roleta": "幸运大转盘", "act-senha": "修改密码", "btn-sair": "安全退出",
-            "md-config-banco": "配置银行账户", "md-titular": "开户人姓名", "md-banco": "银行名称/代码",
-            "md-iban": "银行 IBAN", "md-btn-salvar-banco": "保存账户信息", "md-sem-registro": "未找到相关交易记录。",
+            "lbl-meu-nivel": "我的等级", "lbl-disponivel": "可用余额", 
+            "stat-hoje": "今日收益", "stat-subsidio": "津贴",
+            "act-senha": "修改密码", "btn-sair": "安全退出",
             "md-titulo-senha": "修改登录密码", "md-senha-atual": "当前密码", "md-nova-senha": "新密码",
             "md-conf-senha": "确认新密码", "md-btn-senha": "更新密码"
         }
@@ -470,15 +389,12 @@
     }
 
     function applyLanguage(lang) {
-        // Atualizar o rótulo do botão principal
         const langLabels = { pt: 'PT', en: 'EN', zh: 'ZH' };
         document.getElementById('current-lang-txt').innerText = langLabels[lang] || 'PT';
 
-        // Atualizar marcadores ativos visuais
         document.querySelectorAll('.lang-opt').forEach(opt => opt.classList.remove('active'));
         document.getElementById('opt-' + lang)?.classList.add('active');
 
-        // Percorrer elementos traduzíveis
         document.querySelectorAll('[data-tr]').forEach(el => {
             const key = el.getAttribute('data-tr');
             if (translations[lang] && translations[lang][key]) {
@@ -490,15 +406,14 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // Ao inicializar o documento
     document.addEventListener('DOMContentLoaded', () => {
+        performCryptoConversions();
         const currentLang = localStorage.getItem('userLang') || 'pt';
         applyLanguage(currentLang);
 
-        // Fecha o seletor de idiomas se clicar fora dele
         document.addEventListener('click', (e) => {
             const wrapper = document.querySelector('.lang-selector-wrapper');
-            if (!wrapper.contains(e.target)) {
+            if (wrapper && !wrapper.contains(e.target)) {
                 document.getElementById('lang-menu').style.display = 'none';
             }
         });

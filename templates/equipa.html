@@ -1,117 +1,161 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Meu Time | FD{% endblock %}
+{% block title %}Meu Time | nebraska{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
     
     :root { 
-        --primary-green: #1cbd6f;
-        --gradient-green: linear-gradient(135deg, #2ecc71, #1cbd6f);
-        --text-dark: #222222;
-        --text-muted: #8c9ba5;
-        --border-color: #f1f5f9;
-        --card-bg: #f8fafc;
+        --primary-green: #2ecc71;
+        --accent-glow: #1cbd6f;
+        --text-light: #ffffff;
+        --text-muted: #a3b8cc;
+        --card-overlay: rgba(255, 255, 255, 0.06);
+        --card-border: rgba(255, 255, 255, 0.12);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
     body { 
-        background: #ffffff !important; 
-        color: var(--text-dark); 
+        background: radial-gradient(circle at 50% 0%, #114c2c 0%, #061f12 100%) !important; 
+        color: var(--text-light); 
         font-family: 'Poppins', sans-serif; 
         margin: 0; 
         padding-bottom: 60px;
+        min-height: 100vh;
     }
 
     .container { 
         width: 100%; 
         max-width: 500px; 
         margin: 0 auto; 
-        padding: 0; 
-        box-sizing: border-box; 
+        padding: 0 16px; 
     }
 
-    /* Top Navigation */
     .top-navbar {
         display: flex;
         align-items: center;
-        padding: 15px;
-        background: #ffffff;
-        border-bottom: 1px solid var(--border-color);
+        padding: 20px 4px;
+        background: transparent;
     }
-    .top-navbar a { color: #000; font-size: 18px; text-decoration: none; }
-    .top-navbar h1 { flex: 1; text-align: center; font-size: 16px; font-weight: 600; margin: 0; padding-right: 18px; }
+    .top-navbar a { color: var(--text-light); font-size: 18px; text-decoration: none; display: flex; align-items: center; }
+    .top-navbar h1 { flex: 1; text-align: center; font-size: 16px; font-weight: 700; margin: 0; padding-right: 18px; text-transform: uppercase; letter-spacing: 0.8px; }
 
-    /* Green Header Card Area */
-    .summary-banner {
-        background: var(--gradient-green);
-        margin: 15px 15px 10px 15px;
-        border-radius: 20px;
-        padding: 22px;
-        color: #ffffff;
-        box-shadow: 0 4px 15px rgba(28, 189, 111, 0.15);
-    }
-    .banner-grid {
+    .accounting-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        row-gap: 20px;
-        column-gap: 15px;
+        gap: 12px;
+        margin-bottom: 20px;
     }
-    .banner-item-label {
-        font-size: 11px;
-        opacity: 0.85;
-        font-weight: 500;
-        display: block;
-        margin-bottom: 4px;
-        line-height: 1.3;
+    
+    .accounting-card-item {
+        background: var(--card-overlay);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
     }
-    .banner-item-value {
-        font-size: 18px;
-        font-weight: 700;
-        line-height: 1;
+    
+    .accounting-card-item.full-width {
+        grid-column: span 2;
+        flex-direction: row;
+        align-items: center;
+        padding: 18px 20px;
+        background: rgba(46, 204, 113, 0.1);
+        border-color: rgba(46, 204, 113, 0.25);
     }
 
-    /* Invite Link Action Box (Posicionado abaixo do card verde) */
+    .card-meta-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .card-icon-wrapper {
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .full-width .card-icon-wrapper { margin-bottom: 0; margin-right: 14px; background: rgba(46, 204, 113, 0.2); color: var(--primary-green); }
+    .ico-novos { color: #3498db; background: rgba(52, 152, 219, 0.15); }
+    .ico-total { color: #e67e22; background: rgba(230, 126, 34, 0.15); }
+    .ico-ativos { color: #f1c40f; background: rgba(241, 196, 15, 0.15); }
+
+    .banner-item-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
+    }
+    
+    .banner-item-value {
+        font-size: 18px;
+        font-weight: 800;
+        margin-top: 4px;
+        letter-spacing: -0.3px;
+    }
+    
+    .accounting-card-item.full-width .banner-item-value {
+        font-size: 22px;
+        color: var(--primary-green);
+        margin-top: 0;
+    }
+
     .floating-invite-strip {
-        margin: 0 15px 20px 15px;
-        background: #fffdf5;
-        border: 1px dashed #dfb387;
+        background: var(--card-overlay);
+        border: 1px dashed var(--card-border);
         border-radius: 16px;
-        padding: 12px 15px;
+        padding: 14px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 25px;
     }
     .invite-text-col { max-width: 70%; }
-    .invite-text-col label { font-size: 10px; font-weight: 700; color: #dfb387; text-transform: uppercase; display: block; margin-bottom: 2px; }
-    .invite-url-string { font-size: 12px; color: var(--text-dark); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; block-size: 18px; }
+    .invite-text-col label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
+    .invite-url-string { font-size: 13px; color: var(--text-light); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
     .btn-action-copy {
-        background: #dfb387;
-        color: #ffffff;
+        background: var(--primary-green);
+        color: #061f12;
         border: none;
-        padding: 8px 16px;
-        border-radius: 20px;
+        padding: 10px 18px;
+        border-radius: 12px;
         font-size: 12px;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 3px 8px rgba(223, 179, 135, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
-    /* Multi-level Level Selector Tabs */
     .level-tab-bar {
         display: flex;
-        gap: 10px;
-        padding: 0 15px 15px 15px;
+        gap: 8px;
+        margin-bottom: 20px;
     }
     .level-tab-btn {
         flex: 1;
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
         padding: 12px 6px;
         text-align: center;
         cursor: pointer;
@@ -121,137 +165,146 @@
         gap: 4px;
         transition: all 0.2s;
     }
-    .level-tab-btn i { font-size: 16px; color: var(--text-muted); }
-    .level-tab-btn span { font-size: 11px; font-weight: 600; color: #444; }
-    .level-tab-btn small { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+    .level-tab-btn i { font-size: 14px; color: var(--text-muted); }
+    .level-tab-btn span { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .level-tab-btn small { font-size: 10px; color: var(--text-muted); opacity: 0.7; }
     
     .level-tab-btn.active {
-        background: #ffffff;
+        background: var(--card-overlay);
         border-color: var(--primary-green);
-        box-shadow: 0 4px 10px rgba(28, 189, 111, 0.08);
     }
     .level-tab-btn.active i { color: var(--primary-green); }
-    .level-tab-btn.active span { color: var(--primary-green); font-weight: 700; }
+    .level-tab-btn.active span { color: #ffffff; font-weight: 700; }
 
-    /* Content Area Container */
-    .team-content-area {
-        padding: 0 15px;
-    }
     .tab-view { display: none; }
     .tab-view.active { display: block; }
 
-    /* Sub-list Header */
     .list-header-row {
         display: grid;
-        grid-template-columns: 1.2fr 1fr 0.8fr;
-        padding: 10px 5px;
-        border-bottom: 1px solid var(--border-color);
+        grid-template-columns: 1.1fr 1.1fr 0.8fr;
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--card-border);
         font-size: 11px;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--text-muted);
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     .list-header-row :nth-child(3) { text-align: right; }
 
-    /* Dynamic User Records Row */
     .user-record-row {
         display: grid;
-        grid-template-columns: 1.2fr 1fr 0.8fr;
+        grid-template-columns: 1.1fr 1.1fr 0.8fr;
         align-items: center;
-        padding: 14px 5px;
-        border-bottom: 1px solid #f8fafc;
+        padding: 14px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .user-phone { font-size: 13px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 2px; }
-    .user-date { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .user-phone { font-size: 13px; font-weight: 700; color: #ffffff; display: block; margin-bottom: 4px; }
+    .user-date { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+    
     .badge-status {
         font-size: 9px;
-        font-weight: 800;
-        padding: 4px 8px;
-        border-radius: 6px;
+        font-weight: 700;
+        padding: 3px 6px;
+        border-radius: 5px;
         width: fit-content;
         text-transform: uppercase;
     }
-    .status-vip { background: #eafaf1; color: #28a745; border: 1px solid #bcedce; }
-    .status-intern { background: #f1f5f9; color: var(--text-muted); }
+    .status-vip { background: rgba(46, 204, 113, 0.15); color: var(--primary-green); border: 1px solid rgba(46, 204, 113, 0.3); }
+    .status-intern { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); }
+    
     .user-commission-val {
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--primary-green);
         text-align: right;
     }
 
-    /* Empty State Box */
     .empty-state-box {
         text-align: center;
-        padding: 60px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-    .empty-illustration {
-        width: 140px;
-        height: auto;
-        opacity: 0.15;
-        margin-bottom: 15px;
-    }
-    .empty-state-box p {
-        margin: 0;
-        font-size: 13px;
+        padding: 40px 20px;
         color: var(--text-muted);
-        font-weight: 500;
     }
+    .empty-illustration { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
 </style>
 
 <div class="container">
     <div class="top-navbar">
-        <a href="{% url 'perfil' %}"><i class="fas fa-arrow-left"></i></a>
-        <h1>meu time</h1>
+        <a href="{% url 'menu' %}"><i class="fas fa-arrow-left"></i></a>
+        <h1>Meu Time</h1>
     </div>
 
-    <div class="summary-banner">
-        <div class="banner-grid">
-            <div>
-                <span class="banner-item-label">comissão promocional total (Kz)</span>
-                <div class="banner-item-value" id="top-subsidy-display">{{ subsidy_balance|default:"0.00" }}</div>
-            </div>
-            <div>
-                <span class="banner-item-label">Número de novas pessoas</span>
-                <div class="banner-item-value">{{ team_count|default:"0" }}</div>
-            </div>
-            <div>
-                <span class="banner-item-label">Tamanho da equipe</span>
-                <div class="banner-item-value">{{ team_count|default:"0" }}</div>
-            </div>
-            <div>
-                <span class="banner-item-label">Número de convidados ativos</span>
-                <div class="banner-item-value">{{ level_a_investors|default:"0" }}</div>
+    <div class="accounting-grid">
+        
+        <div class="accounting-card-item full-width">
+            <div style="display: flex; align-items: center;">
+                <div class="card-icon-wrapper">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="card-meta-left">
+                    <span class="banner-item-label">Comissão Acumulada</span>
+                    <div class="banner-item-value" id="top-subsidy-display">0.00 USDT</div>
+                </div>
             </div>
         </div>
+
+        <div class="accounting-card-item">
+            <div>
+                <div class="card-icon-wrapper ico-novos">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <span class="banner-item-label">Novos Convites</span>
+            </div>
+            <div class="banner-item-value">{{ team_count|default:"0" }}</div>
+        </div>
+
+        <div class="accounting-card-item">
+            <div>
+                <div class="card-icon-wrapper ico-total">
+                    <i class="fas fa-users-viewfinder"></i>
+                </div>
+                <span class="banner-item-label">Total Equipe</span>
+            </div>
+            <div class="banner-item-value">{{ team_count|default:"0" }}</div>
+        </div>
+
+        <div class="accounting-card-item full-width" style="background: var(--card-overlay); border-color: var(--card-border);">
+            <div style="display: flex; align-items: center;">
+                <div class="card-icon-wrapper ico-ativos" style="margin-bottom: 0; margin-right: 14px;">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+                <div class="card-meta-left">
+                    <span class="banner-item-label">Convidados Ativos</span>
+                    <div class="banner-item-value" style="color: #ffffff;">{{ level_a_investors|default:"0" }}</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="floating-invite-strip">
         <div class="invite-text-col">
-            <label>Meu link de indicação</label>
+            <label>Link de Indicação</label>
             <div class="invite-url-string" id="shareUrlLink">{{ invite_link }}</div>
         </div>
-        <button class="btn-action-copy" onclick="triggerCopyUrl()">Copiar</button>
+        <button class="btn-action-copy" onclick="triggerCopyUrl()">
+            <i class="fas fa-copy"></i> Copiar
+        </button>
     </div>
 
     <div class="level-tab-bar">
         <div class="level-tab-btn active" onclick="openLevelTab(event, 'level-a')">
-            <i class="fas fa-crown"></i>
+            <i class="fas fa-sitemap"></i>
             <span>Nível 1</span>
             <small>Diretos ({{ level_a_count|default:"0" }})</small>
         </div>
         <div class="level-tab-btn" onclick="openLevelTab(event, 'level-b')">
-            <i class="fas fa-crown"></i>
+            <i class="fas fa-diagram-predecessor"></i>
             <span>Nível 2</span>
             <small>Indiretos ({{ level_b_count|default:"0" }})</small>
         </div>
         <div class="level-tab-btn" onclick="openLevelTab(event, 'level-c')">
-            <i class="fas fa-crown"></i>
+            <i class="fas fa-diagram-project"></i>
             <span>Nível 3</span>
             <small>Indiretos ({{ level_c_count|default:"0" }})</small>
         </div>
@@ -261,103 +314,93 @@
         
         <div id="level-a" class="tab-view active">
             <div class="list-header-row">
-                <span>Hora do registro</span>
-                <span>Número da conta</span>
+                <span>Cadastro</span>
+                <span>Conta</span>
                 <span>Comissão</span>
             </div>
-            
             {% for guest in level_a_members %}
             <div class="user-record-row">
                 <div>
-                    <span class="user-date">{{ guest.date_joined|date:"d/m/Y" }}</span>
+                    <span class="user-date"><i class="far fa-calendar"></i> {{ guest.date_joined|date:"d/m/Y" }}</span>
                 </div>
                 <div>
                     <span class="user-phone">{{ guest.phone_number }}</span>
-                    
                     {% if guest.level_active %}
-                        <div class="badge-status status-vip">
-                            {{ guest.nome_do_plano_activo|default:"PLANO ATIVO" }}
-                        </div>
+                        <div class="badge-status status-vip">{{ guest.nome_do_plano_activo|default:"PLANO ATIVO" }}</div>
                     {% else %}
                         <div class="badge-status status-intern">ESTAGIÁRIO</div>
                     {% endif %}
                 </div>
                 <div>
-                    <span class="user-commission-val">10%</span>
+                    <span class="user-commission-val">+10%</span>
                 </div>
             </div>
             {% empty %}
             <div class="empty-state-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/5058/5058414.png" class="empty-illustration" alt="Nenhum dado">
-                <p>Nenhum afiliado encontrado neste nível.</p>
+                <i class="fas fa-folder-open empty-illustration"></i>
+                <p>Nenhum afiliado neste nível.</p>
             </div>
             {% endfor %}
         </div>
 
         <div id="level-b" class="tab-view">
             <div class="list-header-row">
-                <span>Hora do registro</span>
-                <span>Número da conta</span>
+                <span>Cadastro</span>
+                <span>Conta</span>
                 <span>Comissão</span>
             </div>
-            
             {% for guest in level_b_members %}
             <div class="user-record-row">
                 <div>
-                    <span class="user-date">{{ guest.date_joined|date:"d/m/Y" }}</span>
+                    <span class="user-date"><i class="far fa-calendar"></i> {{ guest.date_joined|date:"d/m/Y" }}</span>
                 </div>
                 <div>
                     <span class="user-phone">{{ guest.phone_number }}</span>
                     {% if guest.level_active %}
-                        <div class="badge-status status-vip">
-                            {{ guest.nome_do_plano_activo|default:"PLANO ATIVO" }}
-                        </div>
+                        <div class="badge-status status-vip">{{ guest.nome_do_plano_activo|default:"PLANO ATIVO" }}</div>
                     {% else %}
                         <div class="badge-status status-intern">ESTAGIÁRIO</div>
                     {% endif %}
                 </div>
                 <div>
-                    <span class="user-commission-val">2%</span>
+                    <span class="user-commission-val">+2%</span>
                 </div>
             </div>
             {% empty %}
             <div class="empty-state-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/5058/5058414.png" class="empty-illustration" alt="Nenhum dado">
-                <p>Nenhum afiliado encontrado neste nível.</p>
+                <i class="fas fa-folder-open empty-illustration"></i>
+                <p>Nenhum afiliado neste nível.</p>
             </div>
             {% endfor %}
         </div>
 
         <div id="level-c" class="tab-view">
             <div class="list-header-row">
-                <span>Hora do registro</span>
-                <span>Número da conta</span>
+                <span>Cadastro</span>
+                <span>Conta</span>
                 <span>Comissão</span>
             </div>
-            
             {% for guest in level_c_members %}
             <div class="user-record-row">
                 <div>
-                    <span class="user-date">{{ guest.date_joined|date:"d/m/Y" }}</span>
+                    <span class="user-date"><i class="far fa-calendar"></i> {{ guest.date_joined|date:"d/m/Y" }}</span>
                 </div>
                 <div>
                     <span class="user-phone">{{ guest.phone_number }}</span>
                     {% if guest.level_active %}
-                        <div class="badge-status status-vip">
-                            {{ guest.nome_do_plano_activo|default:"PLANO ATIVO" }}
-                        </div>
+                        <div class="badge-status status-vip">{{ guest.nome_do_plano_activo|default:"PLANO ATIVO" }}</div>
                     {% else %}
                         <div class="badge-status status-intern">ESTAGIÁRIO</div>
                     {% endif %}
                 </div>
                 <div>
-                    <span class="user-commission-val">1%</span>
+                    <span class="user-commission-val">+1%</span>
                 </div>
             </div>
             {% empty %}
             <div class="empty-state-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/5058/5058414.png" class="empty-illustration" alt="Nenhum dado">
-                <p>Nenhum afiliado encontrado neste nível.</p>
+                <i class="fas fa-folder-open empty-illustration"></i>
+                <p>Nenhum afiliado neste nível.</p>
             </div>
             {% endfor %}
         </div>
@@ -391,8 +434,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const rawBalance = parseFloat("{{ subsidy_balance|default:'0' }}".replace(',', '.'));
-        document.getElementById('top-subsidy-display').innerText = rawBalance.toFixed(2) + " Kz";
+        const rawBalanceKz = parseFloat("{{ subsidy_balance|default:'0' }}".replace(',', '.'));
+        const balanceUsdt = rawBalanceKz / 1000;
+        document.getElementById('top-subsidy-display').innerText = balanceUsdt.toFixed(2) + " USDT";
     });
 </script>
 {% endblock %}

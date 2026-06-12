@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Saque | fd{% endblock %}
+{% block title %}Saque | nebraska{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -9,20 +9,22 @@
 
 <style>
     :root {
-        --primary-blue: #1a1f36;
+        --primary-blue: #0f172a;
         --accent-green: #1cbd6f;
-        --text-dark: #2c3e50;
-        --text-muted: #7f8c8d;
-        --border-color: #eef2f5;
+        --accent-usdt: #26a17b;
+        --accent-kwanza: #e11d48;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #cbd5e1;
         --bg-light: #f8fafc;
-        --visa-gradient: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+        --panel-bg: #ffffff;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body { 
         margin: 0; padding: 0;
-        background: #ffffff !important; /* Fundo totalmente branco */
+        background: #ffffff !important; 
         font-family: 'Poppins', sans-serif; 
         color: var(--text-dark);
         overflow-x: hidden;
@@ -38,7 +40,6 @@
         overflow-x: hidden;
     }
 
-    /* NAVBAR MINIMALISTA */
     .casino-navbar {
         width: 100%;
         max-width: 500px;
@@ -48,7 +49,6 @@
         justify-content: space-between;
         padding: 0 20px; 
         background: #ffffff;
-        box-sizing: border-box;
     }
     .back-link { 
         display: inline-flex;
@@ -76,52 +76,80 @@
 
     .scroll-content { flex: 1; padding: 0 20px 40px 20px; width: 100%; max-width: 500px; box-sizing: border-box; }
 
-    /* CARD DE SALDO ESTILO CARTÃO VISA - DIMINUÍDO E MAIS COMPACTO */
-    .visa-card-balance {
+    /* CARD DE SALDO - COMPACTO, BONITO E EXECUTIVO */
+    .premium-balance-box {
         width: 100%;
-        background: var(--visa-gradient);
-        border-radius: 20px;
-        padding: 18px 20px;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-radius: 16px;
+        padding: 16px 20px;
         color: #ffffff;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-        margin-bottom: 22px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        margin-bottom: 25px;
         position: relative;
-        overflow: hidden;
-        box-sizing: border-box;
     }
-    .visa-card-balance::before {
-        content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
-        background: rgba(255, 255, 255, 0.03); border-radius: 50%; pointer-events: none;
-    }
-    .visa-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .visa-label { font-size: 10px; font-weight: 500; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; }
-    .visa-logo { font-size: 18px; font-weight: 700; font-style: italic; letter-spacing: -0.5px; }
-    
-    .visa-balance-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .visa-amount { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-    .btn-toggle-visibility { background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; }
-    
-    .visa-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; opacity: 0.8; }
+    .premium-label { font-size: 11px; font-weight: 500; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+    .premium-main-row { display: flex; align-items: center; justify-content: space-between; margin: 4px 0; }
+    .premium-amount { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+    .premium-secondary-amount { font-size: 16px; font-weight: 500; opacity: 0.85; margin-top: 2px; }
+    .premium-crypto-hint { font-size: 12px; font-weight: 500; color: #34d399; opacity: 0.95; display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+    .btn-toggle-premium { background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* FORMULÁRIO E INPUT DE VALOR */
+    /* SELEÇÃO DO CANAL (TABS GRANDES) */
+    .channel-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .channel-card-option {
+        border: 2px solid var(--border-color);
+        border-radius: 18px;
+        padding: 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        background: #ffffff;
+    }
+    .channel-card-option i { font-size: 24px; margin-bottom: 8px; display: block; }
+    .channel-card-option span { font-size: 13px; font-weight: 700; display: block; }
+    
+    .channel-card-option.selected[data-channel="USDT"] {
+        border-color: var(--accent-usdt); color: var(--accent-usdt); background: #f0fdf4;
+    }
+    .channel-card-option.selected[data-channel="KWANZA"] {
+        border-color: var(--accent-kwanza); color: var(--accent-kwanza); background: #fff5f5;
+    }
+
+    /* CHASSIS DINÂMICOS */
+    .dynamic-form-panel {
+        background: var(--bg-light); border-radius: 20px; padding: 20px;
+        border: 1px solid var(--border-color); margin-bottom: 20px; display: none;
+    }
+    
+    .form-group-custom { margin-bottom: 14px; }
+    .form-group-custom:last-child { margin-bottom: 0; }
+    .form-group-custom label { font-size: 12px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 6px; }
+    
+    .select-modern, .input-modern {
+        width: 100%; padding: 14px 16px; border: 1px solid var(--border-color);
+        background: #ffffff; border-radius: 12px; font-size: 13px; font-weight: 600;
+        color: var(--text-dark); outline: none; transition: 0.2s;
+    }
+    .select-modern:focus, .input-modern:focus { border-color: var(--primary-blue); }
+
+    .btn-save-gate {
+        width: 100%; background: var(--primary-blue); color: #fff; padding: 14px;
+        border-radius: 12px; font-weight: 700; border: none; cursor: pointer; text-transform: uppercase; font-size: 12px;
+    }
+
+    /* CAMPO DE VALOR BLOQUEADO ATÉ SALVAR */
+    .amount-section-wrapper { opacity: 0.4; pointer-events: none; transition: all 0.3s ease; }
+    .amount-section-wrapper.unlocked { opacity: 1; pointer-events: auto; }
+
     .input-group-saque { position: relative; margin-bottom: 15px; width: 100%; }
     .input-label-title { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; display: block; }
     .input-saque-field {
-        width: 100%;
-        padding: 16px 50px 16px 20px;
-        border: 1px solid var(--border-color);
-        background: var(--bg-light);
-        border-radius: 16px;
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--text-dark);
-        outline: none;
-        box-sizing: border-box;
+        width: 100%; padding: 16px 70px 16px 20px; border: 1px solid var(--border-color);
+        background: var(--bg-light); border-radius: 16px; font-size: 16px; font-weight: 700;
+        color: var(--text-dark); outline: none;
     }
-    .input-saque-field:focus { border-color: var(--accent-green); background: #ffffff; }
-    .currency-suffix { position: absolute; right: 20px; top: 43px; font-weight: 700; font-size: 14px; color: var(--text-muted); }
+    .currency-suffix { position: absolute; right: 20px; top: 43px; font-weight: 700; font-size: 15px; color: var(--text-dark); }
 
-    /* PAINEL DE TAXAS */
     .calc-panel {
         background: var(--bg-light); border-radius: 16px;
         padding: 16px; border: 1px solid var(--border-color); margin-bottom: 25px;
@@ -129,83 +157,83 @@
     .calc-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 10px; color: var(--text-muted); font-weight: 500; }
     .main-result { border-top: 1px solid var(--border-color); padding-top: 12px; font-weight: 700; font-size: 14px; margin-bottom: 0; color: var(--text-dark); }
 
-    /* BOTÕES */
     .btn-saque-gold {
-        width: 100%; padding: 16px; border-radius: 16px;
-        font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: 0.2s;
-        box-sizing: border-box; text-transform: uppercase;
+        width: 100%; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: 0.2s; text-transform: uppercase;
     }
     .btn-active { background: var(--accent-green); color: #ffffff; box-shadow: 0 5px 15px rgba(28, 189, 111, 0.2); }
     .btn-locked { background: #eef2f5; color: var(--text-muted); cursor: not-allowed; }
 
-    .info-badge-minimum { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 15px; font-weight: 500; }
+    .info-badge-minimum { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 15px; font-weight: 500; line-height: 1.6; }
 
-    /* MODAL DE HISTÓRICO - SIMPLIFICADO SEM ABAS */
+    /* MODAL DE HISTÓRICO PRO */
     .modal-history-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(44, 62, 80, 0.4); backdrop-filter: blur(4px);
-        display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; box-sizing: border-box;
+        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+        display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px;
     }
     .modal-history-box {
-        background: #ffffff; width: 100%; max-width: 420px; border-radius: 24px; padding: 24px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1); animation: slideUp 0.25s ease; box-sizing: border-box;
+        background: #ffffff; width: 100%; max-width: 440px; border-radius: 24px; padding: 24px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1); animation: slideUp 0.25s ease;
     }
     .modal-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .modal-history-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--primary-blue); }
-    .close-history-btn { background: var(--border-color); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-dark); }
+    .close-history-btn { background: var(--bg-light); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    .history-list-container { max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px; }
-    .empty-history-text { font-size: 12px; color: var(--text-muted); text-align: center; padding: 40px 0; }
-
-    /* CARDS DE HISTÓRICO REAL DO DJANGO */
-    .item-h-card {
-        padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-light);
-        display: flex; justify-content: space-between; align-items: center; font-size: 12px;
-    }
-    .item-h-info { display: flex; flex-direction: column; gap: 4px; }
-    .item-h-info .h-date { font-size: 10px; color: var(--text-muted); }
-    .item-h-info .h-val { font-weight: 700; color: var(--text-dark); font-size: 13px; }
-    .status-badge-inline { padding: 5px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .history-list-container { max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; }
     
-    /* Cores corretas para os status reais do banco de dados */
-    .status-badge-inline.aprovado, .status-badge-inline.approved, .status-badge-inline.sucesso { background: #def7ec; color: #03543f; }
-    .status-badge-inline.pendente, .status-badge-inline.pending { background: #fef3c7; color: #92400e; }
-    .status-badge-inline.recusado, .status-badge-inline.rejected, .status-badge-inline.failed { background: #fde8e8; color: #9b1c1c; }
+    .history-premium-card {
+        background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px;
+        display: flex; align-items: center; justify-content: space-between; transition: 0.2s;
+    }
+    .history-premium-card:hover { border-color: #cbd5e1; }
+    .hp-left { display: flex; align-items: center; gap: 12px; }
+    
+    .hp-icon-avatar {
+        width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .hp-icon-avatar.usdt { background: #e6f7f3; color: var(--accent-usdt); }
+    .hp-icon-avatar.kwanza { background: #fff1f2; color: var(--accent-kwanza); }
+    
+    .hp-details { display: flex; flex-direction: column; gap: 2px; }
+    .hp-meta-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .hp-meta-date { font-size: 11px; color: var(--text-muted); }
+    
+    .hp-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .hp-amount-display { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+    .hp-badge { padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    
+    .hp-badge.aprovado, .hp-badge.approved, .hp-badge.sucesso { background: #d1fae5; color: #065f46; }
+    .hp-badge.pendente, .hp-badge.pending { background: #fef3c7; color: #92400e; }
+    .hp-badge.recusado, .hp-badge.rejected, .hp-badge.failed { background: #fee2e2; color: #991b1b; }
 
-    /* MODAL EXCLUSIVO PARA RESPOSTAS DE TEXTO */
+    /* MODAL DE AVISO E RESPOSTA PROFISSIONAL */
     .response-modal-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
-        display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; box-sizing: border-box;
+        display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
     }
     .response-modal-box {
-        background: #ffffff; width: 100%; max-width: 400px; border-radius: 28px; padding: 30px 24px;
-        text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-sizing: border-box;
+        background: #ffffff; width: 100%; max-width: 400px; border-radius: 24px; padding: 32px 24px;
+        text-align: center; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18); animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .response-icon-circle {
-        width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px auto;
-    }
-    .response-icon-circle.success { background: #e6f7ed; color: #1cbd6f; }
-    .response-icon-circle.warning { background: #fffbeb; color: #d97706; }
-    
-    .response-title { font-size: 18px; font-weight: 700; color: var(--primary-blue); margin: 0 0 10px 0; }
-    .response-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0 0 25px 0; font-weight: 500; }
-    .response-action-btn {
-        width: 100%; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; text-transform: uppercase; transition: 0.2s;
-    }
+    .response-icon-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 18px auto; }
+    .response-icon-circle.success { background: #e6f7ed; color: #1cbd6f; box-shadow: 0 4px 12px rgba(28, 189, 111, 0.15); }
+    .response-icon-circle.warning { background: #fffbeb; color: #d97706; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15); }
+    .response-title { font-size: 18px; font-weight: 700; color: var(--primary-blue); margin: 0 0 8px 0; letter-spacing: -0.3px; }
+    .response-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0 0 24px 0; padding: 0 8px; }
+    .response-action-btn { width: 100%; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
     .response-action-btn.success-btn { background: #1cbd6f; color: #ffffff; }
-    .response-action-btn.warning-btn { background: #1a1f36; color: #ffffff; }
+    .response-action-btn.success-btn:hover { background: #17a45f; }
+    .response-action-btn.warning-btn { background: #1e293b; color: #ffffff; }
+    .response-action-btn.warning-btn:hover { background: #0f172a; }
 
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(25px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 </style>
 
 <div class="magico-container">
     <div class="casino-navbar">
         <a href="{% url 'menu' %}" class="back-link">
-            <svg viewBox="0 0 24 24">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
+            <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         </a>
         <button class="history-trigger-btn" onclick="openHistoryModal()">
             <i class="fas fa-history"></i> Histórico
@@ -213,61 +241,117 @@
     </div>
 
     <div class="scroll-content">
-        <div class="visa-card-balance">
-            <div class="visa-header">
-                <span class="visa-label">Fundo Disponível</span>
-                <span class="visa-logo">Visa</span>
-            </div>
-            <div class="visa-balance-row">
-                <span class="visa-amount" id="txtBalanceValue" data-raw-balance="{{ user.available_balance }}">{{ user.available_balance }} Kz</span>
-                <button type="button" class="btn-toggle-visibility" onclick="toggleBalanceVisibility()">
+        <div class="premium-balance-box">
+            <span class="premium-label">Balanço Disponível</span>
+            <div class="premium-main-row">
+                <div style="display: flex; flex-direction: column;">
+                    <span class="premium-amount" id="txtBalanceValueUSDT" data-raw-balance="{{ user.available_balance }}">0.00 USDT</span>
+                    <span class="premium-secondary-amount" id="txtBalanceValueAOA">0 Kz</span>
+                </div>
+                <button type="button" class="btn-toggle-premium" onclick="toggleBalanceVisibility()">
                     <i class="fas fa-eye" id="eyeIcon"></i>
                 </button>
             </div>
-            <div class="visa-footer">
-                <span>**** **** **** {% if user.id %}{{ user.id|stringformat:"04d" }}{% else %}0000{% endif %}</span>
-                <span>fd GLOBAL</span>
+            <div class="premium-crypto-hint" id="cryptoConversionHint">
+                <i class="fab fa-bitcoin"></i> Câmbio oficial: 1 USDT = 1000 AOA
+            </div>
+        </div>
+
+        <label class="input-label-title">1. Escolha a Moeda de Resgate</label>
+        <div class="channel-selector-grid">
+            <div class="channel-card-option" id="cardUSDT" data-channel="USDT" onclick="selectWithdrawalChannel('USDT')">
+                <i class="fas fa-circle-dollar-to-slot" style="color: var(--accent-usdt);"></i>
+                <span>USDT (Cripto)</span>
+            </div>
+            <div class="channel-card-option" id="cardKWANZA" data-channel="KWANZA" onclick="selectWithdrawalChannel('KWANZA')">
+                <i class="fas fa-money-bill-wave" style="color: var(--accent-kwanza);"></i>
+                <span>Kwanza (AOA)</span>
             </div>
         </div>
 
         <form method="post" id="formSaque" onsubmit="return handleSaqueSubmit(event)">
             {% csrf_token %}
-            
-            <div class="input-group-saque">
-                <label class="input-label-title">Quantia para Retirada</label>
-                <input type="number" 
-                       name="amount" 
-                       id="inputAmountKz" 
-                       class="input-saque-field" 
-                       placeholder="Digite o valor (Ex: 1000)" 
-                       min="2000" 
-                       step="any"
-                       oninput="calculateSaqueFees(this.value)"
-                       {% if has_withdrawn_today %}disabled{% endif %} required>
-                <span class="currency-suffix">Kz</span>
+            <input type="hidden" name="chosen_channel" id="chosenChannelInput" value="">
+
+            <div class="dynamic-form-panel" id="panelUSDT">
+                <div class="form-group-custom">
+                    <label>Selecione a Rede (Permite saques menores de 10 USDT)</label>
+                    <select class="select-modern" name="usdt_network" id="usdtNetwork">
+                        <option value="TRC-20">TRC-20 (Tron Network - Mais Rápida)</option>
+                        <option value="BEP-20">BEP-20 (Binance Smart Chain)</option>
+                        <option value="Polygon">Polygon Matic (Taxa Ultra Baixa)</option>
+                        <option value="Arbitrum">Arbitrum One</option>
+                        <option value="Solana">Solana SPL</option>
+                        <option value="Optimism">Optimism (OP)</option>
+                        <option value="Base">Base Chain</option>
+                        <option value="ERC-20">ERC-20 (Ethereum Mainnet)</option>
+                        <option value="AVAX">Avalanche C-Chain</option>
+                        <option value="TON">TON Network</option>
+                    </select>
+                </div>
+                <div class="form-group-custom">
+                    <label>Endereço da Carteira Cripto</label>
+                    <input type="text" class="input-modern" name="crypto_address" id="cryptoAddress" placeholder="Cole aqui sua carteira destino">
+                </div>
+                <div style="margin-top: 12px;">
+                    <button type="button" class="btn-save-gate" onclick="saveGateCoordinates()">Confirmar Destino Cripto</button>
+                </div>
             </div>
 
-            <div class="calc-panel">
-                <div class="calc-row">
-                    <span>Taxa Operacional (10%)</span>
-                    <span id="taxaTxt">0.00 Kz</span>
+            <div class="dynamic-form-panel" id="panelKWANZA">
+                <div class="form-group-custom">
+                    <label>Titular da Conta Bancária</label>
+                    <input type="text" class="input-modern" name="bank_holder" id="bankHolder" placeholder="Nome completo do beneficiário">
                 </div>
-                <div class="calc-row main-result">
-                    <span>Líquido a Receber</span>
-                    <span id="liquidoTxt" style="color: var(--accent-green);">0.00 Kz</span>
+                <div class="form-group-custom">
+                    <label>Nome do Banco</label>
+                    <input type="text" class="input-modern" name="bank_name" id="bankName" placeholder="Ex: BAI, BFA, BIC...">
+                </div>
+                <div class="form-group-custom">
+                    <label>Número do IBAN</label>
+                    <input type="text" class="input-modern" name="bank_iban" id="bankIban" placeholder="AO06.0000.0000.0000.0000.0">
+                </div>
+                <div style="margin-top: 12px;">
+                    <button type="button" class="btn-save-gate" onclick="saveGateCoordinates()">Confirmar Dados Bancários</button>
                 </div>
             </div>
 
-            {% if has_withdrawn_today %}
-                <button type="button" class="btn-saque-gold btn-locked" onclick="triggerDailyLimitModal()">Bloqueado até amanhã</button>
-            {% else %}
-                <button type="submit" class="btn-saque-gold btn-active" id="btnConfirm">Solicitar Saque</button>
-            {% endif %}
+            <div class="amount-section-wrapper" id="amountSectionWrapper">
+                <div class="input-group-saque">
+                    <label class="input-label-title" id="amountLabelTitle">2. Quantia para Retirada</label>
+                    <input type="number" 
+                           name="amount" 
+                           id="inputAmount" 
+                           class="input-saque-field" 
+                           placeholder="0.00" 
+                           step="any"
+                           oninput="calculateSaqueFees(this.value)"
+                           {% if has_withdrawn_today %}disabled{% endif %} required>
+                    <span class="currency-suffix" id="currencySuffix">Kz</span>
+                </div>
+
+                <div class="calc-panel">
+                    <div class="calc-row">
+                        <span>Taxa Operacional Integrada (10%)</span>
+                        <span id="taxaTxt">0.00 Kz</span>
+                    </div>
+                    <div class="calc-row main-result">
+                        <span>Líquido Creditado na sua Conta</span>
+                        <span id="liquidoTxt" style="color: var(--accent-green);">0.00 Kz</span>
+                    </div>
+                </div>
+
+                {% if has_withdrawn_today %}
+                    <button type="button" class="btn-saque-gold btn-locked" onclick="triggerDailyLimitModal()">Bloqueado até amanhã</button>
+                {% else %}
+                    <button type="submit" class="btn-saque-gold btn-active" id="btnConfirm">Solicitar Saque</button>
+                {% endif %}
+            </div>
         </form>
 
         <div class="info-badge-minimum">
-            <i class="fas fa-info-circle"></i> O valor mínimo para saque é de 1.000 Kz
-            <i class="fas fa-info-circle"></i> Processado em 2 minutos a 24 horas, reclame saquê, se passar 24 horas sem refletir
+            <i class="fas fa-info-circle"></i> <span id="footerInfoText">O valor mínimo para saque é de 2.0 USDT / 2.000 Kz</span><br>
+            <i class="fas fa-clock"></i> Pago em 15 a 24 hours. Contacte o suporte se exceder o prazo de 24 horas.
         </div>
     </div>
 </div>
@@ -275,23 +359,48 @@
 <div class="modal-history-overlay" id="historyModal">
     <div class="modal-history-box">
         <div class="modal-history-header">
-            <h3>Histórico de Saques</h3>
+            <h3>Histórico de Transações</h3>
             <button class="close-history-btn" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
         </div>
 
         <div class="history-list-container">
             {% if withdrawal_records %}
                 {% for record in withdrawal_records %}
-                <div class="item-h-card">
-                    <div class="item-h-info">
-                        <span class="h-val">{{ record.amount }} Kz</span>
-                        <span class="h-date">{{ record.created_at|date:"d/m/Y H:i" }}</span>
+                <div class="history-premium-card">
+                    <div class="hp-left">
+                        {% if "usdt" in record.channel_type|lower or record.amount < 1500 %}
+                            <div class="hp-icon-avatar usdt">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                            <div class="hp-details">
+                                <span class="hp-meta-title">Retirada Cripto</span>
+                                <span class="hp-meta-date">{{ record.created_at|date:"d/m/Y H:i" }}</span>
+                            </div>
+                        {% else %}
+                            <div class="hp-icon-avatar kwanza">
+                                <i class="fas fa-building-columns"></i>
+                            </div>
+                            <div class="hp-details">
+                                <span class="hp-meta-title">Saque Bancário</span>
+                                <span class="hp-meta-date">{{ record.created_at|date:"d/m/Y H:i" }}</span>
+                            </div>
+                        {% endif %}
                     </div>
-                    <span class="status-badge-inline {{ record.status|lower }}">{{ record.status }}</span>
+                    
+                    <div class="hp-right">
+                        {% if "usdt" in record.channel_type|lower or record.amount < 1500 %}
+                            <span class="hp-amount-display" style="color: var(--accent-usdt);">{{ record.amount }} USDT</span>
+                        {% else %}
+                            <span class="hp-amount-display">{{ record.amount }} Kz</span>
+                        {% endif %}
+                        <span class="hp-badge {{ record.status|lower }}">{{ record.status }}</span>
+                    </div>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-history-text">Nenhuma solicitação de saque encontrada nesta conta.</div>
+                <div class="empty-history-text" style="text-align:center; padding: 40px; color: var(--text-muted); font-size: 12px;">
+                    Nenhuma movimentação registrada até o momento.
+                </div>
             {% endif %}
         </div>
     </div>
@@ -302,51 +411,145 @@
         <div class="response-icon-circle success" id="modalIconContainer">
             <i class="fas fa-check" id="modalIconItem"></i>
         </div>
-        <h4 class="response-title" id="modalResponseTitle">Saque Solicitado!</h4>
-        <p class="response-desc" id="modalResponseDesc">Aguarde de alguns minutos a 24 horas e será aprovado.</p>
-        <button class="response-action-btn success-btn" id="modalResponseBtn" onclick="closeResponseModal()">Entendido</button>
+        <h4 class="response-title" id="modalResponseTitle">Sucesso!</h4>
+        <p class="response-desc" id="modalResponseDesc">Ação processada no sistema.</p>
+        <button class="response-action-btn success-btn" id="modalResponseBtn" onclick="closeResponseModal()">Fechar</button>
     </div>
 </div>
 
 <script>
-    const TAXA_PERCENT = 0.10;
+    let currentChannel = "";
     let isValueHidden = false;
+    
+    // Câmbio fixado conforme instrução: 1 USDT = 1000 AOA
+    const KWANZA_TO_USDT_RATE = 1000; 
 
-    // Modal de Regra de Limite Diário (Segunda a Sábado, 1 saque por dia)
     function triggerDailyLimitModal() {
-        showCustomModal(
-            'warning', 
-            'Aviso de Limite', 
-            'Você já sacou hoje, volte a sacar amanhã. É permitido apenas um saque por dia de segunda a sábado.'
-        );
+        showCustomModal('warning', 'Aviso de Limite', 'Você já efetuou um resgate hoje. É permitido apenas um saque diário de segunda a sábado.');
     }
 
-    // Intercepta e trata as mensagens enviadas pela Views.py transformando-as nos Modais Modernos
     window.addEventListener('DOMContentLoaded', () => {
-        {% if has_withdrawn_today %}
-            // Mantém aviso visual se já tentou sacar hoje
-            triggerDailyLimitModal();
-        {% endif %}
+        {% if has_withdrawn_today %} triggerDailyLimitModal(); {% endif %}
 
         {% if messages %}
+            {% block messages_handling %}
             {% for message in messages %}
                 let msgText = "{{ message }}".toLowerCase();
-                if (msgText.includes("hoje") || msgText.includes("limite") || msgText.includes("realizou")) {
+                if (msgText.includes("hoje") || msgText.includes("limite")) {
                     triggerDailyLimitModal();
-                } else if (msgText.includes("solicitado") || msgText.includes("sucesso") || msgText.includes("processamento")) {
-                    showCustomModal(
-                        'success', 
-                        'Saque Solicitado!', 
-                        'Aguarde de alguns minutos a 24 horas e será aprovado. Reclame apenas de saque após 24 horas caso não seja pago.'
-                    );
+                } else if (msgText.includes("solicitado") || msgText.includes("sucesso")) {
+                    showCustomModal('success', 'Saque Solicitado!', 'A sua ordem de retirada foi encaminhada para a fila de auditoria e será paga em 15 a 24 horas.');
                 } else {
-                    showCustomModal('warning', 'Mensagem do Sistema', "{{ message }}");
+                    showCustomModal('warning', 'Aviso do Sistema', "{{ message }}");
                 }
             {% endfor %}
+            {% endblock %}
         {% endif %}
+        
+        // Inicializa o display mostrando os dois saldos baseados no raw_balance recebido (considerando que o banco de dados armazena em Kwanza)
+        updateBalanceDisplay();
     });
 
-    // Controlador do Modal Customizado de Respostas
+    function selectWithdrawalChannel(channel) {
+        currentChannel = channel;
+        document.getElementById('chosenChannelInput').value = channel;
+        
+        document.getElementById('cardUSDT').classList.remove('selected');
+        document.getElementById('cardKWANZA').classList.remove('selected');
+        document.getElementById('panelUSDT').style.display = 'none';
+        document.getElementById('panelKWANZA').style.display = 'none';
+        
+        document.getElementById('amountSectionWrapper').classList.remove('unlocked');
+        
+        if(channel === 'USDT') {
+            document.getElementById('cardUSDT').classList.add('selected');
+            document.getElementById('panelUSDT').style.display = 'block';
+            document.getElementById('currencySuffix').innerText = "USDT";
+            document.getElementById('amountLabelTitle').innerText = "2. Quantia para Retirada (em USDT)";
+            document.getElementById('inputAmount').placeholder = "Mínimo: 2";
+            document.getElementById('inputAmount').min = "2";
+            document.getElementById('footerInfoText').innerText = "O valor mínimo para saque é de 2 USDT";
+        } else {
+            document.getElementById('cardKWANZA').classList.add('selected');
+            document.getElementById('panelKWANZA').style.display = 'block';
+            document.getElementById('currencySuffix').innerText = "Kz";
+            document.getElementById('amountLabelTitle').innerText = "2. Quantia para Retirada (em Kwanza)";
+            document.getElementById('inputAmount').placeholder = "Mínimo: 2000";
+            document.getElementById('inputAmount').min = "2000";
+            document.getElementById('footerInfoText').innerText = "O valor mínimo para saque é de 2.000 Kz";
+        }
+        
+        calculateSaqueFees(document.getElementById('inputAmount').value);
+    }
+
+    function saveGateCoordinates() {
+        if (currentChannel === 'USDT') {
+            const address = document.getElementById('cryptoAddress').value.trim();
+            if (address.length < 10) {
+                showCustomModal('warning', 'Dados Incompletos', 'Por favor, insira um endereço de carteira válido.');
+                return;
+            }
+        } else if (currentChannel === 'KWANZA') {
+            const holder = document.getElementById('bankHolder').value.trim();
+            const bank = document.getElementById('bankName').value.trim();
+            const iban = document.getElementById('bankIban').value.trim();
+            if (!holder || !bank || iban.length < 15) {
+                showCustomModal('warning', 'Dados Incompletos', 'Preencha todos os dados bancários corretamente.');
+                return;
+            }
+        }
+        
+        document.getElementById('amountSectionWrapper').classList.add('unlocked');
+        showCustomModal('success', 'Coordenadas Prontas', 'Dados verificados com sucesso! Agora defina o valor do resgate.');
+    }
+
+    function updateBalanceDisplay() {
+        const txtBalanceUSDT = document.getElementById('txtBalanceValueUSDT');
+        const txtBalanceAOA = document.getElementById('txtBalanceValueAOA');
+        const rawBalance = parseFloat(txtBalanceUSDT.getAttribute('data-raw-balance')) || 0;
+        
+        if (isValueHidden) {
+            txtBalanceUSDT.innerText = "•••••• USDT";
+            txtBalanceAOA.innerText = "•••••• Kz";
+            return;
+        }
+
+        const convertedUSDT = rawBalance / KWANZA_TO_USDT_RATE;
+        txtBalanceUSDT.innerText = convertedUSDT.toFixed(2) + " USDT";
+        txtBalanceAOA.innerText = rawBalance.toLocaleString('pt-AO') + " Kz";
+    }
+
+    function toggleBalanceVisibility() {
+        isValueHidden = !isValueHidden;
+        document.getElementById('eyeIcon').className = isValueHidden ? "fas fa-eye-slash" : "fas fa-eye";
+        updateBalanceDisplay();
+    }
+
+    function calculateSaqueFees(value) {
+        const amount = parseFloat(value) || 0;
+        const vTaxa = amount * 0.10;
+        const vLiquido = amount - vTaxa;
+        const suffix = currentChannel === 'USDT' ? " USDT" : " Kz";
+
+        document.getElementById('taxaTxt').innerText = "-" + vTaxa.toFixed(2) + suffix;
+        document.getElementById('liquidoTxt').innerText = vLiquido.toFixed(2) + suffix;
+    }
+
+    function handleSaqueSubmit(event) {
+        const inputVal = parseFloat(document.getElementById('inputAmount').value) || 0;
+        
+        if (currentChannel === 'USDT' && inputVal < 2) {
+            event.preventDefault();
+            showCustomModal('warning', 'Valor Insuficiente', 'Para USDT o saque mínimo é de 2 USDT.');
+            return false;
+        } else if (currentChannel === 'KWANZA' && inputVal < 2000) {
+            event.preventDefault();
+            showCustomModal('warning', 'Valor Insuficiente', 'Para Kwanza o saque mínimo é de 2.000 Kz.');
+            return false;
+        }
+        return true;
+    }
+
     function showCustomModal(type, title, description) {
         const modal = document.getElementById('responseModal');
         const iconContainer = document.getElementById('modalIconContainer');
@@ -367,67 +570,16 @@
             iconItem.className = "fas fa-exclamation-triangle";
             btnEl.className = "response-action-btn warning-btn";
         }
-
         modal.style.display = 'flex';
     }
 
-    function closeResponseModal() {
-        document.getElementById('responseModal').style.display = 'none';
-    }
+    function closeResponseModal() { document.getElementById('responseModal').style.display = 'none'; }
+    function openHistoryModal() { document.getElementById('historyModal').style.display = 'flex'; }
+    function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
-    // Alternar visibilidade do saldo
-    function toggleBalanceVisibility() {
-        const txtBalance = document.getElementById('txtBalanceValue');
-        const eyeIcon = document.getElementById('eyeIcon');
-        const rawBalance = txtBalance.getAttribute('data-raw-balance');
-
-        if (!isValueHidden) {
-            txtBalance.innerText = "•••••• Kz";
-            eyeIcon.className = "fas fa-eye-slash";
-            isValueHidden = true;
-        } else {
-            txtBalance.innerText = rawBalance + " Kz";
-            eyeIcon.className = "fas fa-eye";
-            isValueHidden = false;
-        }
-    }
-
-    // Calcula taxas e líquidos apenas em Kz
-    function calculateSaqueFees(value) {
-        const amount = parseFloat(value) || 0;
-        const vTaxa = amount * TAXA_PERCENT;
-        const vLiquido = amount - vTaxa;
-
-        document.getElementById('taxaTxt').innerText = "-" + vTaxa.toFixed(2) + " Kz";
-        document.getElementById('liquidoTxt').innerText = vLiquido.toFixed(2) + " Kz";
-    }
-
-    // Validação de segurança no envio
-    function handleSaqueSubmit(event) {
-        const inputVal = parseFloat(document.getElementById('inputAmountKz').value) || 0;
-        if (inputVal < 2000) {
-            event.preventDefault();
-            showCustomModal('warning', 'Valor Insuficiente', 'O valor mínimo para solicitação de saque é 1.000 Kz.');
-            return false;
-        }
-        return true;
-    }
-
-    // Modais do Histórico
-    function openHistoryModal() {
-        document.getElementById('historyModal').style.display = 'flex';
-    }
-
-    function closeHistoryModal() {
-        document.getElementById('historyModal').style.display = 'none';
-    }
-
-    // Fechar ao clicar fora das caixas
     window.onclick = function(event) {
-        const histModal = document.getElementById('historyModal');
-        const respModal = document.getElementById('responseModal');
-        if (event.target == histModal) histModal.style.display = "none";
-        if (event.target == respModal) respModal.style.display = "none";
+        if (event.target == document.getElementById('historyModal')) closeHistoryModal();
+        if (event.target == document.getElementById('responseModal')) closeResponseModal();
     }
 </script>
 {% endblock %}

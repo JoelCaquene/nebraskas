@@ -17,7 +17,6 @@ from .models import (
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    # 1. MODIFICADO: Mostra afiliados, investidores e tarefas de estagiários
     list_display = (
         'phone_number', 
         'available_balance', 
@@ -36,65 +35,87 @@ class CustomUserAdmin(admin.ModelAdmin):
     get_afiliados_count.short_description = 'Convidados'
 
     def get_investidores_count(self, obj):
-        # Conta quantos convidados têm um nível VIP ativo
         return CustomUser.objects.filter(invited_by=obj, userlevel__is_active=True).distinct().count()
     get_investidores_count.short_description = 'Investidores'
 
     def get_tarefas_estagiario(self, obj):
-        # 2. MODIFICADO: Mostra progresso das tarefas (mínimo 2)
         count = Task.objects.filter(user=obj).count()
         if obj.level_active:
             return mark_safe(f'<span style="color: #28a745; font-weight: bold;">VIP ({count})</span>')
         return f"{count} / 2"
     get_tarefas_estagiario.short_description = 'Tarefas (Estag.)'
 
+
 @admin.register(PlatformSettings)
 class PlatformSettingsAdmin(admin.ModelAdmin):
     list_display = ('id', 'whatsapp_link', 'history_text', 'deposit_instruction', 'withdrawal_instruction')
     search_fields = ('whatsapp_link',)
+
 
 @admin.register(Level)
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('name', 'deposit_value', 'daily_gain', 'monthly_gain', 'cycle_days')
     search_fields = ('name',)
 
+
 @admin.register(BankDetails)
 class BankDetailsAdmin(admin.ModelAdmin):
-    list_display = ('user', 'bank_name', 'account_holder_name', 'IBAN')
-    search_fields = ('user__phone_number', 'bank_name', 'account_holder_name')
+    # Mudança inteligente: Exibe dinamicamente na lista se a conta é USDT ou dados bancários normais
+    list_display = ('user', 'get_tipo_conta', 'bank_name', 'account_holder_name', 'IBAN')
+    search_fields = ('user__phone_number', 'bank_name', 'account_holder_name', 'IBAN')
+
+    def get_tipo_conta(self, obj):
+        if obj.IBAN and not obj.bank_name and not obj.account_holder_name:
+            return mark_safe('<b style="color: #16a34a;">Carteira USDT</b>')
+        elif getattr(obj, 'type', None) == 'USDT':
+            return mark_safe('<b style="color: #16a34a;">Carteira USDT</b>')
+        return mark_safe('<b style="color: #ef4444;">Banco Kwanza</b>')
+    get_tipo_conta.short_description = 'Tipo de Conta'
+
 
 @admin.register(PlatformBankDetails)
 class PlatformBankDetailsAdmin(admin.ModelAdmin):
-    list_display = ('get_type_icon', 'type', 'bank_name', 'account_holder_name', 'IBAN_preview')
+    list_display = ('get_type_icon', 'bank_name', 'account_holder_name', 'IBAN_preview')
     list_filter = ('type', 'bank_name')
     search_fields = ('bank_name', 'account_holder_name', 'IBAN')
     
     fieldsets = (
-        ('Configuração de Destino', {
+        ('Configuração do Canal de Recebimento', {
             'fields': ('type',),
-            'description': 'Selecione se esta entrada é para pagamentos PIX ou Cripto USDT.'
+            'description': 'Escolha o ecossistema financeiro desta conta para direcionamento automático no front-end.'
         }),
-        ('Dados da Conta / Carteira', {
+        ('Coordenadas de Destino (Depósito)', {
             'fields': ('bank_name', 'account_holder_name', 'IBAN'),
+            'description': 'Para Kwanza, use o nome do Banco e o IBAN. Para USDT, insira apenas a Rede (Ex: TRC-20) e o Endereço no campo IBAN.'
         }),
     )
 
     def get_type_icon(self, obj):
-        if obj.type == 'PIX':
-            return mark_safe('<span style="color: #32BCAD; font-weight: bold;">💎 PIX</span>')
-        return mark_safe('<span style="color: #F3BA2F; font-weight: bold;">🪙 USDT</span>')
-    get_type_icon.short_description = 'Tipo'
+        if obj.type == 'PIX' or obj.type == 'KWANZA':  
+            return mark_safe(
+                '<span style="background: #ef4444; color: #fff; padding: 4px 10px; '
+                'border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block;">'
+                '<i class="fa-solid fa-money-bill-wave" style="margin-right: 4px;"></i> KWANZA (AOA)</span>'
+            )
+        return mark_safe(
+            '<span style="background: #16a34a; color: #fff; padding: 4px 10px; '
+            'border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block;">'
+            '<i class="fa-solid fa-circle-dollar-to-slot" style="margin-right: 4px;"></i> USDT (Cripto)</span>'
+        )
+    get_type_icon.short_description = 'Canal / Moeda'
 
     def IBAN_preview(self, obj):
         if obj.IBAN:
-            return obj.IBAN[:20] + "..." if len(obj.IBAN) > 20 else obj.IBAN
+            preview = obj.IBAN[:24] + "..." if len(obj.IBAN) > 24 else obj.IBAN
+            return mark_safe(f'<code style="font-family: monospace; font-size: 12px;">{preview}</code>')
         return "-"
-    IBAN_preview.short_description = 'Chave / Endereço'
+    IBAN_preview.short_description = 'Endereço da Carteira / IBAN'
 
     class Media:
         css = {
-            'all': ('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',)
+            'all': ('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',)
         }
+
 
 @admin.register(Deposit)
 class DepositAdmin(admin.ModelAdmin):
@@ -103,7 +124,6 @@ class DepositAdmin(admin.ModelAdmin):
     list_filter = ('is_approved',)
     readonly_fields = ('current_proof_display',)
 
-    # 3. MODIFICADO: Soma saldo imediatamente ao marcar como aprovado
     def save_model(self, request, obj, form, change):
         if change:
             old_deposit = Deposit.objects.get(pk=obj.pk)
@@ -129,27 +149,28 @@ class DepositAdmin(admin.ModelAdmin):
         return "Nenhum Comprovativo Carregado"
     current_proof_display.short_description = 'Comprovativo Atual'
 
+
 @admin.register(Withdrawal)
 class WithdrawalAdmin(admin.ModelAdmin):
-    # 4. MODIFICADO: IBAN aparece na lista e botão de aprovação rápida
     list_display = (
         'user', 
+        'get_canal_solicitado', 
         'get_valor_bruto_kz', 
-        'get_valor_liquido_kz',
-        'get_pagamento_real_brl', 
-        'get_iban_direto', # Solicitação: IBAN aparece imediatamente
+        'get_taxa_descontada_kz',
+        'get_valor_liquido_kz', 
+        'get_iban_direto', 
         'status', 
-        'botao_aprovar_rapido' # Solicitação: Apenas clique para aprovar
+        'botao_aprovar_rapido'
     )
     
-    list_filter = ('status', 'created_at')
-    search_fields = ('user__phone_number', 'user__full_name')
+    list_filter = ('status', 'created_at', 'channel_type')
+    search_fields = ('user__phone_number', 'user__full_name', 'user__username', 'bank_iban', 'crypto_address')
 
     readonly_fields = (
+        'get_canal_solicitado',
         'get_valor_bruto_kz', 
         'get_taxa_descontada_kz', 
         'get_valor_liquido_kz', 
-        'get_pagamento_real_brl',
         'get_dados_bancarios',
         'created_at'
     )
@@ -158,15 +179,15 @@ class WithdrawalAdmin(admin.ModelAdmin):
         ('Informações do Cliente', {
             'fields': ('user', 'status', 'created_at')
         }),
-        ('Cálculos Financeiros (Câmbio Wise)', {
+        ('Cálculos de Auditoria (Desconto de Taxa Integrado)', {
             'fields': (
+                'get_canal_solicitado',
                 'get_valor_bruto_kz', 
                 'get_taxa_descontada_kz', 
-                'get_valor_liquido_kz', 
-                'get_pagamento_real_brl'
+                'get_valor_liquido_kz'
             )
         }),
-        ('Logística de Pagamento', {
+        ('Logística e Destino do Pagamento', {
             'fields': ('get_dados_bancarios',)
         }),
         ('Dados Técnicos', {
@@ -175,8 +196,15 @@ class WithdrawalAdmin(admin.ModelAdmin):
         }),
     )
     
-    CAMBIO_WISE = Decimal('0.0065')
     TAXA_PERCENTUAL = Decimal('0.10')
+
+    def get_canal_solicitado(self, obj):
+        """ Verifica o canal real gravado no momento em que o saque foi efetuado """
+        canal = getattr(obj, 'channel_type', 'KWANZA')
+        if canal == 'USDT':
+            return mark_safe('<span style="color: #16a34a; font-weight: bold;"><i class="fa-solid fa-circle-dollar-to-slot"></i> USDT</span>')
+        return mark_safe('<span style="color: #ef4444; font-weight: bold;"><i class="fa-solid fa-money-bill-wave"></i> KWANZA (AOA)</span>')
+    get_canal_solicitado.short_description = 'Canal / Moeda'
 
     def get_valor_bruto_kz(self, obj):
         return f"{obj.amount:,.2f} Kz".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -184,64 +212,80 @@ class WithdrawalAdmin(admin.ModelAdmin):
 
     def get_taxa_descontada_kz(self, obj):
         taxa = obj.amount * self.TAXA_PERCENTUAL
-        return mark_safe(f'<span style="color: #d9534f;">- {taxa:,.2f} Kz</span>')
+        taxa_formatada = f"{taxa:,.2f} Kz".replace(",", "X").replace(".", ",").replace("X", ".")
+        return mark_safe(f'<span style="color: #dc2626; font-weight: 500;">- {taxa_formatada}</span>')
     get_taxa_descontada_kz.short_description = 'Taxa (10%)'
 
     def get_valor_liquido_kz(self, obj):
         liquido = obj.amount * (Decimal('1') - self.TAXA_PERCENTUAL)
-        return mark_safe(f'<b>{liquido:,.2f} Kz</b>')
+        liquido_formatado = f"{liquido:,.2f} Kz".replace(",", "X").replace(".", ",").replace("X", ".")
+        return mark_safe(f'<b style="color: #0f172a; font-size: 13px;">{liquido_formatado}</b>')
     get_valor_liquido_kz.short_description = 'Líquido'
 
-    def get_pagamento_real_brl(self, obj):
-        liquido_kz = obj.amount * (Decimal('1') - self.TAXA_PERCENTUAL)
-        valor_brl = liquido_kz * self.CAMBIO_WISE
-        return mark_safe(
-            f'<div style="background: #e6fffa; padding: 5px 10px; border-radius: 4px; border: 1px solid #38b2ac; display: inline-block;">'
-            f'<b style="color: #2c7a7b;">R$ {valor_brl:,.2f}</b>'
-            f'</div>'
-        )
-    get_pagamento_real_brl.short_description = 'PAGAR (BRL)'
-
     def get_iban_direto(self, obj):
-        try:
-            dados = BankDetails.objects.get(user=obj.user)
-            return mark_safe(f'<code style="color:#e83e8c; font-weight:bold;">{dados.IBAN}</code>')
-        except BankDetails.DoesNotExist:
-            return mark_safe("<span style='color:red;'>Sem Dados</span>")
-    get_iban_direto.short_description = 'IBAN/PIX'
+        """ Retorna diretamente o dado fixado no registro histórico do saque """
+        canal = getattr(obj, 'channel_type', 'KWANZA')
+        if canal == 'USDT':
+            endereco = getattr(obj, 'crypto_address', 'Sem Endereço') or 'Sem Endereço'
+            return mark_safe(f'<code style="color:#16a34a; font-weight:600; font-family: monospace;">{endereco}</code>')
+        
+        iban = getattr(obj, 'bank_iban', 'Sem IBAN') or 'Sem IBAN'
+        return mark_safe(f'<code style="color:#2563eb; font-weight:600; font-family: monospace;">{iban}</code>')
+    get_iban_direto.short_description = 'IBAN / Carteira USDT'
 
     def get_dados_bancarios(self, obj):
-        try:
-            dados = BankDetails.objects.get(user=obj.user)
+        """ Renderiza os blocos com base exclusiva nos dados imutáveis salvos no registro do saque """
+        canal = getattr(obj, 'channel_type', 'KWANZA')
+        
+        if canal == 'USDT':
+            rede = getattr(obj, 'usdt_network', 'Não informada') or 'Não informada'
+            carteira = getattr(obj, 'crypto_address', 'Não informada') or 'Não informada'
             return mark_safe(
-                f"<div style='background:#f9f9f9; padding:10px; border-radius:8px; border:1px solid #ddd;'>"
-                f"<b>Titular:</b> {dados.account_holder_name}<br>"
-                f"<b>Banco:</b> {dados.bank_name}<br>"
-                f"<b>IBAN:</b> {dados.IBAN}"
+                f"<div style='background:#f0fdf4; padding:12px 16px; border-radius:12px; border:1px solid #bbf7d0; max-width: 400px;'>\n"
+                f"<span style='font-size:11px; text-transform:uppercase; color:#16a34a; font-weight:700; display:block; margin-bottom:4px;'>Destinatário Cripto (USDT)</span>"
+                f"<b>Rede:</b> {rede}<br>"
+                f"<b>Endereço da Carteira:</b> <code style='font-family:monospace; font-size:12px; color:#16a34a; font-weight:bold;'>{carteira}</code>"
                 f"</div>"
             )
-        except BankDetails.DoesNotExist:
-            return "Sem dados cadastrados."
-    get_dados_bancarios.short_description = 'Dados para Depósito'
+            
+        # Layout Completo para saques em Kwanza (Angola)
+        titular = getattr(obj, 'bank_holder', 'Não informado') or 'Não informado'
+        banco = getattr(obj, 'bank_name', 'Não informado') or 'Não informado'
+        iban = getattr(obj, 'bank_iban', 'Não informado') or 'Não informado'
+        return mark_safe(
+            f"<div style='background:#f8fafc; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; max-width: 400px;'>"
+            f"<span style='font-size:11px; text-transform:uppercase; color:#64748b; font-weight:700; display:block; margin-bottom:4px;'>Destinatário Bancário (Kwanza)</span>"
+            f"<b>Titular:</b> {titular}<br>"
+            f"<b>Banco:</b> {banco}<br>"
+            f"<b>IBAN:</b> <code style='font-family:monospace; font-size:12px; color:#2563eb;'>{iban}</code>"
+            f"</div>"
+        )
+    get_dados_bancarios.short_description = 'Coordenadas de Envio'
 
     def botao_aprovar_rapido(self, obj):
-        if obj.status == 'Pendente' or obj.status == 'Pending':
+        if obj.status in ['Pendente', 'Pending']:
             return mark_safe(
                 f'<a class="button" href="?set_status=Aprovado&idx={obj.id}" '
-                f'style="background-color: #28a745; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none;">'
-                f'Aprovar Agora</a>'
+                f'style="background-color: #16a34a; color: white; padding: 6px 12px; border-radius: 6px; '
+                f'text-decoration: none; font-weight: 700; font-size: 11px; display: inline-block;">'
+                f'Aprovar e Pagar</a>'
             )
-        elif obj.status == 'Aprovado':
-            return mark_safe("<span style='color:#28a745; font-weight:bold;'>✓ Pago</span>")
-        return obj.status
-    botao_aprovar_rapido.short_description = 'Aprovação'
+        elif obj.status in ['Aprovado', 'Approved']:
+            return mark_safe("<span style='color:#16a34a; font-weight:700;'><i class='fa-solid fa-circle-check'></i> Pago</span>")
+        return mark_safe(f"<span style='color:#64748b;'>{obj.status}</span>")
+    botao_aprovar_rapido.short_description = 'Ações'
 
     def changelist_view(self, request, extra_context=None):
         if 'set_status' in request.GET and 'idx' in request.GET:
             status_novo = request.GET.get('set_status')
             idx = request.GET.get('idx')
-            Withdrawal.objects.filter(id=idx).update(status=status_novo)
-            self.message_user(request, f"Saque #{idx} aprovado!")
+            
+            withdrawal = Withdrawal.objects.filter(id=idx).first()
+            if withdrawal and withdrawal.status in ['Pendente', 'Pending']:
+                withdrawal.status = status_novo
+                withdrawal.save()
+                self.message_user(request, f"Saque de {withdrawal.user.get_username()} aprovado com sucesso.")
+                
         return super().changelist_view(request, extra_context)
 
 @admin.register(Task)
@@ -249,15 +293,18 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ('user', 'earnings', 'completed_at')
     search_fields = ('user__phone_number',)
 
+
 @admin.register(Roulette)
 class RouletteAdmin(admin.ModelAdmin):
     list_display = ('user', 'prize', 'is_approved', 'spin_date')
     search_fields = ('user__phone_number',)
     list_filter = ('is_approved',)
 
+
 @admin.register(RouletteSettings)
 class RouletteSettingsAdmin(admin.ModelAdmin):
     list_display = ('id', 'prizes')
+
 
 @admin.register(UserLevel)
 class UserLevelAdmin(admin.ModelAdmin):

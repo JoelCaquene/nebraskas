@@ -1,85 +1,309 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Planos e Funções - fd{% endblock %}
+{% block title %}Certificados Oficiais - nebraska GLOBAL{% endblock %}
 
 {% block content %}
 <style>
-    body { 
-        background: #020b1e !important; /* Azul escuro profundo uniforme */
-        margin: 0; 
+    /* RESET DE CAIXA E TRATAMENTO DE CONTEXTO GLOBAL */
+    *, *::before, *::after { 
+        box-sizing: border-box; 
+    }
+    
+    body {
+        margin: 0;
         padding: 0;
-        overflow-x: hidden; /* Remove rolagem horizontal e evita o balanço da tela */
+        overflow-x: hidden !important; /* Bloqueia rigorosamente qualquer rolagem horizontal no dispositivo */
+        background: #020b1e !important; /* Fundo escuro corporativo unificado da nebraska GLOBAL */
+        font-family: 'Times New Roman', Times, serif;
+        -webkit-font-smoothing: antialiased;
     }
 
+    /* EMBALAGEM PRINCIPAL DA GALERIA */
     .gallery-wrapper {
         min-height: 100vh;
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        /* Brilho radial estético no centro da tela */
-        background: radial-gradient(circle at center, rgba(0, 122, 255, 0.15) 0%, transparent 70%);
+        background: radial-gradient(circle at center, rgba(0, 122, 255, 0.12) 0%, transparent 75%);
+        padding-bottom: 60px;
         box-sizing: border-box;
-        overflow-x: hidden;
     }
 
-    /* HEADER TOTALMENTE LIMPO */
+    /* CABEÇALHO DA PÁGINA (BOTÃO VOLTAR) */
     .gallery-header { 
         width: 100%;
-        max-width: 500px;
-        padding: 20px;
+        max-width: 850px;
+        padding: 25px 16px;
         display: flex; 
         align-items: center; 
-        justify-content: flex-start; /* Alinha a seta à esquerda sem texto */
+        justify-content: flex-start;
         box-sizing: border-box;
     }
 
-    /* SETA DE VOLTAR MINIMALISTA (FINA E ELEGANTE EM SVG) */
+    /* BOTÃO VOLTAR EM SVG SEGURO */
     .back-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         text-decoration: none; 
-        color: rgba(255, 255, 255, 0.8);
-        width: 40px;
-        height: 40px;
-        transition: transform 0.2s, color 0.2s;
+        color: rgba(255, 255, 255, 0.85);
+        width: 44px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: background 0.2s, transform 0.2s;
     }
     .back-btn svg {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         fill: none;
         stroke: currentColor;
-        stroke-width: 2;
+        stroke-width: 2.5;
         stroke-linecap: round;
         stroke-linejoin: round;
     }
     .back-btn:active { 
-        transform: scale(0.9); 
+        transform: scale(0.95); 
+        background: rgba(0, 122, 255, 0.2);
         color: #007AFF;
     }
 
-    /* CONTAINER VERTICAL DE IMAGENS INTEGRADAS */
-    .images-container {
+    /* CONTAINER DO DOCUMENTO - EXPANDIDO ATÉ ÀS LATERAIS */
+    .document-container {
         width: 100%;
-        max-width: 500px; /* Garante estabilidade em ecrãs Mobile */
+        max-width: 850px; /* Limite estrutural para ecrãs de computadores ou tablets */
+        padding: 0 12px; /* Margem milimétrica de segurança nas bordas laterais do telemóvel */
+        box-sizing: border-box;
+        margin-bottom: 35px;
+    }
+
+    /* FOLHA DE DOCUMENTO JURÍDICO - TOTALMENTE RESPONSIVA (OCUPA 100% DA LARGURA DISPONÍVEL) */
+    .document-page {
+        position: relative;
+        width: 100%; /* Ocupa as laterais completamente, eliminando divisões estáticas */
+        background-color: #ffffff;
+        padding: 35px 24px; /* Otimização de preenchimento interno adaptável */
+        border: 3px solid #0c2340;
+        outline: 2px solid #c5a059;
+        outline-offset: -8px;
         display: flex;
         flex-direction: column;
-        gap: 0; /* Cola as duas imagens eliminando qualquer separação */
-        padding: 0 10px 40px 10px; /* Espaço de respiro apenas nas laterais e base */
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        color: #111111;
         box-sizing: border-box;
     }
 
-    /* QUALIDADE MÁXIMA SEM CORTES */
-    .mixed-image {
-        width: 100%;
-        height: auto;
-        display: block;
-        object-fit: contain; /* Abre a imagem por completo sem recortar ou ocultar partes */
-        image-rendering: -webkit-optimize-contrast; /* Otimização de nitidez para ecrãs mobile */
+    /* CÓDIGO IDENTIFICADOR DO REGISTO */
+    .doc-id {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 11px;
+        color: #444444;
+        text-align: right;
+        font-weight: bold;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+    }
+
+    /* CABEÇALHO DO DOCUMENTO */
+    .header-doc {
+        text-align: center;
+        margin-bottom: 22px;
+        border-bottom: 2px double #c5a059;
+        padding-bottom: 14px;
+    }
+
+    .header-doc h1 {
+        font-size: 19px;
+        color: #0c2340;
+        margin: 0 0 6px 0;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        line-height: 1.2;
+        font-weight: bold;
+    }
+
+    .header-doc h2 {
+        font-size: 12px;
+        color: #c5a059;
         margin: 0;
-        padding: 0;
+        font-style: italic;
+        font-weight: normal;
+        letter-spacing: 0.5px;
+    }
+
+    /* TÍTULO CENTRAL DO CERTIFICADO */
+    .title-doc {
+        text-align: center;
+        font-size: 15px;
+        font-weight: bold;
+        color: #0c2340;
+        margin-bottom: 22px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.3;
+    }
+
+    /* TEXTO LEGAL - MÁXIMA LEGIBILIDADE NAS LATERAIS */
+    .content-doc {
+        font-size: 14px;
+        text-align: justify;
+        line-height: 1.55;
+        color: #1a1a1a;
+    }
+
+    .content-doc p {
+        margin: 0 0 14px 0;
+        text-indent: 25px;
+    }
+
+    /* TABELA DE REGISTO TÉCNICO - ADAPTÁVEL DE PONTA A PONTA */
+    .table-data {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 22px 0;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+    }
+
+    .table-data th, .table-data td {
+        border: 1px solid #bbbbbb;
+        padding: 9px 11px;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .table-data th {
+        background-color: #f4f6f9;
+        color: #0c2340;
+        font-weight: bold;
+        width: 35%; /* Proporção ideal para rotulagem estável em mobile */
+    }
+
+    .table-data td {
+        color: #222222;
+        background-color: #ffffff;
+    }
+
+    .highlight-expiry {
+        color: #b10000;
+        font-weight: bold;
+    }
+
+    /* SECÇÃO DE CHANCELAS, CARIMBOS E ASSINATURAS */
+    .stamp-signature-section {
+        margin-top: 15px;
+        padding-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap; /* Permite realinhamento vertical inteligente em telas muito estreitas */
+        gap: 25px;
+    }
+
+    .sig-col {
+        flex: 1;
+        min-width: 145px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* RENDERIZAÇÃO VECTORIAL DO CARIMBO EM CSS PURO */
+    .stamp-box {
+        width: 105px;
+        height: 105px;
+        border: 3px double #0033aa;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #0033aa;
+        font-family: Arial, sans-serif;
+        font-size: 8px;
+        font-weight: bold;
+        text-align: center;
+        text-transform: uppercase;
+        line-height: 1.2;
+        transform: rotate(-4deg);
+        background-color: rgba(0, 51, 170, 0.01);
+    }
+
+    .stamp-box.green { border-color: #107c41; color: #107c41; }
+    .stamp-box.purple { border-color: #7a1a85; color: #7a1a85; }
+    .stamp-box.gold { border-color: #8e6f15; color: #8e6f15; }
+
+    .stamp-inner-alert {
+        font-size: 10px;
+        color: #cc0000;
+        border-top: 1px dashed currentColor;
+        border-bottom: 1px dashed currentColor;
+        margin: 2px 0;
+        padding: 1px 3px;
+        letter-spacing: 0.5px;
+    }
+
+    .stamp-label {
+        font-size: 9px;
+        margin-top: 6px;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        letter-spacing: 0.5px;
+    }
+
+    /* BLOCO DE ASSINATURA MANUAL */
+    .signature-container {
+        width: 100%;
+        position: relative;
+    }
+
+    .signature-handwritten {
+        font-family: 'Brush Script MT', 'Comic Sans MS', cursive;
+        font-size: 25px;
+        color: #1a237e;
+        position: absolute;
+        top: -18px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-1.5deg);
+        white-space: nowrap;
+        opacity: 0.9;
+        user-select: none;
+    }
+
+    .signature-line {
+        border-top: 1px solid #111111;
+        padding-top: 6px;
+        font-size: 11px;
+        font-family: Arial, sans-serif;
+        line-height: 1.35;
+    }
+
+    /* RODA-PÉ DOS CERTIFICADOS */
+    .footer-note {
+        text-align: center;
+        font-size: 9px;
+        color: #666666;
+        font-family: Arial, sans-serif;
+        border-top: 1px solid #e8e8e8;
+        margin-top: 25px;
+        padding-top: 10px;
+        letter-spacing: 0.2px;
+    }
+
+    /* MEDIA QUERY PARA MAIOR CLAREZA VISUAL EM ECRÃS GRANDES (DESKTOP) */
+    @media (min-width: 650px) {
+        .document-page { padding: 45px 40px; }
+        .header-doc h1 { font-size: 23px; letter-spacing: 2px; }
+        .title-doc { font-size: 17px; letter-spacing: 1px; }
+        .content-doc { font-size: 15px; }
+        .stamp-box { width: 120px; height: 120px; font-size: 9px; }
+        .stamp-inner-alert { font-size: 11px; }
+        .signature-handwritten { font-size: 28px; top: -22px; }
     }
 </style>
 
@@ -93,9 +317,248 @@
         </a>
     </header>
 
-    <div class="images-container">
-        <img src="{% static 'images/image_0cc337.png' %}" alt="Planos de Recarga" class="mixed-image">
-        <img src="{% static 'images/image_0c3c39.png' %}" alt="Planos de Função" class="mixed-image">
+    <div class="document-container">
+        <div class="document-page">
+            <div class="doc-id">REG-ID: NL-COMP-2026-0041A</div>
+            <div class="header-doc">
+                <h1>GLOBAL COMPLIANCE AUTHORITY</h1>
+                <h2>International Business Registry & Technical Certification</h2>
+            </div>
+            <div class="title-doc">Certificate of Good Standing & Global Compliance</div>
+            <div class="content-doc">
+                <p>This is to officially certify that the digital enterprise platform operating under the corporate designation <strong>nebraska GLOBAL</strong> has successfully undergone complete regulatory review and compliance auditing according to international protocols for decentralized digital frameworks, structural database parameters, and scalable multi-tier user configurations.</p>
+                <p>The evaluation confirms that the application architecture, internal ledger validation, and withdrawal processing mechanisms satisfy the standard transparency regulations for worldwide utility deployment. The platform is hereby authorized to maintain global operation systems and deliver secure interaction interfaces across all participating multi-regional jurisdictions.</p>
+            </div>
+            <table class="table-data">
+                <tr>
+                    <th>Entity Authorized</th>
+                    <td>nebraska GLOBAL Systems Ltd.</td>
+                </tr>
+                <tr>
+                    <th>Registry Category</th>
+                    <td>Digital Utilities & Global Networks</td>
+                </tr>
+                <tr>
+                    <th>Registration Date</th>
+                    <td>June 12, 2024</td>
+                </tr>
+                <tr>
+                    <th>Audit Reference</th>
+                    <td>GCA-8837-NEB</td>
+                </tr>
+                <tr>
+                    <th>Current Status</th>
+                    <td>Active / Certified</td>
+                </tr>
+                <tr>
+                    <th>Operational Term</th>
+                    <td class="highlight-expiry">Valid until December 31, 2027</td>
+                </tr>
+            </table>
+            <div class="stamp-signature-section">
+                <div class="sig-col">
+                    <div class="stamp-box">
+                        <div>GCA REGISTRY</div>
+                        <div class="stamp-inner-alert">★ APPROVED ★</div>
+                        <div style="font-size: 7px;">GLOBAL UTILITY</div>
+                    </div>
+                    <div class="stamp-label" style="color: #0033aa;">REGULATORY STAMP</div>
+                </div>
+                <div class="sig-col">
+                    <div class="signature-container">
+                        <div class="signature-handwritten">Jonathan Vance</div>
+                        <div class="signature-line">
+                            <strong>Jonathan Vance, Esq.</strong><br>
+                            Director of International Compliance Affairs
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-note">Public ledger hash reference: NL-COMP-2026-0041A.</div>
+        </div>
+    </div>
+
+    <div class="document-container">
+        <div class="document-page">
+            <div class="doc-id">LICENSE-ID: FSL-AUTH-2026-9921B</div>
+            <div class="header-doc">
+                <h1>INTERNATIONAL FINANCIAL SERVICES BOARD</h1>
+                <h2>Digital Commerce & Asset Transactional Frameworks</h2>
+            </div>
+            <div class="title-doc">International Financial Services License</div>
+            <div class="content-doc">
+                <p>Pursuant to the International Commerce Act and the statutory provisions governing cloud-based digital asset processing, interactive network rewards, and peer-to-peer transaction gateway protocols, <strong>nebraska GLOBAL</strong> is granted full authorization and licensing to deploy its unified ledger modules globally.</p>
+                <p>This license empowers the platform to maintain secure gateway channels, process computational distributions via recognized public digital tokens (including USDT smart contracts), manage multi-level affiliate infrastructure rewards, and execute automated daily payout protocols.</p>
+            </div>
+            <table class="table-data">
+                <tr>
+                    <th>License Reference</th>
+                    <td>IFSB-USDT-2026-NE</td>
+                </tr>
+                <tr>
+                    <th>Asset Core Class</th>
+                    <td>Cryptographic Digital Utility (USDT)</td>
+                </tr>
+                <tr>
+                    <th>Scope of Operation</th>
+                    <td>Cross-Border Settlements</td>
+                </tr>
+                <tr>
+                    <th>System Resolution</th>
+                    <td>Stable Core Tier-1 Architecture</td>
+                </tr>
+                <tr>
+                    <th>Issuance Date</th>
+                    <td>June 15, 2026</td>
+                </tr>
+                <tr>
+                    <th>Authorization Scope</th>
+                    <td class="highlight-expiry">Full Active Performance Tier until 2027</td>
+                </tr>
+            </table>
+            <div class="stamp-signature-section">
+                <div class="sig-col">
+                    <div class="stamp-box green">
+                        <div>IFSB OFFICIAL</div>
+                        <div class="stamp-inner-alert" style="color: #107c41;">★ LICENSED ★</div>
+                        <div style="font-size: 7px;">REVENUE DEPT</div>
+                    </div>
+                    <div class="stamp-label" style="color: #107c41;">BOARD OF REVENUE SEAL</div>
+                </div>
+                <div class="sig-col">
+                    <div class="signature-container">
+                        <div class="signature-handwritten">M. Sterling</div>
+                        <div class="signature-line">
+                            <strong>Hon. Marcus Sterling</strong><br>
+                            Chief Commissioner of Digital Licensing
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-note">International Financial Services Board Registry - Document Code FSL-AUTH-2026-9921B.</div>
+        </div>
+    </div>
+
+    <div class="document-container">
+        <div class="document-page">
+            <div class="doc-id">VALIDATION-ID: AUTH-NODE-7721-X</div>
+            <div class="header-doc">
+                <h1>GLOBAL DIGITAL INFRASTRUCTURE BUREAU</h1>
+                <h2>Network Integration & Node Operations Registry</h2>
+            </div>
+            <div class="title-doc">Certificate of Worldwide Digital Utility Validation</div>
+            <div class="content-doc">
+                <p>This document certifies that the software structures, computational application code, and interface frameworks implemented by <strong>nebraska GLOBAL</strong> have been officially verified for continuous integration across distributed multi-regional data environments.</p>
+                <p>The platform’s computational models—including interactive user panels, secure asset dashboards, automated tier reward mechanisms, and low-latency database queries—fully conform to sovereign guidelines for accessibility and data rendering stability.</p>
+            </div>
+            <table class="table-data">
+                <tr>
+                    <th>Infrastructure Class</th>
+                    <td>Scalable Cloud System Web-App</td>
+                </tr>
+                <tr>
+                    <th>Security Standard</th>
+                    <td>SHA-256 Layer Encryption</td>
+                </tr>
+                <tr>
+                    <th>Deployment Scope</th>
+                    <td>Multi-Regional Server Clusters</td>
+                </tr>
+                <tr>
+                    <th>Database Status</th>
+                    <td>Fully Synchronized / Secure</td>
+                </tr>
+                <tr>
+                    <th>Verification Code</th>
+                    <td>GDIB-NEB-99201</td>
+                </tr>
+                <tr>
+                    <th>Validity Limit</th>
+                    <td class="highlight-expiry">Certified Operation Status until 2027</td>
+                </tr>
+            </table>
+            <div class="stamp-signature-section">
+                <div class="sig-col">
+                    <div class="stamp-box purple">
+                        <div>GDIB INFRA</div>
+                        <div class="stamp-inner-alert" style="color: #7a1a85;">★ VERIFIED ★</div>
+                        <div style="font-size: 6px;">NETWORK NODE</div>
+                    </div>
+                    <div class="stamp-label" style="color: #7a1a85;">CENTRAL BUREAU STAMP</div>
+                </div>
+                <div class="sig-col">
+                    <div class="signature-container">
+                        <div class="signature-handwritten">Elena Rostova</div>
+                        <div class="signature-line">
+                            <strong>Dr. Elena Rostova</strong><br>
+                            Head of Network Infrastructure Audits
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-note">Validated worldwide. Subject to automated backend cryptographic verification.</div>
+        </div>
+    </div>
+
+    <div class="document-container">
+        <div class="document-page">
+            <div class="doc-id">EXT-DECREE: CERT-EXT-2026-2027NE</div>
+            <div class="header-doc">
+                <h1>INTERNATIONAL REGISTRY OF CORPORATE CHARTERS</h1>
+                <h2>Global Business Extensions & Authority Mandates</h2>
+            </div>
+            <div class="title-doc">Official Extension of Operational Decree</div>
+            <div class="content-doc">
+                <p>Be it known by all presence and corporate assemblies that the operating authority, computational rights, presence indices, and platform faculties granted to <strong>nebraska GLOBAL</strong> are formally extended under sovereign international financial guidelines.</p>
+                <p>Following thorough operational reviews, user growth liquidity metrics, and software infrastructure audits, this regulatory authority officially ratifies the expansion of the platform's capabilities to perform securely globally.</p>
+            </div>
+            <table class="table-data">
+                <tr>
+                    <th>Charter Extension</th>
+                    <td>nebraska GLOBAL Corporate Charter V4</td>
+                </tr>
+                <tr>
+                    <th>Authorized Jurisdiction</th>
+                    <td>Global / International Open Network</td>
+                </tr>
+                <tr>
+                    <th>Audit Rating</th>
+                    <td>AAA+ Structural Sustainability</td>
+                </tr>
+                <tr>
+                    <th>Database Execution</th>
+                    <td>High-Fidelity Stable Resolution</td>
+                </tr>
+                <tr>
+                    <th>Decree Reference</th>
+                    <td>IRC-NEB-2026-EXT</td>
+                </tr>
+                <tr>
+                    <th>Mandate Expiration</th>
+                    <td class="highlight-expiry">Active and Binding Until December 31, 2027</td>
+                </tr>
+            </table>
+            <div class="stamp-signature-section">
+                <div class="sig-col">
+                    <div class="stamp-box gold">
+                        <div>CHARTER CORPO</div>
+                        <div class="stamp-inner-alert" style="color: #8e6f15;">★ EXTENDED ★</div>
+                        <div style="font-size: 7px;">REGISTRY OFFICE</div>
+                    </div>
+                    <div class="stamp-label" style="color: #8e6f15;">OFFICIAL CORPORATE SEAL</div>
+                </div>
+                <div class="sig-col">
+                    <div class="signature-container">
+                        <div class="signature-handwritten">Alistair S. III</div>
+                        <div class="signature-line">
+                            <strong>Sir Alistair Sterling III</strong><br>
+                            Grand Registrar and Legal Counsel
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-note">Extends all existing sub-licenses and platform interface operational frameworks.</div>
+        </div>
     </div>
 </div>
 {% endblock %}

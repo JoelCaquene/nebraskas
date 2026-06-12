@@ -103,28 +103,54 @@ def user_logout(request):
     logout(request)
     return redirect('menu')
 
-# --- DEPÓSITO INTERNACIONAL ---
+# --- DEPÓSITO INTERNACIONAL (USDT / KWANZA) ---
 @login_required
 def deposito(request):
-    # Filtra o que é PIX e o que é USDT de acordo com o que você editou no admin
+    # Filtra as contas do tipo correspondente cadastradas no Admin do Django
     pix_accounts = PlatformBankDetails.objects.filter(type='PIX')
     usdt_wallets = PlatformBankDetails.objects.filter(type='USDT')
     
     settings = PlatformSettings.objects.first()
     deposit_instruction = settings.deposit_instruction if settings else ''
     
+    # Coleta valores únicos dos níveis e ordena de forma crescente
     level_deposits = Level.objects.all().values_list('deposit_value', flat=True).distinct().order_by('deposit_value')
-    level_deposits_list = [str(d) for d in level_deposits] 
+    # Mantemos como float/int limpo para o motor JavaScript ler nativamente sem quebras de string
+    level_deposits_list = [float(d) for d in level_deposits] 
 
     if request.method == 'POST':
         form = DepositForm(request.POST, request.FILES)
         if form.is_valid():
             deposit = form.save(commit=False)
             deposit.user = request.user
-            deposit.save()
-            return render(request, 'deposito.html', {'deposit_success': True})
+            
+            # Captura a moeda vinda do front-end (USDT ou KWANZA)
+            currency_type = request.POST.get('currency_type', 'KWANZA')
+            payment_channel = request.POST.get('payment_method', 'Não Especificado')
+            
+            # Customização inteligente da descrição do método de pagamento
+            # Salvando explicitamente o tipo de ativo usado para facilitar a auditoria da equipe
+            deposit.payment_method = f"[{currency_type}] {payment_channel}"
+            
+            # Captura o valor final enviado (Garantindo conversão segura para Decimal)
+            raw_amount = request.POST.get('amount', '0')
+            try:
+                deposit.amount = Decimal(raw_amount)
+            except:
+                deposit.amount = Decimal('0.00')
+
+            if deposit.amount > 0:
+                deposit.save()
+                return render(request, 'deposito.html', {'deposit_success': True})
+            else:
+                messages.error(request, 'O valor do depósito deve ser maior que zero.')
+        else:
+            # Caso o formulário falhe em alguma validação interna do Django
+            messages.error(request, 'Erro ao processar os dados do depósito. Verifique os campos e o comprovante.')
     
-    form = DepositForm()
+    else:
+        form = DepositForm()
+        
     context = {
         'pix_accounts': pix_accounts,
         'usdt_wallets': usdt_wallets,
@@ -134,56 +160,62 @@ def deposito(request):
     }
     return render(request, 'deposito.html', context)
 
+
+# --- APROVAÇÃO DE DEPÓSITO (PAINEL DE ADMINISTRAÇÃO / STAFF) ---
 @login_required
 def approve_deposit(request, deposit_id):
     if not request.user.is_staff:
         return redirect('menu')
+        
     deposit = get_object_or_404(Deposit, id=deposit_id)
+    
     if not deposit.is_approved:
         deposit.is_approved = True
         deposit.save()
+        
+        # Adiciona o saldo diretamente na carteira unificada do usuário em Kwanza
+        # Como o front-end já envia o valor de USDT convertido para a equivalência em Kwanza, 
+        # o saldo é incrementado perfeitamente sem distorções cambiais.
         deposit.user.available_balance += deposit.amount
         deposit.user.save()
-        messages.success(request, 'Depósito aprovado.')
+        
+        messages.success(request, f'Depósito de {deposit.amount} Kz aprovado com sucesso para {deposit.user.username}.')
+        
     return redirect('renda')
 
 @login_required
 def saque(request):
     # --- CONFIGURAÇÕES DE REGRAS DE NEGÓCIO ---
-    MIN_WITHDRAWAL_Kz = Decimal('2000')
+    MIN_WITHDRAWAL_KWANZA = Decimal('2000')
+    MIN_WITHDRAWAL_USDT = Decimal('2')
     TAXA_SAQUE = Decimal('0.10')  
-    CAMBIO_BRL_WISE = Decimal('0.0065') # Câmbio aplicado sobre o valor em Kz
     
-    # Horário de Luanda (UTC+1) - Ajustado para 09:00 às 20:00
-    START_TIME = time(9, 0, 0)
-    END_TIME = time(20, 0, 0)
+    # Taxa de conversão: 1 USDT = 1000 Kz (Ajuste este valor se necessário)
+    TAXA_CAMBIO_USDT_K_Z = Decimal('1000') 
+    CAMBIO_BRL_WISE = Decimal('0.0065') 
     
-    # Define o fuso horário de Luanda para a validação
+    # Configuração de Fuso Horário de Luanda (UTC+1)
     luanda_tz = pytz.timezone('Africa/Luanda')
     now_luanda = timezone.now().astimezone(luanda_tz)
-    current_time = now_luanda.time()
     current_weekday = now_luanda.weekday() # 0=Segunda, 5=Sábado, 6=Domingo
     
-    # Verifica se é dia de saque (Segunda a Sábado: 0 a 5)
+    # Regra: Permitido de Segunda a Sábado, 24 horas por dia (24/24)
     is_working_day = current_weekday <= 5
-    # Verifica se está no horário (09:00 às 20:00)
-    is_time_to_withdraw = is_working_day and (START_TIME <= current_time <= END_TIME)
 
     # --- DADOS DA PLATAFORMA ---
     settings = PlatformSettings.objects.first()
     withdrawal_instruction = settings.withdrawal_instruction if settings else ''
     withdrawal_records = Withdrawal.objects.filter(user=request.user).order_by('-created_at')
     
-    # Cálculo para histórico na tela
+    # Processamento para exibição no Histórico
     for record in withdrawal_records:
         valor_liquido_kz = record.amount * (Decimal('1') - TAXA_SAQUE)
         record.amount_brl = valor_liquido_kz * CAMBIO_BRL_WISE
         record.liquido_display = valor_liquido_kz
 
-    has_bank_details = BankDetails.objects.filter(user=request.user).exists()
     today = now_luanda.date()
     
-    # Limite de 1 saque por dia (Verifica se já existe saque hoje)
+    # Limite estrito de 1 saque por dia
     withdrawals_today_count = Withdrawal.objects.filter(
         user=request.user, 
         created_at__date=today
@@ -193,51 +225,89 @@ def saque(request):
     
     # --- PROCESSAMENTO DO POST ---
     if request.method == 'POST':
-        form = WithdrawalForm(request.POST)
-        if form.is_valid():
-            amount_bruto = Decimal(str(form.cleaned_data['amount']))
+        # Captura o canal selecionado no front-end ('USDT' ou 'KWANZA')
+        chosen_channel = request.POST.get('chosen_channel', 'KWANZA').upper()
+        raw_amount = request.POST.get('amount')
+        
+        try:
+            amount_input = Decimal(str(raw_amount))
+        except (ValueError, TypeError, KeyError):
+            messages.error(request, 'Valor inserido inválido.')
+            return redirect('saque')
+
+        # Transforma o valor inserido para a moeda padrão do Banco de Dados (Kwanza) para processar o débito
+        if chosen_channel == 'USDT':
+            amount_bruto_kz = amount_input * TAXA_CAMBIO_USDT_K_Z
+        else:
+            amount_bruto_kz = amount_input
+
+        # --- VALIDAÇÕES DE SEGURANÇA ---
+        if not is_working_day:
+            messages.error(request, 'Os saques estão disponíveis apenas de Segunda a Sábado.')
             
-            if not is_working_day:
-                messages.error(request, 'Saques disponíveis apenas de Segunda a Sábado.')
-            elif not is_time_to_withdraw:
-                messages.error(request, 'Fora do horário de saque (Luanda: 09:00 às 20:00).')
-            elif not can_withdraw_today:
-                messages.error(request, 'Você já realizou uma solicitação hoje. Limite: 1 por dia.')
-            elif not has_bank_details:
-                messages.error(request, 'Por favor, adicione suas coordenadas bancárias primeiro.')
-            elif amount_bruto < MIN_WITHDRAWAL_Kz:
-                messages.error(request, f'O valor mínimo para saque é de {MIN_WITHDRAWAL_Kz} Kz.')
-            elif request.user.available_balance < amount_bruto:
-                messages.error(request, 'Saldo insuficiente em sua conta.')
+        elif not can_withdraw_today:
+            messages.error(request, 'Você já realizou uma solicitação hoje. Limite máximo: 1 saque por dia.')
+            
+        # Validação do valor mínimo com base no canal escolhido
+        elif chosen_channel == 'USDT' and amount_input < MIN_WITHDRAWAL_USDT:
+            messages.error(request, f'O valor mínimo para saque via USDT é de {MIN_WITHDRAWAL_USDT} USDT.')
+            
+        elif chosen_channel == 'KWANZA' and amount_input < MIN_WITHDRAWAL_KWANZA:
+            messages.error(request, f'O valor mínimo para saque via Kwanza é de {MIN_WITHDRAWAL_KWANZA} Kz.')
+            
+        # Validação de Saldo na conta do usuário (Sempre validado em Kz)
+        elif request.user.available_balance < amount_bruto_kz:
+            messages.error(request, 'Saldo insuficiente para completar esta operação.')
+            
+        else:
+            # Tudo validado! Realiza os cálculos de liquidação
+            valor_liquido_kz = amount_bruto_kz * (Decimal('1') - TAXA_SAQUE)
+            
+            # --- CAPTURA DAS COORDENADAS DO FORMULÁRIO HTML ---
+            usdt_network = request.POST.get('usdt_network', '').strip()
+            crypto_address = request.POST.get('crypto_address', '').strip()
+            bank_holder = request.POST.get('bank_holder', '').strip()
+            bank_name = request.POST.get('bank_name', '').strip()
+            bank_iban = request.POST.get('bank_iban', '').strip()
+            
+            # Salva o registro de saque no banco de dados com as coordenadas inseridas
+            nova_retirada = Withdrawal.objects.create(
+                user=request.user, 
+                amount=amount_input,
+                channel_type=chosen_channel,
+                usdt_network=usdt_network if chosen_channel == 'USDT' else None,
+                crypto_address=crypto_address if chosen_channel == 'USDT' else None,
+                bank_holder=bank_holder if chosen_channel == 'KWANZA' else None,
+                bank_name=bank_name if chosen_channel == 'KWANZA' else None,
+                bank_iban=bank_iban if chosen_channel == 'KWANZA' else None
+            )
+            
+            # Mantida a verificação dinâmica caso o campo exista isolado
+            if hasattr(nova_retirada, 'channel_type'):
+                nova_retirada.channel_type = chosen_channel
+                nova_retirada.save()
+
+            # Deduz o valor bruto em Kwanzas do saldo do usuário
+            request.user.available_balance -= amount_bruto_kz
+            request.user.save()
+            
+            # Mensagem de retorno adaptada ao canal escolhido
+            if chosen_channel == 'USDT':
+                valor_liquido_usdt = amount_input * (Decimal('1') - TAXA_SAQUE)
+                messages.success(request, f'Saque de {valor_liquido_usdt:.2f} USDT solicitado com sucesso! Processamento ativo.')
             else:
-                # Cálculo do valor líquido para registro/mensagem
-                valor_liquido = amount_bruto * (Decimal('1') - TAXA_SAQUE)
-                valor_em_reais = valor_liquido * CAMBIO_BRL_WISE
+                messages.success(request, f'Saque de {valor_liquido_kz:.2f} Kz solicitado com sucesso! Aguarde o processamento bancário.')
                 
-                # Criar registro
-                Withdrawal.objects.create(user=request.user, amount=amount_bruto)
-                
-                # Atualizar saldo do usuário
-                request.user.available_balance -= amount_bruto
-                request.user.save()
-                
-                messages.success(request, f'Saque de {valor_liquido:.2f} Kz (aprox. R$ {valor_em_reais:.2f}) solicitado! Processamento em até 5h.')
-                return redirect('saque')
-    else:
-        form = WithdrawalForm()
+            return redirect('saque')
 
     context = {
         'withdrawal_instruction': withdrawal_instruction,
         'withdrawal_records': withdrawal_records,
-        'form': form,
-        'has_bank_details': has_bank_details,
-        'is_time_to_withdraw': is_time_to_withdraw,
-        'MIN_WITHDRAWAL_AMOUNT': MIN_WITHDRAWAL_Kz,
         'has_withdrawn_today': not can_withdraw_today, 
-        'CAMBIO_BRL': CAMBIO_BRL_WISE,
+        'is_time_to_withdraw': is_working_day,  
     }
     return render(request, 'saque.html', context)
-
+    
 # --- FUNÇÃO AUXILIAR DE COMISSÃO ---
 def distribuir_comissao_tarefa(user, ganho_tarefa):
     """
@@ -283,12 +353,11 @@ def tarefa(request):
     total_tasks_ever = Task.objects.filter(user=user).count()
     tasks_completed_today = Task.objects.filter(user=user, completed_at__date=today).count()
     
-    # 3. Lógica de Estagiário Protegida
-    # Só é estagiário se: Não é VIP E não expirou o estágio E tem menos de 2 tarefas
-    is_intern = not has_active_level and not user.is_intern_expired and total_tasks_ever < 2
+    # 3. Lógica de Estagiário Protegida (Estágio Removido)
+    is_intern = False
 
-    # 4. Variável mestre para o Botão do HTML
-    can_do_task = (has_active_level or is_intern) and tasks_completed_today < 1
+    # 4. Variável mestre para o Botão do HTML (Apenas VIP faz tarefa)
+    can_do_task = has_active_level and tasks_completed_today < 1
 
     context = {
         'has_active_level': has_active_level,
@@ -317,35 +386,25 @@ def process_task(request):
         total_task_earnings = Decimal('0.00')
         is_vip_task = False
 
-        # LÓGICA DE VERIFICAÇÃO
+        # LÓGICA DE VERIFICAÇÃO (Sem estágio, apenas VIP)
         if active_user_levels.exists():
             is_vip_task = True
             for user_level in active_user_levels:
                 total_task_earnings += Decimal(str(user_level.level.daily_gain))
-        
-        # Se não é VIP, verificamos se o estágio ainda é válido
-        elif not user.is_intern_expired and total_tasks_ever < 2:
-            total_task_earnings = Decimal('350.00')
-            
-            # SE ESTA FOR A SEGUNDA TAREFA, MARCAMOS COMO EXPIRADO PARA SEMPRE
-            if total_tasks_ever + 1 >= 2:
-                user.is_intern_expired = True
-                # O user.save() será chamado logo abaixo
         else:
-            # Caso o usuário tente burlar o front-end
             return JsonResponse({
                 'success': False, 
-                'message': 'Estágio expirado. Ative um VIP para continuar a lucrar.'
+                'message': 'Ative um VIP para continuar a lucrar.'
             })
 
         # Salva a tarefa e paga o usuário
         Task.objects.create(user=user, earnings=total_task_earnings)
         user.available_balance += total_task_earnings
-        user.save() # Salva o saldo e o status is_intern_expired
+        user.save() 
 
         # Distribui comissão apenas se for VIP
         if is_vip_task:
-            distribuir_comissao_tarefa(user, total_task_earnings)
+            distribui_comissao_tarefa(user, total_task_earnings)
         
         return JsonResponse({
             'success': True, 
@@ -354,7 +413,7 @@ def process_task(request):
 
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Erro: {str(e)}'})
-
+        
 @login_required
 def nivel(request):
     if request.method == 'POST':

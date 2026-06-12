@@ -1,5 +1,5 @@
 """
-Django settings for fd project.
+Django settings for nebraska project.
 Pronto para produção no Render.com com domínio personalizado.
 """
 
@@ -23,9 +23,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 # 1. Inicializa a lista com os domínios fixos (Locais e Produção)
 ALLOWED_HOSTS = [
-    'empresa-fd.com',          # O teu domínio principal
-    'www.empresa-fd.com',      # Versão com www
-    'fd-ybs2.onrender.com',    # O link padrão do Render (útil para testes)
+    'empresa-nebraska.com',          # O teu domínio principal
+    'www.empresa-nebraska.com',      # Versão com www
+    'nebraska-ybs2.onrender.com',    # O link padrão do Render (útil para testes)
     '127.0.0.1',
     'localhost',
 ]
@@ -77,7 +77,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'fd.urls'
+ROOT_URLCONF = 'nebraska.urls'
 
 TEMPLATES = [
     {
@@ -95,7 +95,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'fd.wsgi.application'
+WSGI_APPLICATION = 'nebraska.wsgi.application'
 
 # ======================================================================
 # DATABASE (PostgreSQL no Render / SQLite local)
@@ -141,7 +141,7 @@ LOGIN_URL = 'login'
 
 if not DEBUG:
     # Essencial para o Render identificar o HTTPS vindo do proxy reversível ok
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
     SECURE_SSL_REDIRECT = True
     
     # Cookies seguros (impedem o roubo de sessões em redes públicas)
