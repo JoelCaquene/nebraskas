@@ -1,6 +1,6 @@
 """
 Django settings for nebraska project.
-Pronto para produção no Render.com com domínio personalizado.
+Configuração ajustada para produção no Render.com.
 """
 
 from pathlib import Path
@@ -20,31 +20,13 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # ======================================================================
 # CONFIGURAÇÃO DOS HOSTS PERMITIDOS
 # ======================================================================
-
-# 1. Inicializa a lista com os domínios fixos (Locais e Produção)
 ALLOWED_HOSTS = [
-    'www.nebraskasgroup.com',    # Domínio principal (www)
-    'nebraskasgroup.com',        # Domínio raiz
-    'nebraskasquinhas.onrender.com',    # O link padrão do Render
+    'www.nebraskasgroup.com',
+    'nebraskasgroup.com',
+    'nebraskasquinhas.onrender.com',
     '127.0.0.1',
     'localhost',
 ]
-
-# 2. Cria a variável CUSTOM_DOMAINS com os mesmos dados para o teu loop não falhar
-CUSTOM_DOMAINS = list(ALLOWED_HOSTS)
-
-# 3. Puxa hosts extras do Render/Ambiente (.env) se existirem e adiciona-os
-hosts_env = config('ALLOWED_HOSTS', default='')
-if hosts_env:
-    for host in hosts_env.split(','):
-        clean_host = host.strip()
-        if clean_host and clean_host not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(clean_host)
-
-# 4. Garante que qualquer item em CUSTOM_DOMAINS está no ALLOWED_HOSTS (o teu loop original)
-for domain in CUSTOM_DOMAINS:
-    if domain not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append(domain)
 
 if not DEBUG:
     RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -59,16 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # WhiteNoise para arquivos estáticos
     'whitenoise.runserver_nostatic',
-    
     'core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', 
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -97,9 +76,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nebraska.wsgi.application'
 
-# ======================================================================
-# DATABASE (PostgreSQL no Render / SQLite local)
-# ======================================================================
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3'),
@@ -107,59 +83,38 @@ DATABASES = {
     )
 }
 
-# Internationalization
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'Africa/Luanda'
 USE_I18N = True
 USE_TZ = True
 
-# ======================================================================
-# STATIC FILES (CSS, JS, Imagens do Sistema)
-# ======================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# Armazenamento de arquivos estáticos (WhiteNoise com compressão)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ======================================================================
-# MEDIA FILES (Uploads de usuários)
-# ======================================================================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 if not os.path.exists(MEDIA_ROOT):
     os.makedirs(MEDIA_ROOT)
 
-# ======================================================================
-# ======================================================================
-# SEGURANÇA E REDIRECIONAMENTO (PRODUÇÃO)
-# ======================================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.CustomUser'
 LOGIN_URL = 'login'
 
-# Força o uso do www. como domínio principal
-PREPEND_WWW = True
+# CORREÇÃO: Removido PREPEND_WWW = True para evitar conflito de redirecionamento
+PREPEND_WWW = False
 
 if not DEBUG:
-    # O Render usa HTTP_X_FORWARDED_PROTO para detectar HTTPS
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    
-    # Redirecionamento HTTPS
     SECURE_SSL_REDIRECT = True
-    
-    # Cookies seguros
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    
-    # Proteções
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
     
-    # HSTS - ATENÇÃO: Se o site não abrir após o deploy, 
-    # comente as linhas abaixo temporariamente.
+    # HSTS ativado
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
